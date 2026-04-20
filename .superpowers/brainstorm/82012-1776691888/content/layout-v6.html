@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harnesson Platform Layout v6</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  body { background: #0d0d1a; color: #e0e0e0; padding: 32px; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.5); }
+
+  .page-title { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { color: #888; font-size: 14px; margin-bottom: 24px; }
+
+  .mockup { border: 1px solid #333; border-radius: 12px; overflow: hidden; }
+  .mockup-header { background: #1a1a2e; padding: 8px 16px; font-size: 12px; color: #888; border-bottom: 1px solid #333; }
+
+  .topbar { background: #1a1a2e; padding: 8px 16px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; border-bottom: 1px solid #333; }
+  .topbar-left { display: flex; align-items: center; gap: 16px; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .logo { font-weight: 700; font-size: 15px; color: #8b5cf6; }
+  .project-selector { background: #2d2d44; padding: 4px 12px; border-radius: 6px; cursor: pointer; color: #ccc; }
+  .branch-indicator { color: #888; font-size: 12px; }
+  .agent-badge { background: #22c55e; color: #000; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .settings-btn { background: #2d2d44; padding: 4px 8px; border-radius: 6px; font-size: 12px; color: #ccc; cursor: pointer; }
+
+  .main { display: flex; height: 520px; }
+
+  .sidebar { width: 240px; background: #1e1e32; border-right: 1px solid #333; display: flex; flex-direction: column; flex-shrink: 0; }
+  .nav-section { padding: 12px 0; }
+  .nav-item { padding: 8px 16px; color: #aaa; font-size: 13px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 10px; }
+  .nav-item:hover { background: rgba(139,92,246,0.05); color: #ccc; }
+  .nav-item.active { color: #8b5cf6; background: rgba(139,92,246,0.1); border-left: 3px solid #8b5cf6; }
+  .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  .new-agent-btn { margin: 8px 16px; background: #8b5cf6; color: #fff; text-align: center; padding: 7px 0; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .new-agent-btn:hover { background: #7c3aed; }
+  .new-agent-btn svg { width: 14px; height: 14px; }
+
+  .divider { height: 1px; background: #333; margin: 0 16px; }
+
+  .agent-section { flex: 1; padding: 12px 0; overflow-y: auto; }
+  .agent-item { padding: 8px 16px; cursor: pointer; transition: background 0.15s; }
+  .agent-item:hover { background: rgba(139,92,246,0.05); }
+  .agent-item.active { background: rgba(139,92,246,0.08); border-left: 3px solid #8b5cf6; }
+  .agent-header { display: flex; align-items: center; gap: 8px; }
+  .status-indicator { width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+  /* Agent 状态指示器 — 统一 16x16 容器，居中放置图标 */
+  .agent-status { flex-shrink: 0; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; }
+
+  /* Running: 橙色呼吸灯，放大缩小 */
+  .agent-status.running {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #f97316;
+    animation: pulse-scale 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse-scale {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 2px rgba(249,115,22,0.4); }
+    50% { transform: scale(1.6); box-shadow: 0 0 8px rgba(249,115,22,0.6), 0 0 16px rgba(249,115,22,0.2); }
+  }
+
+  /* Completed: 绿色圆点，静态 */
+  .agent-status.completed {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 4px rgba(34,197,94,0.3);
+  }
+
+  /* Waiting: 黄色圆点 */
+  .agent-status.waiting {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #f59e0b; opacity: 0.7;
+  }
+
+  /* Error: 红色感叹号 */
+  .agent-status.error svg { width: 16px; height: 16px; }
+
+  /* Idle: 灰色圆点 */
+  .agent-status.idle {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #666;
+  }
+
+  .agent-name { font-size: 13px; color: #ccc; font-weight: 500; }
+  .agent-name.error { color: #ef4444; }
+  .agent-name.completed { color: #22c55e; }
+  .agent-type-tag { margin-left: auto; background: #2d2d44; padding: 1px 6px; border-radius: 3px; font-size: 10px; color: #888; }
+  .agent-meta { color: #888; font-size: 11px; margin-top: 2px; padding-left: 16px; }
+  .agent-task { color: #666; font-size: 10px; margin-top: 1px; padding-left: 16px; }
+  .agent-task.error { color: #ef4444; }
+  .agent-task.completed { color: #22c55e; }
+  .branch-name { font-weight: 500; }
+  .branch-purple { color: #8b5cf6; }
+  .branch-green { color: #22c55e; }
+  .branch-yellow { color: #f59e0b; }
+
+  .content { flex: 1; background: #16162a; padding: 24px; overflow: auto; }
+  .content-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .stat-card { background: #1e1e32; border: 1px solid #333; border-radius: 8px; padding: 16px; }
+  .stat-label { font-size: 11px; color: #888; margin-bottom: 4px; }
+  .stat-value { font-size: 28px; font-weight: 700; }
+  .stat-value.green { color: #22c55e; }
+  .stat-value.orange { color: #f97316; }
+  .stat-value.purple { color: #8b5cf6; }
+  .stat-value.red { color: #ef4444; }
+  .activity-card { background: #1e1e32; border: 1px solid #333; border-radius: 8px; padding: 16px; }
+  .activity-title { font-size: 13px; color: #888; margin-bottom: 12px; }
+  .activity-item { color: #aaa; font-size: 13px; line-height: 2.2; display: flex; align-items: center; gap: 8px; }
+  .activity-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .highlight-green { color: #22c55e; }
+  .highlight-purple { color: #8b5cf6; }
+  .highlight-yellow { color: #f59e0b; }
+
+  .info-section { margin-top: 24px; }
+  .info-section h3 { font-size: 16px; margin-bottom: 12px; }
+  .info-grid { display: grid; gap: 12px; }
+  .info-card { background: #1e1e32; border: 1px solid #333; border-radius: 8px; padding: 16px; }
+  .info-card h4 { font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+  .info-card ul { color: #aaa; font-size: 13px; padding-left: 16px; line-height: 1.8; }
+  .status-demo { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-size: 12px; }
+</style>
+</head>
+<body>
+  <div class="page-title">整体平台框架布局 v6</div>
+  <div class="subtitle">Agent 状态：橙色呼吸灯 · 绿色已完成 · 红色错误</div>
+
+  <div class="mockup">
+    <div class="mockup-header">布局预览</div>
+
+    <div class="topbar">
+      <div class="topbar-left">
+        <span class="logo">Harnesson</span>
+        <span style="color:#666">|</span>
+        <span class="project-selector">▼ My Project A</span>
+        <span class="branch-indicator">main branch</span>
+      </div>
+      <div class="topbar-right">
+        <span class="agent-badge">3 Agents Running</span>
+        <span class="settings-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </span>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="sidebar">
+        <div class="nav-section">
+          <div class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Dashboard
+          </div>
+          <div class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            Specs
+          </div>
+          <div class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Tasks
+          </div>
+          <div class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><path d="M11 18H8a2 2 0 0 1-2-2V9"/></svg>
+            Git
+          </div>
+          <div class="new-agent-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Agent
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="agent-section">
+          <!-- Agent A - Running (橙色呼吸灯) -->
+          <div class="agent-item active">
+            <div class="agent-header">
+              <span class="status-indicator"><span class="agent-status running"></span></span>
+              <span class="agent-name">Agent A</span>
+              <span class="agent-type-tag">Claude</span>
+            </div>
+            <div class="agent-meta">My Project A · <span class="branch-name branch-purple">main</span></div>
+            <div class="agent-task">Implementing auth module...</div>
+          </div>
+
+          <!-- Agent B - Completed (绿色圆点) -->
+          <div class="agent-item">
+            <div class="agent-header">
+              <span class="status-indicator"><span class="agent-status completed"></span></span>
+              <span class="agent-name completed">Agent B</span>
+              <span class="agent-type-tag">Claude</span>
+            </div>
+            <div class="agent-meta">My Project A · <span class="branch-name branch-green">tree-1</span></div>
+            <div class="agent-task completed">Completed: Add unit tests</div>
+          </div>
+
+          <!-- Agent C - Error (红色感叹号) -->
+          <div class="agent-item">
+            <div class="agent-header">
+              <span class="status-indicator"><span class="agent-status error">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </span></span>
+              <span class="agent-name error">Agent C</span>
+              <span class="agent-type-tag">GPT</span>
+            </div>
+            <div class="agent-meta">My Project B · <span class="branch-name branch-yellow">dev</span></div>
+            <div class="agent-task error">Build failed: type error in api.ts</div>
+          </div>
+
+          <!-- Agent D - Running (橙色呼吸灯) -->
+          <div class="agent-item">
+            <div class="agent-header">
+              <span class="status-indicator"><span class="agent-status running"></span></span>
+              <span class="agent-name">Agent D</span>
+              <span class="agent-type-tag">Cursor</span>
+            </div>
+            <div class="agent-meta">My Project A · <span class="branch-name branch-purple">feature/ui</span></div>
+            <div class="agent-task">Building dashboard layout</div>
+          </div>
+
+          <!-- Agent E - Waiting (黄点) -->
+          <div class="agent-item">
+            <div class="agent-header">
+              <span class="status-indicator"><span class="agent-status waiting"></span></span>
+              <span class="agent-name">Agent E</span>
+              <span class="agent-type-tag">Claude</span>
+            </div>
+            <div class="agent-meta">My Project C · <span class="branch-name branch-green">fix/header</span></div>
+            <div class="agent-task">Waiting for input...</div>
+          </div>
+
+          <!-- Agent F - Running (橙色呼吸灯) -->
+          <div class="agent-item">
+            <div class="agent-header">
+              <span class="status-indicator"><span class="agent-status running"></span></span>
+              <span class="agent-name">Agent F</span>
+              <span class="agent-type-tag">Claude</span>
+            </div>
+            <div class="agent-meta">My Project B · <span class="branch-name branch-yellow">staging</span></div>
+            <div class="agent-task">Refactoring components</div>
+          </div>
+
+          <!-- Agent G - Error -->
+          <div class="agent-item">
+            <div class="agent-header">
+              <span class="status-indicator"><span class="agent-status error">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </span></span>
+              <span class="agent-name error">Agent G</span>
+              <span class="agent-type-tag">GPT</span>
+            </div>
+            <div class="agent-meta">My Project A · <span class="branch-name branch-purple">hotfix/db</span></div>
+            <div class="agent-task error">Connection timeout</div>
+          </div>
+
+          <!-- Agent H - Completed -->
+          <div class="agent-item">
+            <div class="agent-header">
+              <span class="status-indicator"><span class="agent-status completed"></span></span>
+              <span class="agent-name completed">Agent H</span>
+              <span class="agent-type-tag">Claude</span>
+            </div>
+            <div class="agent-meta">My Project A · <span class="branch-name branch-green">feature/api</span></div>
+            <div class="agent-task completed">Completed: REST API endpoints</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="content-title">Dashboard</div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Running</div>
+            <div class="stat-value orange">3</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Pending</div>
+            <div class="stat-value" style="color:#f59e0b;">1</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Completed</div>
+            <div class="stat-value green">2</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Errors</div>
+            <div class="stat-value red">2</div>
+          </div>
+        </div>
+        <div class="activity-card">
+          <div class="activity-title">Recent Activity</div>
+          <div class="activity-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Agent B completed: <span class="highlight-green">Add unit tests</span> — just now
+          </div>
+          <div class="activity-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            Agent C failed: <span style="color:#ef4444">Build error in api.ts</span> — 1 min ago
+          </div>
+          <div class="activity-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Spec updated: <span class="highlight-purple">Auth Module</span> — 15 min ago
+          </div>
+          <div class="activity-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><path d="M11 18H8a2 2 0 0 1-2-2V9"/></svg>
+            Git: <span class="highlight-yellow">feature/auth</span> merged into main — 1 hour ago
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-section">
+    <h3>Agent 状态指示器</h3>
+    <div class="info-grid" style="grid-template-columns: repeat(5, 1fr);">
+      <div class="info-card">
+        <div class="status-demo">
+          <span class="status-indicator"><span class="agent-status running"></span></span>
+          <span style="color: #f97316; font-weight: 600;">Running</span>
+        </div>
+        <ul>
+          <li>橙色圆点</li>
+          <li>呼吸灯：放大缩小 + 发光</li>
+          <li>表示 Agent 正在工作中</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <div class="status-demo">
+          <span class="status-indicator"><span class="agent-status completed"></span></span>
+          <span style="color: #22c55e; font-weight: 600;">Completed</span>
+        </div>
+        <ul>
+          <li>绿色圆点</li>
+          <li>静态，带微光</li>
+          <li>任务已完成</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <div class="status-demo">
+          <span class="status-indicator"><span class="agent-status waiting"></span></span>
+          <span style="color: #f59e0b; font-weight: 600;">Waiting</span>
+        </div>
+        <ul>
+          <li>黄色半透明圆点</li>
+          <li>静态</li>
+          <li>等待输入或排队中</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <div class="status-demo">
+          <span class="status-indicator"><span class="agent-status error">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </span></span>
+          <span style="color: #ef4444; font-weight: 600;">Error</span>
+        </div>
+        <ul>
+          <li>红色感叹号图标</li>
+          <li>名称/任务变红</li>
+          <li>出错需要处理</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <div class="status-demo">
+          <span class="status-indicator"><span class="agent-status idle"></span></span>
+          <span style="color: #666; font-weight: 600;">Idle</span>
+        </div>
+        <ul>
+          <li>灰色圆点</li>
+          <li>静态</li>
+          <li>空闲待命</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harnesson Platform Layout v8 - Claude Code Style Input</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  body { background: #0d0d1a; color: #e0e0e0; padding: 32px; }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.5); }
+
+  .page-title { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { color: #888; font-size: 14px; margin-bottom: 24px; }
+
+  .mockup { border: 1px solid #333; border-radius: 12px; overflow: hidden; }
+  .mockup-header { background: #1a1a2e; padding: 8px 16px; font-size: 12px; color: #888; border-bottom: 1px solid #333; }
+
+  .topbar { background: #1a1a2e; padding: 8px 16px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; border-bottom: 1px solid #333; }
+  .topbar-left { display: flex; align-items: center; gap: 16px; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .logo { font-weight: 700; font-size: 15px; color: #8b5cf6; }
+  .project-selector { background: #2d2d44; padding: 4px 12px; border-radius: 6px; cursor: pointer; color: #ccc; }
+  .branch-indicator { color: #888; font-size: 12px; }
+  .agent-badge { background: #22c55e; color: #000; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .settings-btn { background: #2d2d44; padding: 4px 8px; border-radius: 6px; font-size: 12px; color: #ccc; cursor: pointer; }
+
+  .main { display: flex; height: 560px; }
+
+  /* 侧边栏 */
+  .sidebar { width: 220px; background: #1e1e32; border-right: 1px solid #333; display: flex; flex-direction: column; flex-shrink: 0; }
+  .nav-section { padding: 12px 0; }
+  .nav-item { padding: 8px 16px; color: #aaa; font-size: 13px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 10px; }
+  .nav-item:hover { background: rgba(139,92,246,0.05); color: #ccc; }
+  .nav-item.active { color: #8b5cf6; background: rgba(139,92,246,0.1); border-left: 3px solid #8b5cf6; }
+  .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .new-agent-btn { margin: 8px 16px; background: #8b5cf6; color: #fff; text-align: center; padding: 7px 0; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .new-agent-btn svg { width: 14px; height: 14px; }
+  .divider { height: 1px; background: #333; margin: 0 16px; }
+  .agent-section { flex: 1; padding: 12px 0; overflow-y: auto; }
+  .agent-item { padding: 8px 16px; cursor: pointer; transition: background 0.15s; }
+  .agent-item:hover { background: rgba(139,92,246,0.05); }
+  .agent-item.active { background: rgba(139,92,246,0.08); border-left: 3px solid #8b5cf6; }
+  .agent-header { display: flex; align-items: center; gap: 8px; }
+  .status-indicator { width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .agent-status.running { width: 8px; height: 8px; border-radius: 50%; background: #f97316; animation: pulse-scale 1.8s ease-in-out infinite; }
+  .agent-status.completed { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 4px rgba(34,197,94,0.3); }
+  .agent-status.waiting { width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; opacity: 0.7; }
+  .agent-status.error svg { width: 16px; height: 16px; }
+  .agent-status.idle { width: 8px; height: 8px; border-radius: 50%; background: #666; }
+  @keyframes pulse-scale {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 2px rgba(249,115,22,0.4); }
+    50% { transform: scale(1.6); box-shadow: 0 0 8px rgba(249,115,22,0.6), 0 0 16px rgba(249,115,22,0.2); }
+  }
+  .agent-name { font-size: 13px; color: #ccc; font-weight: 500; }
+  .agent-type-tag { margin-left: auto; background: #2d2d44; padding: 1px 6px; border-radius: 3px; font-size: 10px; color: #888; }
+  .agent-meta { color: #888; font-size: 11px; margin-top: 2px; padding-left: 16px; }
+  .agent-task { color: #666; font-size: 10px; margin-top: 1px; padding-left: 16px; }
+
+  /* Agent 聊天面板 */
+  .chat-panel { width: 440px; background: #191930; border-right: 1px solid #333; display: flex; flex-direction: column; flex-shrink: 0; position: relative; }
+  .chat-header { padding: 10px 16px; border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
+  .chat-header-left { display: flex; align-items: center; gap: 8px; }
+  .chat-agent-name { font-size: 14px; font-weight: 600; }
+  .chat-agent-status { font-size: 11px; padding: 1px 8px; border-radius: 10px; }
+  .chat-agent-status.running { background: rgba(249,115,22,0.15); color: #f97316; }
+  .chat-close-btn { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 4px; color: #888; }
+  .chat-close-btn:hover { background: #2d2d44; color: #ccc; }
+  .chat-close-btn svg { width: 14px; height: 14px; }
+
+  /* 聊天内容区 — Cursor 风格 */
+  .chat-messages { flex: 1; overflow-y: auto; padding: 0; display: flex; flex-direction: column; }
+
+  /* 消息区块 */
+  .msg { padding: 16px 16px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .msg:last-child { border-bottom: none; }
+
+  /* 用户消息 */
+  .msg.user { background: rgba(139,92,246,0.04); }
+  .msg.user .msg-label { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .msg.user .msg-label-icon { width: 16px; height: 16px; color: #8b5cf6; }
+  .msg.user .msg-label-text { font-size: 11px; font-weight: 600; color: #8b5cf6; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* AI 消息 */
+  .msg.agent { background: transparent; }
+  .msg.agent .msg-label { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .msg.agent .msg-label-icon { width: 16px; height: 16px; color: #22c55e; }
+  .msg.agent .msg-label-text { font-size: 11px; font-weight: 600; color: #22c55e; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .msg-text { font-size: 13px; line-height: 1.7; color: #d0d0d0; }
+  .msg-text code { background: #2d2d44; padding: 1px 4px; border-radius: 3px; font-size: 12px; color: #e0e0e0; }
+  .msg-text .typing { display: inline-block; animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .msg-code-block { background: #0d0d1a; border: 1px solid #333; border-radius: 6px; margin-top: 8px; overflow: hidden; }
+  .msg-code-header { background: #1a1a2e; padding: 4px 10px; font-size: 11px; color: #888; display: flex; justify-content: space-between; }
+  .msg-code-content { padding: 10px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; line-height: 1.6; color: #ccc; overflow-x: auto; }
+
+  /* Diff 代码块 */
+  .msg-diff-block { background: #0d0d1a; border: 1px solid #333; border-radius: 6px; margin-top: 8px; overflow: hidden; }
+  .msg-diff-header { background: #1a1a2e; padding: 5px 10px; font-size: 11px; color: #888; display: flex; justify-content: space-between; align-items: center; }
+  .msg-diff-header .diff-stats { display: flex; gap: 8px; }
+  .msg-diff-header .diff-added { color: #22c55e; }
+  .msg-diff-header .diff-removed { color: #ef4444; }
+  .msg-diff-content { padding: 8px 0; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; line-height: 1.7; overflow-x: auto; }
+  .diff-line { padding: 0 10px; white-space: pre; }
+  .diff-line.added { background: rgba(34,197,94,0.1); color: #4ade80; }
+  .diff-line.removed { background: rgba(239,68,68,0.1); color: #f87171; }
+  .diff-line.context { color: #666; }
+  .diff-line-num { display: inline-block; width: 30px; color: #444; text-align: right; margin-right: 12px; user-select: none; }
+  .diff-line.added .diff-line-num { color: rgba(34,197,94,0.4); }
+  .diff-line.removed .diff-line-num { color: rgba(239,68,68,0.4); }
+  .diff-line-prefix { display: inline-block; width: 14px; color: inherit; opacity: 0.6; }
+  /* diff 文件路径头 */
+  .diff-file-header { background: rgba(139,92,246,0.08); padding: 4px 10px; font-size: 11px; color: #b4a0f4; border-bottom: 1px solid #333; font-family: 'SF Mono', 'Fira Code', monospace; }
+
+  /* === Claude Code 风格聊天输入区 === */
+  .chat-input-area { padding: 0 12px 12px 12px; }
+
+  .claude-input-wrapper {
+    background: #1e1e32;
+    border: 1px solid #3a3a55;
+    border-radius: 16px;
+    transition: border-color 0.2s;
+    position: relative;
+  }
+  .claude-input-wrapper:focus-within {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 1px rgba(139,92,246,0.15);
+  }
+  /* 内部内容圆角裁剪，但不影响下拉菜单 */
+  .input-inner-clip {
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  /* 文件引用标签区 */
+  .input-context-area {
+    padding: 8px 12px 0 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .context-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(139,92,246,0.12);
+    border: 1px solid rgba(139,92,246,0.2);
+    border-radius: 6px;
+    padding: 2px 8px;
+    font-size: 11px;
+    color: #b4a0f4;
+    cursor: pointer;
+  }
+  .context-tag svg { width: 12px; height: 12px; opacity: 0.7; }
+  .context-tag .remove-tag { margin-left: 2px; opacity: 0.5; }
+  .context-tag .remove-tag:hover { opacity: 1; }
+
+  /* 输入框 */
+  .claude-textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #e0e0e0;
+    font-size: 13px;
+    padding: 10px 14px;
+    resize: none;
+    outline: none;
+    min-height: 24px;
+    max-height: 140px;
+    font-family: inherit;
+    line-height: 1.6;
+  }
+  .claude-textarea::placeholder { color: #555; }
+
+  /* 底部工具栏 */
+  .claude-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px 8px 10px;
+  }
+  .claude-toolbar-left { display: flex; align-items: center; gap: 4px; }
+  .claude-toolbar-right { display: flex; align-items: center; gap: 8px; }
+
+  /* 工具栏下拉选择器 */
+  .toolbar-select {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: transparent;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .toolbar-select:hover { background: rgba(255,255,255,0.06); color: #bbb; border-color: #3a3a55; }
+  .toolbar-select svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .toolbar-select .select-label { color: #555; }
+  .toolbar-select .select-value { color: #bbb; font-weight: 500; }
+  .toolbar-select .select-chevron { color: #555; }
+
+  .claude-tool-btn {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .claude-tool-btn:hover { background: rgba(255,255,255,0.06); color: #aaa; }
+  .claude-tool-btn svg { width: 16px; height: 16px; }
+
+  /* + 按钮特殊样式 */
+  .claude-plus-btn {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #888;
+    transition: all 0.15s;
+  }
+  .claude-plus-btn:hover { background: rgba(255,255,255,0.08); color: #ccc; }
+  .claude-plus-btn svg { width: 18px; height: 18px; }
+
+  /* 下拉菜单（+ 按钮弹出） */
+  .plus-dropdown {
+    position: absolute;
+    bottom: 38px;
+    left: 0;
+    background: #252540;
+    border: 1px solid #3a3a55;
+    border-radius: 10px;
+    padding: 6px;
+    min-width: 200px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    z-index: 9999;
+  }
+  .plus-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #bbb;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .plus-dropdown-item:hover { background: rgba(255,255,255,0.06); color: #e0e0e0; }
+  .plus-dropdown-item svg { width: 14px; height: 14px; color: #888; }
+  .plus-dropdown-item .shortcut { margin-left: auto; color: #555; font-size: 11px; }
+
+  /* 模型选择器（底部右侧） */
+  .model-pill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: transparent;
+  }
+  .model-pill:hover { background: rgba(255,255,255,0.06); color: #bbb; }
+  .model-pill .model-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #8b5cf6;
+  }
+  .model-pill svg { width: 12px; height: 12px; }
+
+  /* 发送按钮 */
+  .claude-send-btn {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #8b5cf6;
+    color: #fff;
+    transition: all 0.15s;
+  }
+  .claude-send-btn:hover { background: #7c3aed; transform: scale(1.05); }
+  .claude-send-btn svg { width: 15px; height: 15px; }
+
+  /* 快捷键提示 */
+  .input-hint {
+    text-align: center;
+    font-size: 10px;
+    color: #444;
+    margin-top: 6px;
+  }
+  .input-hint kbd {
+    background: #252540;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 10px;
+    border: 1px solid #333;
+  }
+
+  /* 主内容区 */
+  .content { flex: 1; background: #16162a; padding: 24px; overflow: auto; }
+  .content-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .stat-card { background: #1e1e32; border: 1px solid #333; border-radius: 8px; padding: 16px; }
+  .stat-label { font-size: 11px; color: #888; margin-bottom: 4px; }
+  .stat-value { font-size: 28px; font-weight: 700; }
+
+  /* 弹出菜单遮罩 */
+  .dropdown-overlay {
+    position: relative;
+    display: inline-block;
+  }
+
+  .info-section { margin-top: 24px; }
+  .info-section h3 { font-size: 16px; margin-bottom: 12px; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .info-card { background: #1e1e32; border: 1px solid #333; border-radius: 8px; padding: 16px; }
+  .info-card h4 { color: #8b5cf6; font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+  .info-card ul { color: #aaa; font-size: 13px; padding-left: 16px; line-height: 1.8; }
+
+  /* 标注区域 */
+  .annotation {
+    position: relative;
+    display: inline-block;
+  }
+  .annotation::after {
+    content: attr(data-label);
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    color: #8b5cf6;
+    background: rgba(139,92,246,0.12);
+    padding: 1px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+  <div class="page-title">整体平台框架布局 v8</div>
+  <div class="subtitle">Claude Code 桌面版风格聊天输入框</div>
+
+  <div class="mockup">
+    <div class="mockup-header">布局预览</div>
+
+    <div class="topbar">
+      <div class="topbar-left">
+        <span class="logo">Harnesson</span>
+        <span style="color:#666">|</span>
+        <span class="project-selector">▼ My Project A</span>
+        <span class="branch-indicator">main branch</span>
+      </div>
+      <div class="topbar-right">
+        <span class="agent-badge">3 Agents Running</span>
+        <span class="settings-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </span>
+      </div>
+    </div>
+
+    <div class="main">
+      <!-- 侧边栏 -->
+      <div class="sidebar">
+        <div class="nav-section">
+          <div class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Dashboard
+          </div>
+          <div class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Specs
+          </div>
+          <div class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Tasks
+          </div>
+          <div class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><path d="M11 18H8a2 2 0 0 1-2-2V9"/></svg>
+            Git
+          </div>
+          <div class="new-agent-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Agent
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="agent-section">
+          <div class="agent-item active">
+            <div class="agent-header">
+              <span class="status-indicator"><span class="agent-status running"></span></span>
+              <span class="agent-name">Agent A</span>
+              <span class="agent-type-tag">Claude</span>
+            </div>
+            <div class="agent-meta">My Project A · <span style="color:#8b5cf6;font-weight:500;">main</span></div>
+            <div class="agent-task">Implementing auth module...</div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-header">
+              <span class="status-indicator"><span class="agent-status running"></span></span>
+              <span class="agent-name">Agent B</span>
+              <span class="agent-type-tag">Claude</span>
+            </div>
+            <div class="agent-meta">My Project A · <span style="color:#22c55e;font-weight:500;">tree-1</span></div>
+            <div class="agent-task">Running tests</div>
+          </div>
+          <div class="agent-item">
+            <div class="agent-header">
+              <span class="status-indicator"><span class="agent-status completed"></span></span>
+              <span class="agent-name" style="color:#22c55e;">Agent C</span>
+              <span class="agent-type-tag">GPT</span>
+            </div>
+            <div class="agent-meta">My Project B · <span style="color:#f59e0b;font-weight:500;">dev</span></div>
+            <div class="agent-task" style="color:#22c55e;">Completed</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent 聊天面板 -->
+      <div class="chat-panel">
+        <div class="chat-header">
+          <div class="chat-header-left">
+            <span class="chat-agent-name">Agent A</span>
+            <span class="chat-agent-status running">Running</span>
+          </div>
+          <span class="chat-close-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </span>
+        </div>
+
+        <div class="chat-messages">
+          <!-- User message -->
+          <div class="msg user">
+            <div class="msg-label">
+              <svg class="msg-label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span class="msg-label-text">You</span>
+            </div>
+            <div class="msg-text">Implement JWT authentication for the login API endpoint. Use bcrypt for password hashing and include token refresh logic.</div>
+          </div>
+
+          <!-- Agent message with diff -->
+          <div class="msg agent">
+            <div class="msg-label">
+              <svg class="msg-label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              <span class="msg-label-text">Agent A</span>
+            </div>
+            <div class="msg-text">I'll implement JWT authentication. Let me update the auth module:</div>
+            <div class="msg-diff-block">
+              <div class="msg-diff-header">
+                <span>auth/jwt.ts</span>
+                <div class="diff-stats">
+                  <span class="diff-added">+12</span>
+                  <span class="diff-removed">-3</span>
+                </div>
+              </div>
+              <div class="msg-diff-content">
+                <div class="diff-line context"><span class="diff-line-num"> 5</span><span class="diff-line-prefix"> </span><span style="color:#c792ea;">import</span> express <span style="color:#c792ea;">from</span> <span style="color:#c3e88d;">'express'</span>;</div>
+                <div class="diff-line removed"><span class="diff-line-num"> 6</span><span class="diff-line-prefix">-</span><span style="color:#c792ea;">import</span> crypto <span style="color:#c792ea;">from</span> <span style="color:#c3e88d;">'crypto'</span>;</div>
+                <div class="diff-line removed"><span class="diff-line-num"> 7</span><span class="diff-line-prefix">-</span><span style="color:#c792ea;">const</span> SECRET = <span style="color:#c3e88d;">'hardcoded-secret'</span>;</div>
+                <div class="diff-line removed"><span class="diff-line-num"> 8</span><span class="diff-line-prefix">-</span><span style="color:#c792ea;">const</span> EXPIRES = <span style="color:#c3e88d;">'1d'</span>;</div>
+                <div class="diff-line added"><span class="diff-line-num"> 6</span><span class="diff-line-prefix">+</span><span style="color:#c792ea;">import</span> jwt <span style="color:#c792ea;">from</span> <span style="color:#c3e88d;">'jsonwebtoken'</span>;</div>
+                <div class="diff-line added"><span class="diff-line-num"> 7</span><span class="diff-line-prefix">+</span><span style="color:#c792ea;">import</span> bcrypt <span style="color:#c792ea;">from</span> <span style="color:#c3e88d;">'bcryptjs'</span>;</div>
+                <div class="diff-line added"><span class="diff-line-num"> 8</span><span class="diff-line-prefix">+</span><span style="color:#c792ea;">import</span> { config } <span style="color:#c792ea;">from</span> <span style="color:#c3e88d;">'dotenv'</span>;</div>
+                <div class="diff-line added"><span class="diff-line-num"> 9</span><span class="diff-line-prefix">+</span></div>
+                <div class="diff-line added"><span class="diff-line-num">10</span><span class="diff-line-prefix">+</span><span style="color:#c792ea;">const</span> SECRET = config().JWT_SECRET;</div>
+                <div class="diff-line added"><span class="diff-line-num">11</span><span class="diff-line-prefix">+</span><span style="color:#c792ea;">const</span> EXPIRES = <span style="color:#c3e88d;">'24h'</span>;</div>
+                <div class="diff-line added"><span class="diff-line-num">12</span><span class="diff-line-prefix">+</span><span style="color:#c792ea;">const</span> REFRESH_EXPIRES = <span style="color:#c3e88d;">'7d'</span>;</div>
+                <div class="diff-line context"><span class="diff-line-num"> 9</span><span class="diff-line-prefix"> </span></div>
+                <div class="diff-line context"><span class="diff-line-num">10</span><span class="diff-line-prefix"> </span><span style="color:#c792ea;">export async function</span> <span style="color:#82aaff;">hashPassword</span>(pwd: <span style="color:#ffcb6b;">string</span>) {</div>
+                <div class="diff-line removed"><span class="diff-line-num">11</span><span class="diff-line-prefix">-</span>  <span style="color:#c792ea;">return</span> crypto.createHash(<span style="color:#c3e88d;">'sha256'</span>).update(pwd);</div>
+                <div class="diff-line added"><span class="diff-line-num">13</span><span class="diff-line-prefix">+</span>  <span style="color:#c792ea;">return</span> bcrypt.hash(pwd, <span style="color:#f78c6c;">10</span>);</div>
+                <div class="diff-line context"><span class="diff-line-num">12</span><span class="diff-line-prefix"> </span>}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Agent typing message -->
+          <div class="msg agent">
+            <div class="msg-label">
+              <svg class="msg-label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              <span class="msg-label-text">Agent A</span>
+            </div>
+            <div class="msg-text">Now adding the login endpoint with refresh token support<span class="typing">|</span></div>
+          </div>
+        </div>
+
+        <!-- Claude Code 风格输入区 -->
+        <div class="chat-input-area">
+          <div class="claude-input-wrapper">
+            <div class="input-inner-clip">
+              <!-- 已引用的上下文标签 -->
+              <div class="input-context-area">
+                <span class="context-tag">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  @auth/jwt.ts
+                  <span class="remove-tag">×</span>
+                </span>
+                <span class="context-tag">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                  Read File
+                  <span class="remove-tag">×</span>
+                </span>
+              </div>
+
+              <!-- 文本输入 -->
+              <textarea class="claude-textarea" placeholder="Message Agent A...  Type @ for files, / for commands" rows="1"></textarea>
+            </div>
+
+            <!-- 底部工具栏 -->
+            <div class="claude-toolbar">
+              <div class="claude-toolbar-left">
+                <!-- + 按钮（弹出菜单） -->
+                <div class="dropdown-overlay">
+                  <span class="claude-plus-btn" title="Add context">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                  </span>
+                  <!-- + 按钮弹出菜单 -->
+                  <div class="plus-dropdown">
+                    <div class="plus-dropdown-item">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                      Add Image
+                      <span class="shortcut">⌘ V</span>
+                    </div>
+                    <div class="plus-dropdown-item">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                      Reference File
+                      <span class="shortcut">@</span>
+                    </div>
+                    <div class="plus-dropdown-item">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+                      Slash Command
+                      <span class="shortcut">/</span>
+                    </div>
+                    <div class="plus-dropdown-item">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                      Tools
+                    </div>
+                    <div class="plus-dropdown-item">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="6" height="6" rx="1"/><rect x="16" y="2" width="6" height="6" rx="1"/><rect x="9" y="13" width="6" height="6" rx="1"/><path d="M5 8v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8"/><line x1="12" y1="11" x2="12" y2="13"/></svg>
+                      MCP Servers
+                    </div>
+                  </div>
+                </div>
+                <!-- Agent 选择器 -->
+                <span class="toolbar-select" title="Select Agent type">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M17.3 3.3a.75.75 0 0 1 1.4 0L22 14.3a.75.75 0 0 1-1.4.4L17.3 3.3zM2 14.3L5.3 3.3a.75.75 0 0 1 1.4 0L10 14.3a.75.75 0 0 1-1.4.4L5.3 5.1 2 14.7a.75.75 0 0 1-1.4-.4zm7.5 3.2a.75.75 0 0 1-1.4-.4l2-5.5a.75.75 0 0 1 1.4.4l-2 5.5zm5 0a.75.75 0 0 1-1.4-.4l2-5.5a.75.75 0 0 1 1.4.4l-2 5.5z" fill="#D97757"/></svg>
+                  <span class="select-value">Claude Code</span>
+                  <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </span>
+                <!-- Worktree 选择器 -->
+                <span class="toolbar-select" title="Select worktree">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><path d="M11 18H8a2 2 0 0 1-2-2V9"/></svg>
+                  <span class="select-value">main</span>
+                  <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </span>
+              </div>
+
+              <div class="claude-toolbar-right">
+                <!-- 模型选择器 -->
+                <span class="model-pill" title="Change model">
+                  <span class="model-dot"></span>
+                  Sonnet 4.7
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </span>
+                <!-- 发送按钮 -->
+                <span class="claude-send-btn" title="Send (Enter)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="input-hint"><kbd>Enter</kbd> 发送 · <kbd>Shift+Enter</kbd> 换行 · <kbd>@</kbd> 引用文件 · <kbd>/</kbd> 斜杠命令</div>
+        </div>
+      </div>
+
+      <!-- 主内容区 -->
+      <div class="content">
+        <div class="content-title">Dashboard</div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Running</div>
+            <div class="stat-value" style="color:#f97316;">3</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Pending</div>
+            <div class="stat-value" style="color:#f59e0b;">7</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Specs</div>
+            <div class="stat-value" style="color:#8b5cf6;">24</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Errors</div>
+            <div class="stat-value" style="color:#ef4444;">1</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-section">
+    <h3>v8 变更说明 — Claude Code 风格输入框</h3>
+    <div class="info-grid">
+      <div class="info-card">
+        <h4>输入框结构</h4>
+        <ul>
+          <li>圆角胶囊式输入框 (border-radius: 16px)</li>
+          <li>Focus 时紫色边框高亮</li>
+          <li>上下文标签区 (@ 文件引用、Tools)</li>
+          <li>多行输入 (自动扩展高度)</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>工具栏 (从左到右)</h4>
+        <ul>
+          <li><strong>+</strong> 按钮 — 弹出菜单: 图片/文件引用/斜杠命令/Tools/MCP</li>
+          <li><strong>模型选择器</strong> — 胶囊式, 点击切换模型</li>
+          <li><strong>发送按钮</strong> — 紫色上箭头, Enter 发送</li>
+          <li>底部快捷键提示</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>快捷操作</h4>
+        <ul>
+          <li><code>@</code> 引用文件/代码</li>
+          <li><code>/</code> 斜杠命令 (Skills)</li>
+          <li><kbd>⌘ V</kbd> 粘贴图片</li>
+          <li><kbd>Enter</kbd> 发送 / <kbd>Shift+Enter</kbd> 换行</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>与 v7 差异</h4>
+        <ul>
+          <li>移除独立 model-selector 行, 集成到底部工具栏</li>
+          <li>新增上下文标签区 (@ 文件引用)</li>
+          <li>+ 按钮替代原来的独立图标按钮</li>
+          <li>输入框整体更紧凑、更统一</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

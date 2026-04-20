@@ -1,0 +1,133 @@
+<h2>整体平台框架布局 v2</h2>
+<p class="subtitle">侧边栏：导航区 + Agent 列表区</p>
+
+<div class="mockup">
+  <div class="mockup-header">更新后的布局</div>
+  <div class="mockup-body" style="padding: 0; overflow: hidden;">
+    <!-- 顶栏 -->
+    <div style="background: #1a1a2e; color: #e0e0e0; padding: 8px 16px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; border-bottom: 1px solid #333;">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="font-weight: 700; font-size: 15px; color: #8b5cf6;">Harnesson</span>
+        <span style="color: #666;">|</span>
+        <span style="background: #2d2d44; padding: 4px 12px; border-radius: 6px; cursor: pointer;">▼ My Project A</span>
+        <span style="color: #888; font-size: 12px;">main branch</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="background: #22c55e; color: #000; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600;">3 Agents Running</span>
+        <span style="background: #2d2d44; padding: 4px 8px; border-radius: 6px; font-size: 12px;">⚙ Settings</span>
+      </div>
+    </div>
+    <!-- 主体 -->
+    <div style="display: flex; height: 480px;">
+      <!-- 侧边栏 -->
+      <div style="width: 240px; background: #1e1e32; border-right: 1px solid #333; display: flex; flex-direction: column; flex-shrink: 0;">
+        <!-- 导航区 -->
+        <div style="padding: 12px 0;">
+          <div style="padding: 6px 16px; font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px;">导航</div>
+          <div style="padding: 8px 16px; color: #8b5cf6; background: rgba(139,92,246,0.1); border-left: 3px solid #8b5cf6; font-size: 13px; font-weight: 500;">📊 Dashboard</div>
+          <div style="padding: 8px 16px; color: #aaa; font-size: 13px;">📋 Specs</div>
+          <div style="padding: 8px 16px; color: #aaa; font-size: 13px;">📄 Tasks</div>
+          <div style="padding: 8px 16px; color: #aaa; font-size: 13px;">🔀 Git</div>
+          <div style="padding: 10px 16px;">
+            <div style="background: #8b5cf6; color: #fff; text-align: center; padding: 6px 0; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer;">+ New Agent</div>
+          </div>
+        </div>
+
+        <!-- 分隔线 -->
+        <div style="height: 1px; background: #333; margin: 0 16px;"></div>
+
+        <!-- Agent 列表区 -->
+        <div style="flex: 1; padding: 12px 0; overflow-y: auto;">
+          <div style="padding: 6px 16px; font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px;">Agents</div>
+          <!-- Agent A - 选中态 -->
+          <div style="padding: 8px 16px; background: rgba(139,92,246,0.08); border-left: 3px solid #8b5cf6;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="color: #22c55e; font-size: 8px;">●</span>
+              <span style="color: #e0e0e0; font-size: 13px; font-weight: 500;">Agent A</span>
+              <span style="margin-left: auto; background: #2d2d44; padding: 1px 6px; border-radius: 3px; font-size: 10px; color: #888;">Claude</span>
+            </div>
+            <div style="color: #888; font-size: 11px; margin-top: 2px; padding-left: 14px;">My Project A · <span style="color: #8b5cf6;">main</span></div>
+            <div style="color: #666; font-size: 10px; margin-top: 1px; padding-left: 14px;">Implementing auth module...</div>
+          </div>
+          <!-- Agent B -->
+          <div style="padding: 8px 16px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="color: #22c55e; font-size: 8px;">●</span>
+              <span style="color: #ccc; font-size: 13px;">Agent B</span>
+              <span style="margin-left: auto; background: #2d2d44; padding: 1px 6px; border-radius: 3px; font-size: 10px; color: #888;">Claude</span>
+            </div>
+            <div style="color: #888; font-size: 11px; margin-top: 2px; padding-left: 14px;">My Project A · <span style="color: #22c55e;">tree-1</span></div>
+            <div style="color: #666; font-size: 10px; margin-top: 1px; padding-left: 14px;">Running tests</div>
+          </div>
+          <!-- Agent C -->
+          <div style="padding: 8px 16px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="color: #f59e0b; font-size: 8px;">●</span>
+              <span style="color: #ccc; font-size: 13px;">Agent C</span>
+              <span style="margin-left: auto; background: #2d2d44; padding: 1px 6px; border-radius: 3px; font-size: 10px; color: #888;">GPT</span>
+            </div>
+            <div style="color: #888; font-size: 11px; margin-top: 2px; padding-left: 14px;">My Project B · <span style="color: #f59e0b;">dev</span></div>
+            <div style="color: #666; font-size: 10px; margin-top: 1px; padding-left: 14px;">Fixing validation bug</div>
+          </div>
+        </div>
+      </div>
+      <!-- 内容区 -->
+      <div style="flex: 1; background: #16162a; padding: 24px; overflow: auto;">
+        <h3 style="color: #e0e0e0; margin: 0 0 16px 0; font-size: 18px;">Dashboard</h3>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+          <div style="background: #1e1e32; border: 1px solid #333; border-radius: 8px; padding: 16px;">
+            <div style="font-size: 11px; color: #888; margin-bottom: 4px;">Active Agents</div>
+            <div style="font-size: 28px; font-weight: 700; color: #22c55e;">3</div>
+          </div>
+          <div style="background: #1e1e32; border: 1px solid #333; border-radius: 8px; padding: 16px;">
+            <div style="font-size: 11px; color: #888; margin-bottom: 4px;">Pending Tasks</div>
+            <div style="font-size: 28px; font-weight: 700; color: #f59e0b;">7</div>
+          </div>
+          <div style="background: #1e1e32; border: 1px solid #333; border-radius: 8px; padding: 16px;">
+            <div style="font-size: 11px; color: #888; margin-bottom: 4px;">Specs</div>
+            <div style="font-size: 28px; font-weight: 700; color: #8b5cf6;">24</div>
+          </div>
+          <div style="background: #1e1e32; border: 1px solid #333; border-radius: 8px; padding: 16px;">
+            <div style="font-size: 11px; color: #888; margin-bottom: 4px;">Uncommitted</div>
+            <div style="font-size: 28px; font-weight: 700; color: #ef4444;">5</div>
+          </div>
+        </div>
+        <div style="background: #1e1e32; border: 1px solid #333; border-radius: 8px; padding: 16px;">
+          <div style="font-size: 13px; color: #888; margin-bottom: 12px;">Recent Activity</div>
+          <div style="color: #aaa; font-size: 13px; line-height: 2;">
+            <div>🤖 Agent A completed task: <span style="color: #22c55e;">Add login API</span> — 2 min ago</div>
+            <div>📋 Spec updated: <span style="color: #8b5cf6;">Auth Module</span> — 15 min ago</div>
+            <div>🔀 Git: <span style="color: #f59e0b;">feature/auth</span> merged into main — 1 hour ago</div>
+            <div>🤖 Agent C started: <span style="color: #8b5cf6;">Fix validation bug</span> — 2 hours ago</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 24px;">
+  <h3>侧边栏结构说明</h3>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+    <div style="background: #1e1e32; border: 1px solid #333; border-radius: 8px; padding: 16px;">
+      <div style="color: #8b5cf6; font-weight: 600; font-size: 14px; margin-bottom: 8px;">导航区（上半部分）</div>
+      <ul style="color: #aaa; font-size: 13px; margin: 0; padding-left: 16px; line-height: 1.8;">
+        <li><strong>Dashboard</strong> — 项目概览</li>
+        <li><strong>Specs</strong> — 规格管理</li>
+        <li><strong>Tasks</strong> — 任务管理</li>
+        <li><strong>Git</strong> — Git 管理</li>
+        <li><strong>+ New Agent</strong> — 创建新 Agent 按钮</li>
+      </ul>
+    </div>
+    <div style="background: #1e1e32; border: 1px solid #333; border-radius: 8px; padding: 16px;">
+      <div style="color: #8b5cf6; font-weight: 600; font-size: 14px; margin-bottom: 8px;">Agent 列表区（下半部分）</div>
+      <ul style="color: #aaa; font-size: 13px; margin: 0; padding-left: 16px; line-height: 1.8;">
+        <li>显示所有运行中的 Agent</li>
+        <li>Agent 名称 + 类型标签</li>
+        <li>所属项目 + 分支名</li>
+        <li>当前任务简述</li>
+        <li>点击可查看 Agent 详情/日志</li>
+      </ul>
+    </div>
+  </div>
+</div>

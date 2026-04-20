@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harnesson Platform Layout v3</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  body { background: #0d0d1a; color: #e0e0e0; padding: 32px; }
+
+  /* 自定义滚动条 */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.5); }
+
+  .page-title { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { color: #888; font-size: 14px; margin-bottom: 24px; }
+
+  .mockup { border: 1px solid #333; border-radius: 12px; overflow: hidden; }
+  .mockup-header { background: #1a1a2e; padding: 8px 16px; font-size: 12px; color: #888; border-bottom: 1px solid #333; }
+
+  /* 顶栏 */
+  .topbar { background: #1a1a2e; padding: 8px 16px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; border-bottom: 1px solid #333; }
+  .topbar-left { display: flex; align-items: center; gap: 16px; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .logo { font-weight: 700; font-size: 15px; color: #8b5cf6; }
+  .project-selector { background: #2d2d44; padding: 4px 12px; border-radius: 6px; cursor: pointer; color: #ccc; }
+  .branch-indicator { color: #888; font-size: 12px; }
+  .agent-badge { background: #22c55e; color: #000; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .settings-btn { background: #2d2d44; padding: 4px 8px; border-radius: 6px; font-size: 12px; color: #ccc; }
+
+  /* 主体 */
+  .main { display: flex; height: 500px; }
+
+  /* 侧边栏 */
+  .sidebar { width: 240px; background: #1e1e32; border-right: 1px solid #333; display: flex; flex-direction: column; flex-shrink: 0; }
+  .nav-section { padding: 12px 0; }
+  .nav-label { padding: 6px 16px; font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+  .nav-item { padding: 8px 16px; color: #aaa; font-size: 13px; cursor: pointer; transition: all 0.15s; }
+  .nav-item:hover { background: rgba(139,92,246,0.05); color: #ccc; }
+  .nav-item.active { color: #8b5cf6; background: rgba(139,92,246,0.1); border-left: 3px solid #8b5cf6; }
+  .new-agent-btn { margin: 8px 16px; background: #8b5cf6; color: #fff; text-align: center; padding: 7px 0; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+  .new-agent-btn:hover { background: #7c3aed; }
+
+  .divider { height: 1px; background: #333; margin: 0 16px; }
+
+  .agent-section { flex: 1; padding: 12px 0; overflow-y: auto; }
+  .agent-item { padding: 8px 16px; cursor: pointer; transition: background 0.15s; }
+  .agent-item:hover { background: rgba(139,92,246,0.05); }
+  .agent-item.active { background: rgba(139,92,246,0.08); border-left: 3px solid #8b5cf6; }
+  .agent-header { display: flex; align-items: center; gap: 6px; }
+  .agent-status-dot { font-size: 8px; }
+  .agent-status-dot.running { color: #22c55e; }
+  .agent-status-dot.waiting { color: #f59e0b; }
+  .agent-name { font-size: 13px; color: #ccc; font-weight: 500; }
+  .agent-type-tag { margin-left: auto; background: #2d2d44; padding: 1px 6px; border-radius: 3px; font-size: 10px; color: #888; }
+  .agent-meta { color: #888; font-size: 11px; margin-top: 2px; padding-left: 14px; }
+  .agent-task { color: #666; font-size: 10px; margin-top: 1px; padding-left: 14px; }
+  .branch-name { font-weight: 500; }
+  .branch-purple { color: #8b5cf6; }
+  .branch-green { color: #22c55e; }
+  .branch-yellow { color: #f59e0b; }
+
+  /* 内容区 */
+  .content { flex: 1; background: #16162a; padding: 24px; overflow: auto; }
+  .content-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .stat-card { background: #1e1e32; border: 1px solid #333; border-radius: 8px; padding: 16px; }
+  .stat-label { font-size: 11px; color: #888; margin-bottom: 4px; }
+  .stat-value { font-size: 28px; font-weight: 700; }
+  .stat-value.green { color: #22c55e; }
+  .stat-value.yellow { color: #f59e0b; }
+  .stat-value.purple { color: #8b5cf6; }
+  .stat-value.red { color: #ef4444; }
+  .activity-card { background: #1e1e32; border: 1px solid #333; border-radius: 8px; padding: 16px; }
+  .activity-title { font-size: 13px; color: #888; margin-bottom: 12px; }
+  .activity-item { color: #aaa; font-size: 13px; line-height: 2.2; }
+  .highlight-green { color: #22c55e; }
+  .highlight-purple { color: #8b5cf6; }
+  .highlight-yellow { color: #f59e0b; }
+
+  /* 说明区 */
+  .info-section { margin-top: 24px; }
+  .info-section h3 { font-size: 16px; margin-bottom: 12px; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .info-card { background: #1e1e32; border: 1px solid #333; border-radius: 8px; padding: 16px; }
+  .info-card h4 { color: #8b5cf6; font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+  .info-card ul { color: #aaa; font-size: 13px; padding-left: 16px; line-height: 1.8; }
+</style>
+</head>
+<body>
+  <div class="page-title">整体平台框架布局 v3</div>
+  <div class="subtitle">侧边栏：导航区 + Agent 列表区 · 优化滚动条样式</div>
+
+  <div class="mockup">
+    <div class="mockup-header">布局预览</div>
+
+    <!-- 顶栏 -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <span class="logo">Harnesson</span>
+        <span style="color:#666">|</span>
+        <span class="project-selector">▼ My Project A</span>
+        <span class="branch-indicator">main branch</span>
+      </div>
+      <div class="topbar-right">
+        <span class="agent-badge">3 Agents Running</span>
+        <span class="settings-btn">⚙ Settings</span>
+      </div>
+    </div>
+
+    <!-- 主体 -->
+    <div class="main">
+      <!-- 侧边栏 -->
+      <div class="sidebar">
+        <div class="nav-section">
+          <div class="nav-label">导航</div>
+          <div class="nav-item active">📊 Dashboard</div>
+          <div class="nav-item">📋 Specs</div>
+          <div class="nav-item">📄 Tasks</div>
+          <div class="nav-item">🔀 Git</div>
+          <div class="new-agent-btn">+ New Agent</div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="agent-section">
+          <div class="nav-label">Agents</div>
+
+          <div class="agent-item active">
+            <div class="agent-header">
+              <span class="agent-status-dot running">●</span>
+              <span class="agent-name">Agent A</span>
+              <span class="agent-type-tag">Claude</span>
+            </div>
+            <div class="agent-meta">My Project A · <span class="branch-name branch-purple">main</span></div>
+            <div class="agent-task">Implementing auth module...</div>
+          </div>
+
+          <div class="agent-item">
+            <div class="agent-header">
+              <span class="agent-status-dot running">●</span>
+              <span class="agent-name">Agent B</span>
+              <span class="agent-type-tag">Claude</span>
+            </div>
+            <div class="agent-meta">My Project A · <span class="branch-name branch-green">tree-1</span></div>
+            <div class="agent-task">Running tests</div>
+          </div>
+
+          <div class="agent-item">
+            <div class="agent-header">
+              <span class="agent-status-dot waiting">●</span>
+              <span class="agent-name">Agent C</span>
+              <span class="agent-type-tag">GPT</span>
+            </div>
+            <div class="agent-meta">My Project B · <span class="branch-name branch-yellow">dev</span></div>
+            <div class="agent-task">Fixing validation bug</div>
+          </div>
+
+          <div class="agent-item">
+            <div class="agent-header">
+              <span class="agent-status-dot running">●</span>
+              <span class="agent-name">Agent D</span>
+              <span class="agent-type-tag">Cursor</span>
+            </div>
+            <div class="agent-meta">My Project A · <span class="branch-name branch-purple">feature/ui</span></div>
+            <div class="agent-task">Building dashboard layout</div>
+          </div>
+
+          <div class="agent-item">
+            <div class="agent-header">
+              <span class="agent-status-dot waiting">●</span>
+              <span class="agent-name">Agent E</span>
+              <span class="agent-type-tag">Claude</span>
+            </div>
+            <div class="agent-meta">My Project C · <span class="branch-name branch-green">fix/header</span></div>
+            <div class="agent-task">Waiting for review</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 内容区 -->
+      <div class="content">
+        <div class="content-title">Dashboard</div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Active Agents</div>
+            <div class="stat-value green">3</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Pending Tasks</div>
+            <div class="stat-value yellow">7</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Specs</div>
+            <div class="stat-value purple">24</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Uncommitted</div>
+            <div class="stat-value red">5</div>
+          </div>
+        </div>
+        <div class="activity-card">
+          <div class="activity-title">Recent Activity</div>
+          <div class="activity-item">🤖 Agent A completed task: <span class="highlight-green">Add login API</span> — 2 min ago</div>
+          <div class="activity-item">📋 Spec updated: <span class="highlight-purple">Auth Module</span> — 15 min ago</div>
+          <div class="activity-item">🔀 Git: <span class="highlight-yellow">feature/auth</span> merged into main — 1 hour ago</div>
+          <div class="activity-item">🤖 Agent C started: <span class="highlight-purple">Fix validation bug</span> — 2 hours ago</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-section">
+    <h3>侧边栏结构说明</h3>
+    <div class="info-grid">
+      <div class="info-card">
+        <h4>导航区（上半部分）</h4>
+        <ul>
+          <li><strong>Dashboard</strong> — 项目概览</li>
+          <li><strong>Specs</strong> — 规格管理</li>
+          <li><strong>Tasks</strong> — 任务管理</li>
+          <li><strong>Git</strong> — Git 管理</li>
+          <li><strong>+ New Agent</strong> — 创建新 Agent</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <h4>Agent 列表区（下半部分）</h4>
+        <ul>
+          <li>显示所有运行中的 Agent</li>
+          <li>Agent 名称 + 类型标签</li>
+          <li>所属项目 + 分支名</li>
+          <li>当前任务简述</li>
+          <li>点击可查看 Agent 详情/日志</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
