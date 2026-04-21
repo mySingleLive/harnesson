@@ -1,0 +1,10 @@
+{
+  "name": "harnesson",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter @harnesson/web dev",
+    "build": "pnpm --filter @harnesson/shared build && pnpm --filter @harnesson/web build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck"
+  }
+}
