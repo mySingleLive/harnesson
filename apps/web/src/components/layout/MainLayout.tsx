@@ -44,7 +44,6 @@ export function MainLayout() {
           agents={agents}
           activeAgentId={activeAgentId ?? undefined}
           onAgentClick={handleAgentClick}
-          onNewAgent={() => {}}
         />
         {showPanel && (
           <AgentPanel
