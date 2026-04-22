@@ -21,7 +21,7 @@ export function NewSessionPage() {
   const handleSend = () => {
     const text = input.trim();
     if (!text) return;
-    createAgent({ projectId: project, branch });
+    createAgent({ projectId: project, branch, taskTitle: text });
     setInput('');
   };
 
@@ -76,7 +76,7 @@ export function NewSessionPage() {
               </button>
               <button
                 onClick={handleSend}
-                className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-harness-accent text-white hover:bg-[#7c3aed]"
+                className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-harness-accent text-white hover:brightness-110"
               >
                 <ArrowUp className="h-[15px] w-[15px]" />
               </button>
@@ -98,7 +98,7 @@ export function NewSessionPage() {
         </div>
 
         <div className="mt-2 text-center text-[10px] text-gray-600">
-          <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">Enter</kbd> 发送 · <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">Shift+Enter</kbd> 换行
+          <kbd className="rounded border border-harness-border bg-harness-sidebar px-1.5 py-[1px] text-[10px]">Enter</kbd> 发送 · <kbd className="rounded border border-harness-border bg-harness-sidebar px-1.5 py-[1px] text-[10px]">Shift+Enter</kbd> 换行
         </div>
       </div>
     </div>

@@ -9,7 +9,7 @@ interface AgentState {
   addAgent: (agent: Agent) => void;
   updateAgent: (id: string, updates: Partial<Agent>) => void;
   removeAgent: (id: string) => void;
-  createAgent: (opts: { projectId: string; branch: string; model?: string }) => Agent;
+  createAgent: (opts: { projectId: string; branch: string; model?: string; taskTitle?: string }) => Agent;
 }
 
 const mockAgents: Agent[] = [
@@ -87,7 +87,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
       model: opts.model ?? 'Sonnet 4.7',
       createdAt: new Date().toISOString(),
       panelState: { isOpen: true, isMaximized: false },
-      sessionContext: { taskTitle: '', tokenUsage: 0 },
+      sessionContext: { taskTitle: opts.taskTitle ?? '', tokenUsage: 0 },
     };
     set((s) => ({ agents: [...s.agents, agent], activeAgentId: agent.id }));
     return agent;

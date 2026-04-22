@@ -1,4 +1,5 @@
-import { Outlet } from 'react-router';
+import { Outlet, useLocation } from 'react-router';
+import { useEffect } from 'react';
 import { Topbar } from './Topbar';
 import { Sidebar } from './Sidebar';
 import { AgentPanel } from './AgentPanel';
@@ -12,13 +13,9 @@ export function MainLayout() {
   const runningCount = agents.filter((a) => a.status === 'running').length;
 
   const handleAgentClick = (agent: typeof agents[number]) => {
-    const prevId = activeAgentId;
     setActiveAgent(agent.id);
     updatePanelState(agent.id, { isOpen: true });
     switchProject(agent.projectId, agent.branch);
-    if (prevId && prevId !== agent.id) {
-      // 保留上一个 agent 的当前 panelState（已保存在 store 中）
-    }
   };
 
   const handleClose = () => {
@@ -33,6 +30,15 @@ export function MainLayout() {
       updatePanelState(activeAgent.id, { isMaximized: !activeAgent.panelState.isMaximized });
     }
   };
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === '/' && activeAgentId) {
+      updatePanelState(activeAgentId, { isOpen: false });
+      setActiveAgent(null);
+    }
+  }, [location.pathname]);
 
   const showPanel = activeAgent && activeAgent.panelState.isOpen;
 
