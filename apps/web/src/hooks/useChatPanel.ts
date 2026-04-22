@@ -1,15 +1,30 @@
-import { create } from 'zustand';
+import { useAgentStore } from '@/stores/agentStore';
 
-interface ChatPanelState {
-  isOpen: boolean;
-  open: () => void;
-  close: () => void;
-  toggle: () => void;
+export function useChatPanel() {
+  const { agents, activeAgentId, updatePanelState, setActiveAgent } = useAgentStore();
+  const activeAgent = agents.find((a) => a.id === activeAgentId) ?? null;
+
+  const isOpen = activeAgent?.panelState.isOpen ?? false;
+  const isMaximized = activeAgent?.panelState.isMaximized ?? false;
+
+  const open = () => {
+    if (activeAgentId) {
+      updatePanelState(activeAgentId, { isOpen: true });
+    }
+  };
+
+  const close = () => {
+    if (activeAgentId) {
+      updatePanelState(activeAgentId, { isOpen: false });
+    }
+    setActiveAgent(null);
+  };
+
+  const toggleMaximize = () => {
+    if (activeAgentId) {
+      updatePanelState(activeAgentId, { isMaximized: !activeAgent?.panelState.isMaximized });
+    }
+  };
+
+  return { isOpen, isMaximized, open, close, toggleMaximize };
 }
-
-export const useChatPanel = create<ChatPanelState>((set) => ({
-  isOpen: false,
-  open: () => set({ isOpen: true }),
-  close: () => set({ isOpen: false }),
-  toggle: () => set((s) => ({ isOpen: !s.isOpen })),
-}));
