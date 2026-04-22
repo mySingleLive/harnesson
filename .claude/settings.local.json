@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(head:*)",
+      "Bash(mvn compile:*)",
+      "Bash(mvn exec:java:*)",
+      "Bash(mvn test:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(mvn test-compile:*)",
+      "Bash(git:*)"
+    ],
+    "defaultMode": "bypassPermissions"
+  }
+}
