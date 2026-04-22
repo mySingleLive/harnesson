@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 interface SidebarProps {
   agents: Agent[];
   activeAgentId?: string;
-  onAgentClick: (agentId: string) => void;
+  onAgentClick: (agent: Agent) => void;
   onNewAgent: () => void;
 }
 
@@ -60,7 +60,7 @@ export function Sidebar({ agents, activeAgentId, onAgentClick, onNewAgent }: Sid
         {agents.map((agent) => (
           <button
             key={agent.id}
-            onClick={() => onAgentClick(agent.id)}
+            onClick={() => onAgentClick(agent)}
             className={cn(
               'w-full px-4 py-2 text-left transition-colors',
               activeAgentId === agent.id
