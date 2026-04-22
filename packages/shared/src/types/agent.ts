@@ -2,6 +2,16 @@ export type AgentType = 'claude-code' | 'gpt' | 'cursor' | string;
 
 export type AgentStatus = 'running' | 'waiting' | 'completed' | 'error' | 'idle';
 
+export interface AgentPanelState {
+  isOpen: boolean;
+  isMaximized: boolean;
+}
+
+export interface AgentSessionContext {
+  taskTitle?: string;
+  tokenUsage?: number;
+}
+
 export interface Agent {
   id: string;
   name: string;
@@ -15,4 +25,6 @@ export interface Agent {
   model?: string;
   createdAt: string;
   error?: string;
+  panelState: AgentPanelState;
+  sessionContext?: AgentSessionContext;
 }
