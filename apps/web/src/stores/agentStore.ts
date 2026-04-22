@@ -9,6 +9,7 @@ interface AgentState {
   addAgent: (agent: Agent) => void;
   updateAgent: (id: string, updates: Partial<Agent>) => void;
   removeAgent: (id: string) => void;
+  createAgent: (opts: { projectId: string; branch: string; model?: string }) => Agent;
 }
 
 const mockAgents: Agent[] = [
@@ -51,7 +52,7 @@ const mockAgents: Agent[] = [
   },
 ];
 
-export const useAgentStore = create<AgentState>((set) => ({
+export const useAgentStore = create<AgentState>((set, get) => ({
   agents: mockAgents,
   activeAgentId: null,
   setActiveAgent: (id) => set({ activeAgentId: id }),
@@ -68,4 +69,21 @@ export const useAgentStore = create<AgentState>((set) => ({
     })),
   removeAgent: (id) =>
     set((s) => ({ agents: s.agents.filter((a) => a.id !== id) })),
+  createAgent: (opts) => {
+    const agent: Agent = {
+      id: `agent-${Date.now()}`,
+      name: `Agent ${String.fromCharCode(65 + (get().agents.length % 26))}`,
+      type: 'claude-code',
+      status: 'running',
+      projectId: opts.projectId,
+      branch: opts.branch,
+      worktreePath: `/tmp/worktree-${Date.now()}`,
+      model: opts.model ?? 'Sonnet 4.7',
+      createdAt: new Date().toISOString(),
+      panelState: { isOpen: true, isMaximized: false },
+      sessionContext: { taskTitle: '', tokenUsage: 0 },
+    };
+    set((s) => ({ agents: [...s.agents, agent], activeAgentId: agent.id }));
+    return agent;
+  },
 }));
