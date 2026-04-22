@@ -70,14 +70,20 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   removeAgent: (id) =>
     set((s) => ({ agents: s.agents.filter((a) => a.id !== id) })),
   createAgent: (opts) => {
+    const id = crypto.randomUUID();
+    const agents = get().agents;
+    const usedIndices = agents
+      .map((a) => { const m = a.name.match(/^Agent ([A-Z])$/); return m ? m[1].charCodeAt(0) - 65 : -1; })
+      .filter((n) => n >= 0);
+    const nextIndex = usedIndices.length > 0 ? Math.max(...usedIndices) + 1 : 0;
     const agent: Agent = {
-      id: `agent-${Date.now()}`,
-      name: `Agent ${String.fromCharCode(65 + (get().agents.length % 26))}`,
+      id,
+      name: `Agent ${String.fromCharCode(65 + (nextIndex % 26))}`,
       type: 'claude-code',
       status: 'running',
       projectId: opts.projectId,
       branch: opts.branch,
-      worktreePath: `/tmp/worktree-${Date.now()}`,
+      worktreePath: `/tmp/worktree-${id.slice(0, 8)}`,
       model: opts.model ?? 'Sonnet 4.7',
       createdAt: new Date().toISOString(),
       panelState: { isOpen: true, isMaximized: false },
