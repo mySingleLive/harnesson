@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router';
 import {
-  LayoutGrid,
+  MessageSquarePlus,
+  FolderKanban,
   FileText,
   CheckSquare,
+  FolderOpen,
   GitBranch,
-  Plus,
 } from 'lucide-react';
 import { AgentStatusDot } from './AgentStatusDot';
 import type { Agent } from '@harnesson/shared';
@@ -14,17 +15,18 @@ interface SidebarProps {
   agents: Agent[];
   activeAgentId?: string;
   onAgentClick: (agent: Agent) => void;
-  onNewAgent: () => void;
 }
 
 const navItems = [
-  { to: '/', icon: LayoutGrid, label: 'Dashboard' },
+  { to: '/', icon: MessageSquarePlus, label: 'New Session' },
+  { to: '/projects', icon: FolderKanban, label: 'Projects' },
   { to: '/specs', icon: FileText, label: 'Specs' },
   { to: '/tasks', icon: CheckSquare, label: 'Tasks' },
+  { to: '/files', icon: FolderOpen, label: 'Files' },
   { to: '/git', icon: GitBranch, label: 'Git' },
 ];
 
-export function Sidebar({ agents, activeAgentId, onAgentClick, onNewAgent }: SidebarProps) {
+export function Sidebar({ agents, activeAgentId, onAgentClick }: SidebarProps) {
   return (
     <aside className="flex h-full w-[220px] flex-shrink-0 flex-col border-r border-harness-border bg-harness-sidebar">
       <nav className="py-3">
@@ -32,6 +34,7 @@ export function Sidebar({ agents, activeAgentId, onAgentClick, onNewAgent }: Sid
           <NavLink
             key={to}
             to={to}
+            end={to === '/'}
             className={({ isActive }) =>
               cn(
                 'flex items-center gap-2.5 px-4 py-2 text-[13px] transition-colors',
@@ -45,13 +48,6 @@ export function Sidebar({ agents, activeAgentId, onAgentClick, onNewAgent }: Sid
             {label}
           </NavLink>
         ))}
-        <button
-          onClick={onNewAgent}
-          className="mx-4 mt-2 flex items-center justify-center gap-1.5 rounded-md bg-harness-accent px-0 py-[7px] text-[12px] font-medium text-white"
-        >
-          <Plus className="h-3.5 w-3.5" />
-          New Agent
-        </button>
       </nav>
 
       <div className="mx-4 h-px bg-harness-border" />
