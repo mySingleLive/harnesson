@@ -1,43 +1,65 @@
 import { Outlet } from 'react-router';
 import { Topbar } from './Topbar';
 import { Sidebar } from './Sidebar';
-import { ChatPanel } from './ChatPanel';
+import { AgentPanel } from './AgentPanel';
 import { useAgentStore } from '@/stores/agentStore';
-import { useChatPanel } from '@/hooks/useChatPanel';
+import { useProjectStore } from '@/stores/projectStore';
 
 export function MainLayout() {
-  const { agents, activeAgentId, setActiveAgent } = useAgentStore();
-  const { isOpen: chatOpen, close: closeChat } = useChatPanel();
-
+  const { agents, activeAgentId, setActiveAgent, updatePanelState } = useAgentStore();
+  const switchProject = useProjectStore((s) => s.switchProject);
   const activeAgent = agents.find((a) => a.id === activeAgentId);
   const runningCount = agents.filter((a) => a.status === 'running').length;
 
+  const handleAgentClick = (agent: typeof agents[number]) => {
+    const prevId = activeAgentId;
+    setActiveAgent(agent.id);
+    updatePanelState(agent.id, { isOpen: true });
+    switchProject(agent.projectId, agent.branch);
+    if (prevId && prevId !== agent.id) {
+      // 保留上一个 agent 的当前 panelState（已保存在 store 中）
+    }
+  };
+
+  const handleClose = () => {
+    if (activeAgentId) {
+      updatePanelState(activeAgentId, { isOpen: false });
+    }
+    setActiveAgent(null);
+  };
+
+  const handleToggleMaximize = () => {
+    if (activeAgent) {
+      updatePanelState(activeAgent.id, { isMaximized: !activeAgent.panelState.isMaximized });
+    }
+  };
+
+  const showPanel = activeAgent && activeAgent.panelState.isOpen;
+
   return (
     <div className="flex h-screen flex-col">
-      <Topbar projectName="My Project A" branch="main branch" runningAgentCount={runningCount} />
+      <Topbar runningAgentCount={runningCount} />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
           agents={agents}
           activeAgentId={activeAgentId ?? undefined}
-          onAgentClick={(id) => {
-            setActiveAgent(id);
-            useChatPanel.getState().open();
-          }}
+          onAgentClick={handleAgentClick}
           onNewAgent={() => {}}
         />
-        {chatOpen && activeAgent && (
-          <ChatPanel
+        {showPanel && (
+          <AgentPanel
             agent={activeAgent}
             messages={mockMessages}
-            onClose={() => {
-              closeChat();
-              setActiveAgent(null);
-            }}
+            isMaximized={activeAgent.panelState.isMaximized}
+            onToggleMaximize={handleToggleMaximize}
+            onClose={handleClose}
           />
         )}
-        <main className="flex-1 overflow-auto bg-harness-content">
-          <Outlet />
-        </main>
+        {!activeAgent?.panelState.isMaximized && (
+          <main className="flex-1 overflow-auto bg-harness-content">
+            <Outlet />
+          </main>
+        )}
       </div>
     </div>
   );

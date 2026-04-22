@@ -12,6 +12,6 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   switchProject: (projectId, branch) => {
     const s = get();
     if (s.activeProjectId === projectId && s.activeBranch === branch) return;
-    set({ activeProjectId, activeBranch: branch });
+    set({ activeProjectId: projectId, activeBranch: branch });
   },
 }));
