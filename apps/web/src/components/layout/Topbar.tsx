@@ -1,12 +1,15 @@
 import { Settings } from 'lucide-react';
+import { useProjectStore } from '@/stores/projectStore';
 
 interface TopbarProps {
-  projectName: string;
-  branch: string;
   runningAgentCount: number;
 }
 
-export function Topbar({ projectName, branch, runningAgentCount }: TopbarProps) {
+export function Topbar({ runningAgentCount }: TopbarProps) {
+  const { activeProjectId, activeBranch } = useProjectStore();
+  const projectName = activeProjectId ?? 'No Project';
+  const branch = activeBranch ?? '—';
+
   return (
     <header className="flex items-center justify-between border-b border-harness-border bg-[#1a1a2e] px-4 py-2 text-[13px]">
       <div className="flex items-center gap-4">
