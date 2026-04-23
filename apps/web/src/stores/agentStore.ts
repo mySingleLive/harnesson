@@ -86,7 +86,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
       worktreePath: `/tmp/worktree-${id.slice(0, 8)}`,
       model: opts.model ?? 'Sonnet 4.7',
       createdAt: new Date().toISOString(),
-      panelState: { isOpen: true, isMaximized: false },
+      panelState: { isOpen: true, isMaximized: true },
       sessionContext: { taskTitle: opts.taskTitle ?? '', tokenUsage: 0 },
     };
     set((s) => ({ agents: [...s.agents, agent], activeAgentId: agent.id }));
