@@ -14,7 +14,7 @@ interface ProjectRowProps {
 
 export function ProjectRow({ project, onOpen, onReveal, onRemove, onViewDetail }: ProjectRowProps) {
   const [confirmRemove, setConfirmRemove] = useState(false);
-  const confirmTimer = useRef<ReturnType<typeof setTimeout>>();
+  const confirmTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     return () => {

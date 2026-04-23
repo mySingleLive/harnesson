@@ -16,7 +16,7 @@ export function ProjectCard({ project, onOpen, onReveal, onRemove, onViewDetail 
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmRemove, setConfirmRemove] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const confirmTimer = useRef<ReturnType<typeof setTimeout>>();
+  const confirmTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     if (!menuOpen) return;
