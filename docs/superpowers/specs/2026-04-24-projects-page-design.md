@@ -36,6 +36,7 @@ ProjectsPage
   - `ProjectDetailModal.tsx`
   - `CloneRepoModal.tsx`
   - `CreateProjectModal.tsx`
+- `apps/web/src/hooks/useProjectActions.ts` — 添加项目逻辑 hook
 
 ---
 
@@ -101,7 +102,7 @@ ProjectsPage
 
 ### 操作行为
 
-- **打开项目**：调用 `projectStore.switchProject(id, defaultBranch)`
+- **打开项目**：调用 `projectStore.switchProject(id, branch)`，branch 优先使用项目记录的最近分支，无记录时默认 "main"
 - **查看详情**：弹出 `ProjectDetailModal`
 - **打开文件夹**：调用后端 API 在系统文件管理器中打开
 - **移除项目**：inline confirm（红色"确认移除？" + "取消"，3 秒自动恢复），确认后从列表移除，不删除实际文件
@@ -185,14 +186,15 @@ ProjectsPage
 
 ```
 GET    /api/projects              获取项目列表
-POST   /api/projects              创建项目
 GET    /api/projects/:id          获取项目详情
 DELETE /api/projects/:id          移除项目
-POST   /api/projects/open-folder  打开文件夹选择对话框
-POST   /api/projects/clone        克隆仓库
-POST   /api/projects/create       创建新项目
+POST   /api/projects/open-folder  打开文件夹选择对话框并添加项目
+POST   /api/projects/clone        克隆仓库并添加项目
+POST   /api/projects/create       创建新项目并添加项目
 POST   /api/projects/:id/reveal   在文件管理器中打开
 ```
+
+三个添加接口各自完成操作并返回创建的 Project 对象，无需单独的 `POST /api/projects`。
 
 ### Project Type
 
