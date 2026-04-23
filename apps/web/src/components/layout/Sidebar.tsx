@@ -2,7 +2,7 @@ import { NavLink } from 'react-router';
 import {
   MessageSquarePlus,
   FolderKanban,
-  FileText,
+  Network,
   CheckSquare,
   FolderOpen,
   GitBranch,
@@ -20,7 +20,7 @@ interface SidebarProps {
 const navItems = [
   { to: '/', icon: MessageSquarePlus, label: 'New Session' },
   { to: '/projects', icon: FolderKanban, label: 'Projects' },
-  { to: '/specs', icon: FileText, label: 'Specs' },
+  { to: '/graph', icon: Network, label: 'Graph' },
   { to: '/tasks', icon: CheckSquare, label: 'Tasks' },
   { to: '/files', icon: FolderOpen, label: 'Files' },
   { to: '/git', icon: GitBranch, label: 'Git' },
