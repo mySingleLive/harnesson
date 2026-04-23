@@ -45,3 +45,28 @@ body {
     box-shadow: 0 0 8px rgba(249, 115, 22, 0.6), 0 0 16px rgba(249, 115, 22, 0.2);
   }
 }
+
+/* Modal animations */
+@keyframes modal-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-content-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.fixed.inset-0 {
+  animation: modal-backdrop-in 150ms ease-out;
+}
+
+.fixed.inset-0 > .relative {
+  animation: modal-content-in 200ms ease-out;
+}
+
+/* Stagger animation for project items */
+@keyframes fade-slide-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
