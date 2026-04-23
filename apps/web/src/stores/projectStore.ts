@@ -29,8 +29,12 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
   loadProjects: async () => {
     set({ isLoading: true });
-    const projects = await mockApi.getProjects();
-    set({ projects, isLoading: false });
+    try {
+      const projects = await mockApi.getProjects();
+      set({ projects, isLoading: false });
+    } catch {
+      set({ isLoading: false });
+    }
   },
 
   removeProject: async (id) => {

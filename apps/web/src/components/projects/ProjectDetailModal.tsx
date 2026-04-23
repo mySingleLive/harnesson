@@ -1,5 +1,7 @@
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { X } from 'lucide-react';
 import type { Project } from '@harnesson/shared';
+import { cn } from '@/lib/utils';
 
 interface ProjectDetailModalProps {
   project: Project;
@@ -15,8 +17,33 @@ const sourceLabels: Record<Project['source'], string> = {
 };
 
 export function ProjectDetailModal({ project, onClose, onOpen, onDelete }: ProjectDetailModalProps) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const deleteTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  useEffect(() => {
+    return () => {
+      if (deleteTimer.current) clearTimeout(deleteTimer.current);
+    };
+  }, []);
+
+  const handleDeleteClick = useCallback(() => {
+    if (confirmDelete) {
+      onDelete(project.id);
+      onClose();
+    } else {
+      setConfirmDelete(true);
+      deleteTimer.current = setTimeout(() => setConfirmDelete(false), 3000);
+    }
+  }, [confirmDelete, onDelete, onClose, project.id]);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      role="dialog"
+      aria-modal="true"
+      aria-label="项目详情"
+      onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
+    >
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative w-full max-w-md rounded-xl border border-harness-border bg-harness-sidebar p-0 shadow-2xl">
         <div className="flex items-center justify-between border-b border-harness-border px-5 py-3">
@@ -43,10 +70,13 @@ export function ProjectDetailModal({ project, onClose, onOpen, onDelete }: Proje
 
         <div className="flex items-center justify-end gap-3 border-t border-harness-border px-5 py-3">
           <button
-            onClick={() => onDelete(project.id)}
-            className="rounded-md px-3 py-1.5 text-xs text-red-400 hover:bg-red-400/10"
+            onClick={handleDeleteClick}
+            className={cn(
+              'rounded-md px-3 py-1.5 text-xs hover:bg-red-400/10',
+              confirmDelete ? 'text-red-400' : 'text-gray-500 hover:text-red-400',
+            )}
           >
-            删除
+            {confirmDelete ? '确认删除？' : '删除'}
           </button>
           <button
             onClick={() => { onOpen(project); onClose(); }}

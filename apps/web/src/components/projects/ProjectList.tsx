@@ -68,6 +68,7 @@ export function ProjectList({ projects }: ProjectListProps) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="搜索项目..."
+              aria-label="搜索项目"
               className="w-48 rounded-lg border border-harness-border bg-harness-content py-1.5 pl-8 pr-3 text-xs text-gray-200 placeholder-gray-600 outline-none focus:border-harness-accent"
             />
           </div>

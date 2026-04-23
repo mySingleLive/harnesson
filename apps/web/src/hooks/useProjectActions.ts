@@ -24,6 +24,7 @@ export function useProjectActions() {
     try {
       const project = await mockApi.openFolder();
       if (projects.some((p) => p.path === project.path)) {
+        alert('该项目已添加');
         return null;
       }
       addProjectToList(project);

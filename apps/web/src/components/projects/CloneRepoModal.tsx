@@ -24,7 +24,13 @@ export function CloneRepoModal({ onClose, onClone, isCloning }: CloneRepoModalPr
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      role="dialog"
+      aria-modal="true"
+      aria-label="克隆 Git 仓库"
+      onKeyDown={(e) => { if (e.key === 'Escape') onClose(); }}
+    >
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative w-full max-w-md rounded-xl border border-harness-border bg-harness-sidebar shadow-2xl">
         <div className="flex items-center justify-between border-b border-harness-border px-5 py-3">
