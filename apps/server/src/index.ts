@@ -4,6 +4,7 @@ import { cors } from 'hono/cors';
 import { openFolderRoute } from './routes/open-folder.js';
 import { healthRoute } from './routes/health.js';
 import { projectsRoute } from './routes/projects.js';
+import { graphRoute } from './routes/graph.js';
 
 const app = new Hono();
 
@@ -12,6 +13,7 @@ app.use('/*', cors({ origin: 'http://localhost:5173' }));
 app.route('/', healthRoute);
 app.route('/', openFolderRoute);
 app.route('/', projectsRoute);
+app.route('/', graphRoute);
 
 const PORT = Number(process.env.PORT ?? 3456);
 
