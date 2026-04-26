@@ -1,0 +1,20 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider   = "prisma-client"
+  output     = "../src/generated"
+  engineType = "client"
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  name        String
+  path        String   @unique
+  description String?
+  source      String   @default("local")
+  agentCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
