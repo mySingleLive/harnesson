@@ -1,8 +1,10 @@
+import { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router';
-import { useEffect } from 'react';
 import { Topbar } from './Topbar';
 import { Sidebar } from './Sidebar';
 import { AgentPanel } from './AgentPanel';
+import { CreateProjectModal } from '@/components/projects/CreateProjectModal';
+import { useProjectActions } from '@/hooks/useProjectActions';
 import { useAgentStore } from '@/stores/agentStore';
 import { useProjectStore } from '@/stores/projectStore';
 
@@ -11,6 +13,8 @@ export function MainLayout() {
   const switchProject = useProjectStore((s) => s.switchProject);
   const activeAgent = agents.find((a) => a.id === activeAgentId);
   const runningCount = agents.filter((a) => a.status === 'running').length;
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const { createProject, openFolder, isCreating } = useProjectActions();
 
   const handleAgentClick = (agent: typeof agents[number]) => {
     setActiveAgent(agent.id);
@@ -44,7 +48,11 @@ export function MainLayout() {
 
   return (
     <div className="flex h-screen flex-col">
-      <Topbar runningAgentCount={runningCount} />
+      <Topbar
+        runningAgentCount={runningCount}
+        onCreateProject={() => setShowCreateModal(true)}
+        onOpenFolder={() => { openFolder(); }}
+      />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar
           agents={agents}
@@ -66,6 +74,13 @@ export function MainLayout() {
           </main>
         )}
       </div>
+      {showCreateModal && (
+        <CreateProjectModal
+          onClose={() => setShowCreateModal(false)}
+          onCreate={createProject}
+          isCreating={isCreating}
+        />
+      )}
     </div>
   );
 }
