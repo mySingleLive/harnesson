@@ -1,4 +1,7 @@
-import { spawn, type ChildProcess } from 'node:child_process';
+import { spawn, execFile, type ChildProcess } from 'node:child_process';
+import { promisify } from 'node:util';
+
+const execFileAsync = promisify(execFile);
 import type { Manifest, SyncOptions } from '@harnesson/shared';
 import {
   resolveBaseDir,
@@ -123,8 +126,8 @@ export async function runSync(
     const projectName = projectPath.split('/').pop() ?? 'unknown';
     let lastSyncCommit: string | null = null;
     try {
-      const { execSync } = await import('node:child_process');
-      lastSyncCommit = execSync('git rev-parse HEAD', { cwd: projectPath, encoding: 'utf-8' }).trim();
+      const { stdout } = await execFileAsync('git', ['rev-parse', 'HEAD'], { cwd: projectPath });
+      lastSyncCommit = stdout.trim();
     } catch {
       // Not a git repo
     }
