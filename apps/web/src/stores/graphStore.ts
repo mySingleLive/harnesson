@@ -143,6 +143,23 @@ export const useGraphStore = create<GraphState>((set, get) => ({
           }
         }
       }
+
+      // Process any remaining SSE events in buffer after stream closes
+      if (buffer.trim()) {
+        const flushed = buffer + '\n\n';
+        const { parsed } = parseSSEBuffer(flushed);
+        for (const evt of parsed) {
+          if (evt.event === 'complete') {
+            set({ syncStatus: 'completed', syncProgress: 100 });
+            await get().loadGraph(options.projectPath);
+          } else if (evt.event === 'error') {
+            set({
+              syncStatus: 'error',
+              syncLogs: [...get().syncLogs, `Error: ${evt.data.message}`],
+            });
+          }
+        }
+      }
     } catch (err) {
       set({
         syncStatus: 'error',

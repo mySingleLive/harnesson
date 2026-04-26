@@ -26,7 +26,7 @@ export function cancelSync(projectPath: string): boolean {
 }
 
 interface SSEWriter {
-  write: (event: string, data: Record<string, unknown>) => void;
+  write: (event: string, data: Record<string, unknown>) => Promise<void>;
 }
 
 export async function runSync(
@@ -38,12 +38,12 @@ export async function runSync(
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
 
   if (activeSyncs.has(projectPath)) {
-    sse.write('error', { message: 'Sync already in progress', code: -1 });
+    await sse.write('error', { message: 'Sync already in progress', code: -1 });
     return;
   }
 
   try {
-    sse.write('progress', {
+    await sse.write('progress', {
       phase: 'initializing',
       progress: 5,
       message: 'Checking project structure...',
@@ -53,7 +53,7 @@ export async function runSync(
       await archiveCurrentData(baseDir, timestamp);
     }
 
-    sse.write('progress', {
+    await sse.write('progress', {
       phase: 'scanning',
       progress: 10,
       message: 'Starting project scan...',
@@ -73,22 +73,22 @@ export async function runSync(
 
       activeSyncs.set(projectPath, proc);
 
-      proc.stdout?.on('data', (chunk: Buffer) => {
+      proc.stdout?.on('data', async (chunk: Buffer) => {
         const lines = chunk.toString().split('\n').filter(Boolean);
         for (const line of lines) {
           try {
             const parsed = JSON.parse(line);
             if (parsed.type === 'progress') {
-              sse.write('progress', {
+              await sse.write('progress', {
                 phase: parsed.phase ?? 'scanning',
                 progress: parsed.progress ?? 30,
                 message: parsed.message ?? line,
               });
             } else if (parsed.type === 'node') {
-              sse.write('node-generated', { tab: parsed.tab, node: parsed.node });
+              await sse.write('node-generated', { tab: parsed.tab, node: parsed.node });
             }
           } catch {
-            sse.write('progress', {
+            await sse.write('progress', {
               phase: 'scanning',
               progress: 30,
               message: line.slice(0, 200),
@@ -117,7 +117,7 @@ export async function runSync(
       });
     });
 
-    sse.write('progress', {
+    await sse.write('progress', {
       phase: 'completing',
       progress: 95,
       message: 'Writing manifest...',
@@ -143,7 +143,7 @@ export async function runSync(
     };
     await writeManifest(baseDir, manifest);
 
-    sse.write('complete', {
+    await sse.write('complete', {
       commit: lastSyncCommit ?? '',
       timestamp: manifest.lastSyncTime,
       filesGenerated: 7,
@@ -153,7 +153,7 @@ export async function runSync(
     if (existingManifest) {
       await writeManifest(baseDir, { ...existingManifest, syncStatus: 'error' });
     }
-    sse.write('error', {
+    await sse.write('error', {
       message: err instanceof Error ? err.message : String(err),
       code: 1,
     });

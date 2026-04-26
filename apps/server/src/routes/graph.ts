@@ -110,7 +110,7 @@ graphRoute.post('/api/graph/sync', async (c) => {
   return streamSSE(c, async (stream) => {
     const sse = {
       write: (event: string, data: Record<string, unknown>) => {
-        stream.writeSSE({ event, data: JSON.stringify(data) });
+        return stream.writeSSE({ event, data: JSON.stringify(data) });
       },
     };
 
