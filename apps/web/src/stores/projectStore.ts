@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { Project } from '@harnesson/shared';
-import { mockApi } from '@/lib/mockApi';
+import * as serverApi from '@/lib/serverApi';
 
 interface ProjectState {
   activeProjectId: string | null;
@@ -30,7 +30,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   loadProjects: async () => {
     set({ isLoading: true });
     try {
-      const projects = await mockApi.getProjects();
+      const projects = await serverApi.getProjects();
       set({ projects, isLoading: false });
     } catch {
       set({ isLoading: false });
@@ -38,7 +38,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   },
 
   removeProject: async (id) => {
-    await mockApi.removeProject(id);
+    await serverApi.removeProject(id);
     set({ projects: get().projects.filter((p) => p.id !== id) });
   },
 
