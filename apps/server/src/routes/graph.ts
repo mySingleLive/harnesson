@@ -21,11 +21,23 @@ graphRoute.get('/api/graph/status', async (c) => {
   const exists = await hasData(baseDir);
   const manifest = exists ? await getManifest(baseDir) : null;
 
+  let needsSync = false;
+  if (manifest?.lastSyncCommit) {
+    try {
+      const { execSync } = await import('node:child_process');
+      const currentHead = execSync('git rev-parse HEAD', { cwd: projectPath, encoding: 'utf-8' }).trim();
+      needsSync = currentHead !== manifest.lastSyncCommit;
+    } catch {
+      // Not a git repo
+    }
+  }
+
   return c.json({
     hasData: exists,
     lastSyncCommit: manifest?.lastSyncCommit ?? null,
     lastSyncTime: manifest?.lastSyncTime ?? null,
     syncStatus: manifest?.syncStatus ?? 'idle',
+    needsSync,
   });
 });
 

@@ -24,15 +24,18 @@ export function GraphPage() {
   const isDetailPanelOpen = useGraphStore((s) => s.isDetailPanelOpen);
   const setProjectPath = useGraphStore((s) => s.setProjectPath);
   const loadGraph = useGraphStore((s) => s.loadGraph);
+  const checkAutoSync = useGraphStore((s) => s.checkAutoSync);
   const setActiveTab = useGraphStore((s) => s.setActiveTab);
   const startSync = useGraphStore((s) => s.startSync);
 
   useEffect(() => {
     if (projectPath) {
       setProjectPath(projectPath);
-      loadGraph(projectPath);
+      loadGraph(projectPath).then(() => {
+        checkAutoSync(projectPath);
+      });
     }
-  }, [projectPath, setProjectPath, loadGraph]);
+  }, [projectPath, setProjectPath, loadGraph, checkAutoSync]);
 
   const hasData = !!(specsData || architectData);
   const isSyncing = syncStatus === 'syncing';

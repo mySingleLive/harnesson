@@ -81,6 +81,7 @@ export interface GraphStatusResponse {
   lastSyncCommit: string | null;
   lastSyncTime: string | null;
   syncStatus: string;
+  needsSync: boolean;
 }
 
 export async function getGraphStatus(projectPath: string): Promise<GraphStatusResponse> {
