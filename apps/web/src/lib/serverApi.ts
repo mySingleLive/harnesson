@@ -73,3 +73,36 @@ export async function removeProject(id: string): Promise<void> {
   });
   if (!res.ok) throw new Error(`Failed to remove project: ${res.status}`);
 }
+
+// --- Graph API ---
+
+export interface GraphStatusResponse {
+  hasData: boolean;
+  lastSyncCommit: string | null;
+  lastSyncTime: string | null;
+  syncStatus: string;
+}
+
+export async function getGraphStatus(projectPath: string): Promise<GraphStatusResponse> {
+  const res = await fetch(`/api/graph/status?projectPath=${encodeURIComponent(projectPath)}`);
+  if (!res.ok) throw new Error(`Failed to get graph status: ${res.status}`);
+  return res.json();
+}
+
+export async function getGraphData(projectPath: string): Promise<import('@harnesson/shared').GraphFullData> {
+  const res = await fetch(`/api/graph/data?projectPath=${encodeURIComponent(projectPath)}`);
+  if (!res.ok) throw new Error(`Failed to get graph data: ${res.status}`);
+  return res.json();
+}
+
+export async function getGraphManifest(projectPath: string): Promise<import('@harnesson/shared').Manifest> {
+  const res = await fetch(`/api/graph/manifest?projectPath=${encodeURIComponent(projectPath)}`);
+  if (!res.ok) throw new Error(`Failed to get manifest: ${res.status}`);
+  return res.json();
+}
+
+export async function getGraphHistory(projectPath: string): Promise<import('@harnesson/shared').HistoryEntry[]> {
+  const res = await fetch(`/api/graph/history?projectPath=${encodeURIComponent(projectPath)}`);
+  if (!res.ok) throw new Error(`Failed to get history: ${res.status}`);
+  return res.json();
+}
