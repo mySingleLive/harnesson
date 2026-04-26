@@ -1,12 +1,11 @@
 import { useState, useCallback } from 'react';
-import { mockApi } from '@/lib/mockApi';
+import * as serverApi from '@/lib/serverApi';
 import { useProjectStore } from '@/stores/projectStore';
 import type { Project } from '@harnesson/shared';
 
 export function useProjectActions() {
   const addProjectToList = useProjectStore((s) => s.addProjectToList);
   const switchProject = useProjectStore((s) => s.switchProject);
-  const projects = useProjectStore((s) => s.projects);
 
   const [isOpening, setIsOpening] = useState(false);
   const [isCloning, setIsCloning] = useState(false);
@@ -22,24 +21,45 @@ export function useProjectActions() {
   const openFolder = useCallback(async () => {
     setIsOpening(true);
     try {
-      const project = await mockApi.openFolder();
-      if (projects.some((p) => p.path === project.path)) {
-        alert('该项目已添加');
+      const serverUp = await serverApi.isServerRunning();
+      if (!serverUp) {
+        alert('无法连接后端服务');
         return null;
       }
+
+      const result = await serverApi.openFolderDialog();
+      if (result.error) {
+        alert(`无法打开文件夹: ${result.error}`);
+        return null;
+      }
+      if (result.cancelled || !result.path) {
+        return null;
+      }
+
+      const name = result.path.replace(/\/$/, '').split('/').pop() ?? 'untitled';
+      const project = await serverApi.createProject({
+        name,
+        path: result.path,
+        source: 'local',
+      });
       addProjectToList(project);
       activateProject(project);
       return project;
     } finally {
       setIsOpening(false);
     }
-  }, [addProjectToList, activateProject, projects]);
+  }, [addProjectToList, activateProject]);
 
   const cloneRepo = useCallback(
     async (url: string, localPath: string) => {
       setIsCloning(true);
       try {
-        const project = await mockApi.cloneRepo(url, localPath);
+        const name = url.split('/').pop()?.replace('.git', '') ?? 'cloned-project';
+        const project = await serverApi.createProject({
+          name,
+          path: `${localPath}/${name}`,
+          source: 'clone',
+        });
         addProjectToList(project);
         activateProject(project);
         return project;
@@ -54,7 +74,13 @@ export function useProjectActions() {
     async (opts: { name: string; path: string; description?: string; gitInit: boolean }) => {
       setIsCreating(true);
       try {
-        const project = await mockApi.createProject(opts);
+        const project = await serverApi.createProject({
+          name: opts.name,
+          path: `${opts.path}/${opts.name}`,
+          description: opts.description,
+          source: 'create',
+          gitInit: opts.gitInit,
+        });
         addProjectToList(project);
         activateProject(project);
         return project;
@@ -69,21 +95,12 @@ export function useProjectActions() {
     async (path: string) => {
       setIsOpening(true);
       try {
-        if (projects.some((p) => p.path === path)) {
-          const existing = projects.find((p) => p.path === path)!;
-          activateProject(existing);
-          return null;
-        }
-        const name = path.split('/').pop() ?? 'untitled';
-        const project: Project = {
-          id: crypto.randomUUID(),
+        const name = path.replace(/\/$/, '').split('/').pop() ?? 'untitled';
+        const project = await serverApi.createProject({
           name,
           path,
-          source: 'local' as const,
-          agentCount: 0,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        };
+          source: 'local',
+        });
         addProjectToList(project);
         activateProject(project);
         return project;
@@ -91,7 +108,7 @@ export function useProjectActions() {
         setIsOpening(false);
       }
     },
-    [addProjectToList, activateProject, projects],
+    [addProjectToList, activateProject],
   );
 
   return {
