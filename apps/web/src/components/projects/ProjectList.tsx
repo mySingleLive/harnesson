@@ -1,9 +1,9 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router';
 import { Search, LayoutGrid, List, Plus, FolderOpen, GitBranch } from 'lucide-react';
 import type { Project } from '@harnesson/shared';
 import { useProjectStore } from '@/stores/projectStore';
 import { useProjectActions } from '@/hooks/useProjectActions';
-import { mockApi } from '@/lib/mockApi';
 import { ProjectCard } from './ProjectCard';
 import { ProjectRow } from './ProjectRow';
 import { ProjectDetailModal } from './ProjectDetailModal';
@@ -23,6 +23,7 @@ export function ProjectList({ projects }: ProjectListProps) {
   const switchProject = useProjectStore((s) => s.switchProject);
   const removeProject = useProjectStore((s) => s.removeProject);
   const { openFolder, cloneRepo, createProject, isCloning, isCreating } = useProjectActions();
+  const navigate = useNavigate();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [detailProject, setDetailProject] = useState<Project | null>(null);
@@ -36,12 +37,15 @@ export function ProjectList({ projects }: ProjectListProps) {
   }, [projects, searchQuery]);
 
   const handleOpen = useCallback(
-    (project: Project) => switchProject(project.id, 'main'),
-    [switchProject],
+    (project: Project) => {
+      switchProject(project.id, 'main');
+      navigate('/graph');
+    },
+    [switchProject, navigate],
   );
 
-  const handleReveal = useCallback(async (id: string) => {
-    await mockApi.revealFolder(id);
+  const handleReveal = useCallback(async (_id: string) => {
+    // revealFolder will be implemented server-side later
   }, []);
 
   const handleOpenFolder = useCallback(async () => {
