@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { streamSSE } from 'hono/streaming';
 import {
   hasData,
   getManifest,
@@ -7,6 +8,7 @@ import {
   getHistoryData,
   resolveBaseDir,
 } from '../lib/graph-storage.js';
+import { runSync, cancelSync } from '../lib/sync-engine.js';
 
 export const graphRoute = new Hono();
 
@@ -69,4 +71,38 @@ graphRoute.get('/api/graph/history/:timestamp', async (c) => {
   const baseDir = resolveBaseDir(projectPath);
   const data = await getHistoryData(baseDir, timestamp);
   return c.json(data);
+});
+
+// POST /api/graph/sync — start sync with SSE streaming
+graphRoute.post('/api/graph/sync', async (c) => {
+  const body = await c.req.json();
+  const { projectPath, storageLocation, syncType } = body;
+
+  if (!projectPath) return c.json({ error: 'projectPath is required' }, 400);
+
+  return streamSSE(c, async (stream) => {
+    const sse = {
+      write: (event: string, data: Record<string, unknown>) => {
+        stream.writeSSE({ event, data: JSON.stringify(data) });
+      },
+    };
+
+    await runSync(
+      { projectPath, storageLocation: storageLocation ?? 'project', syncType: syncType ?? 'full' },
+      sse,
+    );
+
+    stream.close();
+  });
+});
+
+// POST /api/graph/sync/cancel — cancel active sync
+graphRoute.post('/api/graph/sync/cancel', async (c) => {
+  const body = await c.req.json();
+  const { projectPath } = body;
+
+  if (!projectPath) return c.json({ error: 'projectPath is required' }, 400);
+
+  const cancelled = cancelSync(projectPath);
+  return c.json({ cancelled });
 });
