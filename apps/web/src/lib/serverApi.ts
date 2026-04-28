@@ -111,6 +111,9 @@ export async function checkoutBranch(projectId: string, branch: string): Promise
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ branch }),
   });
+  if (!res.ok && res.status !== 400) {
+    throw new Error(`Checkout request failed: ${res.status}`);
+  }
   return res.json();
 }
 

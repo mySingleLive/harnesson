@@ -59,7 +59,7 @@ branchesRoute.post('/api/projects/:id/checkout', async (c) => {
 
   try {
     const isRemote = branch.startsWith('origin/');
-    const localName = isRemote ? branch.replace('origin/', '') : branch;
+    const localName = isRemote ? branch.slice('origin/'.length) : branch;
 
     if (isRemote) {
       await execFileAsync('git', ['checkout', '-b', localName, branch], {
