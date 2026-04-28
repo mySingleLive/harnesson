@@ -1,5 +1,6 @@
-import { Settings, GitBranch, ChevronDown } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { ProjectDropdown } from './ProjectDropdown';
+import { BranchDropdown } from './BranchDropdown';
 
 interface TopbarProps {
   runningAgentCount: number;
@@ -14,11 +15,7 @@ export function Topbar({ runningAgentCount, onCreateProject, onOpenFolder }: Top
         <span className="text-[15px] font-bold text-harness-accent">Harnesson</span>
         <span className="text-gray-600">|</span>
         <ProjectDropdown onCreateProject={onCreateProject} onOpenFolder={onOpenFolder} />
-        <button className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] text-gray-500 hover:bg-white/5 hover:text-gray-300">
-          <GitBranch className="h-3 w-3" />
-          <span className="font-medium text-gray-400">—</span>
-          <ChevronDown className="h-3 w-3 text-gray-600" />
-        </button>
+        <BranchDropdown />
       </div>
       <div className="flex items-center gap-3">
         <span className="rounded-full bg-green-500 px-2 py-[2px] text-[11px] font-semibold text-black">
