@@ -11,6 +11,7 @@ import { useProjectStore } from '@/stores/projectStore';
 export function MainLayout() {
   const { agents, activeAgentId, setActiveAgent, updatePanelState } = useAgentStore();
   const switchProject = useProjectStore((s) => s.switchProject);
+  const loadProjects = useProjectStore((s) => s.loadProjects);
   const activeAgent = agents.find((a) => a.id === activeAgentId);
   const runningCount = agents.filter((a) => a.status === 'running').length;
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -36,6 +37,10 @@ export function MainLayout() {
   };
 
   const location = useLocation();
+
+  useEffect(() => {
+    loadProjects();
+  }, [loadProjects]);
 
   useEffect(() => {
     if (location.pathname === '/' && activeAgentId) {

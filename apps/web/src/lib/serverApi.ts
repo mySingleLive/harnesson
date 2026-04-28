@@ -84,6 +84,39 @@ export interface GraphStatusResponse {
   needsSync: boolean;
 }
 
+// --- Branch API ---
+
+export interface BranchInfo {
+  local: string[];
+  remote: string[];
+  current: string | null;
+  isGitRepo: boolean;
+}
+
+export interface CheckoutResponse {
+  success: boolean;
+  branch?: string;
+  error?: string;
+}
+
+export async function getProjectBranches(projectId: string): Promise<BranchInfo> {
+  const res = await fetch(`/api/projects/${encodeURIComponent(projectId)}/branches`);
+  if (!res.ok) throw new Error(`Failed to fetch branches: ${res.status}`);
+  return res.json();
+}
+
+export async function checkoutBranch(projectId: string, branch: string): Promise<CheckoutResponse> {
+  const res = await fetch(`/api/projects/${encodeURIComponent(projectId)}/checkout`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ branch }),
+  });
+  if (!res.ok && res.status !== 400) {
+    throw new Error(`Checkout request failed: ${res.status}`);
+  }
+  return res.json();
+}
+
 export async function getGraphStatus(projectPath: string): Promise<GraphStatusResponse> {
   const res = await fetch(`/api/graph/status?projectPath=${encodeURIComponent(projectPath)}`);
   if (!res.ok) throw new Error(`Failed to get graph status: ${res.status}`);
