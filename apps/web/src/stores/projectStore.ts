@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { Project } from '@harnesson/shared';
-import type { BranchInfo } from '@/lib/serverApi';
+import type { BranchInfo, CheckoutResponse } from '@/lib/serverApi';
 import * as serverApi from '@/lib/serverApi';
 
 interface ProjectState {
@@ -19,7 +19,7 @@ interface ProjectState {
   setSearchQuery: (query: string) => void;
   addProjectToList: (project: Project) => void;
   loadBranches: (projectId: string) => Promise<void>;
-  checkoutBranch: (projectId: string, branch: string) => Promise<void>;
+  checkoutBranch: (projectId: string, branch: string) => Promise<CheckoutResponse>;
 }
 
 const VIEW_MODE_KEY = 'harnesson_view_mode';
