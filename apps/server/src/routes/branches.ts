@@ -14,10 +14,10 @@ branchesRoute.get('/api/projects/:id/branches', async (c) => {
   if (!project) return c.json({ error: 'Project not found' }, 404);
 
   try {
-    const { stdout: localRaw } = await execFileAsync('git', ['branch', '--list'], {
-      cwd: project.path,
-      timeout: 10_000,
-    });
+    const [{ stdout: localRaw }, { stdout: remoteRaw }] = await Promise.all([
+      execFileAsync('git', ['branch', '--list'], { cwd: project.path, timeout: 10_000 }),
+      execFileAsync('git', ['branch', '-r'], { cwd: project.path, timeout: 10_000 }),
+    ]);
 
     const local: string[] = [];
     let current: string | null = null;
@@ -33,11 +33,6 @@ branchesRoute.get('/api/projects/:id/branches', async (c) => {
         local.push(trimmed);
       }
     }
-
-    const { stdout: remoteRaw } = await execFileAsync('git', ['branch', '-r'], {
-      cwd: project.path,
-      timeout: 10_000,
-    });
 
     const remote = remoteRaw
       .split('\n')
@@ -55,7 +50,7 @@ branchesRoute.post('/api/projects/:id/checkout', async (c) => {
   const { id } = c.req.param();
   const { branch } = await c.req.json();
 
-  if (!branch || typeof branch !== 'string') {
+  if (!branch || typeof branch !== 'string' || /[\n\r\0]/.test(branch)) {
     return c.json({ error: 'branch is required' }, 400);
   }
 
