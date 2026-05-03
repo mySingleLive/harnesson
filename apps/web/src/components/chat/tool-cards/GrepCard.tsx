@@ -8,6 +8,7 @@ export function GrepCard({ event }: { event: PairedToolEvent }) {
   const matchCount = lines.length;
   const displayLines = lines.slice(0, 20);
   const remaining = matchCount - displayLines.length;
+  const previewLines = lines.slice(0, 2);
 
   return (
     <CollapsibleCard
@@ -24,6 +25,15 @@ export function GrepCard({ event }: { event: PairedToolEvent }) {
             </>
           )}
         </>
+      }
+      preview={
+        previewLines.length > 0 ? (
+          <div className="space-y-0.5">
+            {previewLines.map((l, i) => (
+              <div key={i} className="font-mono text-[11px] text-gray-600 truncate">{l}</div>
+            ))}
+          </div>
+        ) : undefined
       }
       badge={
         event.output ? (
