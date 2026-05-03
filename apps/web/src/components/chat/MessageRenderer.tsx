@@ -1,4 +1,7 @@
-import type { AgentMessage, AgentStreamEvent } from '@harnesson/shared';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import type { AgentMessage } from '@harnesson/shared';
+import { ToolEventCardList } from './tool-cards';
 
 interface MessageRendererProps {
   message: AgentMessage;
@@ -24,7 +27,7 @@ function UserMessage({ content }: { content: string }) {
 }
 
 function AgentMessageBubble({ events, content, agentName, isStreaming }: {
-  events: AgentStreamEvent[];
+  events: AgentMessage['events'];
   content: string;
   agentName: string;
   isStreaming: boolean;
@@ -42,70 +45,18 @@ function AgentMessageBubble({ events, content, agentName, isStreaming }: {
       </div>
 
       {content && (
-        <div className="border-l-2 border-green-500/40 pl-3 text-[13px] leading-relaxed text-gray-300">
-          {content}
+        <div className="border-l-2 border-green-500/40 pl-3 text-[13px] leading-relaxed text-gray-300 prose prose-invert prose-sm max-w-none prose-headings:text-gray-200 prose-p:text-gray-300 prose-strong:text-gray-200 prose-code:text-harness-accent prose-code:before:content-none prose-code:after:content-none prose-pre:bg-harness-sidebar prose-a:text-harness-accent prose-li:text-gray-300">
+          <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
         </div>
       )}
 
-      <div className="mt-2 space-y-2">
-        {events
-          .filter((e) => e.type === 'agent.tool_use' || e.type === 'agent.tool_result')
-          .map((event, i) => (
-            <ToolEventCard key={i} event={event} />
-          ))}
-      </div>
+      {events && events.length > 0 && <ToolEventCardList events={events} />}
 
-      {events.filter((e) => e.type === 'agent.error').map((event, i) => (
+      {events?.filter((e) => e.type === 'agent.error').map((event, i) => (
         <div key={i} className="mt-2 rounded-md bg-red-500/10 px-3 py-2 text-[12px] text-red-400">
           {event.message}
         </div>
       ))}
     </div>
   );
-}
-
-function ToolEventCard({ event }: { event: AgentStreamEvent }) {
-  if (event.type === 'agent.tool_use') {
-    return (
-      <div className="overflow-hidden rounded-md border border-harness-border bg-harness-bg">
-        <div className="flex items-center gap-2 bg-[#1a1a2e] px-2.5 py-1 text-[11px] text-gray-500">
-          <span>🔧</span>
-          <span className="font-medium text-gray-400">{event.tool}</span>
-          {event.input?.file_path && (
-            <span className="text-gray-600">{event.input.file_path as string}</span>
-          )}
-          {event.input?.command && (
-            <span className="truncate text-gray-600 font-mono">{event.input.command as string}</span>
-          )}
-        </div>
-        {event.input && !event.input.file_path && !event.input.command && (
-          <div className="px-2.5 py-1.5 font-mono text-[11px] text-gray-600">
-            {JSON.stringify(event.input, null, 2).slice(0, 200)}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  if (event.type === 'agent.tool_result') {
-    return (
-      <div className="overflow-hidden rounded-md border border-harness-border bg-harness-bg">
-        <div className="flex items-center justify-between bg-[#1a1a2e] px-2.5 py-1 text-[11px]">
-          <span className={event.isError ? 'text-red-400' : 'text-green-500'}>
-            {event.isError ? '✗' : '✓'} Result
-          </span>
-          {event.duration != null && (
-            <span className="text-gray-600">{event.duration}ms</span>
-          )}
-        </div>
-        {event.output && (
-          <div className="max-h-[200px] overflow-auto px-2.5 py-1.5 font-mono text-[11px] text-gray-500 whitespace-pre-wrap">
-            {event.output.slice(0, 1000)}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  return null;
 }
