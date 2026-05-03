@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { Plus, Layers, GitBranch, ImageIcon, FileText, Terminal, Wrench, Network, ChevronDown, ArrowUp, StopCircle } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Plus, Layers, GitBranch, ImageIcon, FileText, Terminal, Wrench, Network, ChevronDown, ArrowUp, ArrowDown, StopCircle } from 'lucide-react';
 import type { Agent, AgentMessage } from '@harnesson/shared';
 import { useAgentStore } from '@/stores/agentStore';
 import { AgentContextHeader } from './AgentContextHeader';
 import { MessageRenderer } from '@/components/chat/MessageRenderer';
+import { useAutoScroll } from '@/hooks/useAutoScroll';
 
 interface AgentPanelProps {
   agent: Agent;
@@ -17,6 +18,8 @@ interface AgentPanelProps {
 export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggleMaximize, onClose }: AgentPanelProps) {
   const [input, setInput] = useState('');
   const [showPlusMenu, setShowPlusMenu] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const { isAtBottom, scrollToBottom } = useAutoScroll(scrollRef, [messages, isStreaming]);
   const sendMessage = useAgentStore((s) => s.sendMessage);
   const abortAgent = useAgentStore((s) => s.abortAgent);
 
@@ -48,7 +51,7 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
         onClose={onClose}
       />
 
-      <div className="flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto relative">
         {messages.map((msg) => (
           <MessageRenderer
             key={msg.id}
@@ -60,6 +63,16 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
         {messages.length === 0 && (
           <div className="flex h-full items-center justify-center text-[13px] text-gray-600">
             Waiting for response...
+          </div>
+        )}
+        {!isAtBottom && (
+          <div className="sticky bottom-2 flex justify-end pr-3">
+            <button
+              onClick={scrollToBottom}
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-[#252540] text-gray-400 shadow-lg transition-colors hover:text-gray-200"
+            >
+              <ArrowDown className="h-4 w-4" />
+            </button>
           </div>
         )}
       </div>
