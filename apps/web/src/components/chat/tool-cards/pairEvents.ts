@@ -22,18 +22,31 @@ export function pairEvents(events: AgentStreamEvent[]): PairedToolEvent[] {
     if (event.type === 'agent.tool_use') {
       pending.push({ tool: event.tool ?? 'unknown', input: event.input ?? {} });
     } else if (event.type === 'agent.tool_result') {
-      // Sequential pairing: match with the oldest pending tool_use.
-      // Claude Code runs tools one at a time, so FIFO is reliable.
       const toolName = event.tool;
       if (pending.length > 0) {
         const { tool, input } = pending.shift()!;
-        paired.push({
+        const pairedEvent: PairedToolEvent = {
           tool: toolName && toolName !== 'unknown' ? toolName : tool,
           input,
           output: event.output,
           isError: event.isError,
           duration: event.duration,
-        });
+        };
+
+        if (pairedEvent.tool === 'Agent' && event.output) {
+          try {
+            const parsed = JSON.parse(event.output);
+            if (parsed.subEvents || parsed.subTexts) {
+              pairedEvent.subEvents = parsed.subEvents;
+              pairedEvent.subTexts = parsed.subTexts;
+              pairedEvent.output = parsed.textOutput;
+            }
+          } catch {
+            // output is plain text, not nested JSON
+          }
+        }
+
+        paired.push(pairedEvent);
       } else {
         paired.push({
           tool: toolName ?? 'unknown',
