@@ -6,6 +6,7 @@ import { healthRoute } from './routes/health.js';
 import { projectsRoute } from './routes/projects.js';
 import { branchesRoute } from './routes/branches.js';
 import { graphRoute } from './routes/graph.js';
+import { agentsRoute } from './routes/agents.js';
 
 const app = new Hono();
 
@@ -16,6 +17,7 @@ app.route('/', openFolderRoute);
 app.route('/', projectsRoute);
 app.route('/', branchesRoute);
 app.route('/', graphRoute);
+app.route('/', agentsRoute);
 
 const PORT = Number(process.env.PORT ?? 3456);
 
