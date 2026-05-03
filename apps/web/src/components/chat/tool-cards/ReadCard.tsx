@@ -6,6 +6,7 @@ export function ReadCard({ event }: { event: PairedToolEvent }) {
   const outputLines = (event.output ?? '').split('\n');
   const displayLines = outputLines.slice(0, 50);
   const remaining = outputLines.length - displayLines.length;
+  const previewLines = outputLines.slice(0, 2);
 
   return (
     <CollapsibleCard
@@ -16,6 +17,18 @@ export function ReadCard({ event }: { event: PairedToolEvent }) {
           <span className="text-gray-600">·</span>
           <span className="font-mono text-gray-500">{filePath}</span>
         </>
+      }
+      preview={
+        previewLines.length > 0 && previewLines[0].trim().length > 0 ? (
+          <div className="space-y-0.5">
+            {previewLines.map((line, i) => (
+              <div key={i} className="flex gap-2 font-mono text-[11px]">
+                <span className="w-8 shrink-0 text-right text-gray-700 select-none">{i + 1}</span>
+                <span className="text-gray-600 truncate">{line}</span>
+              </div>
+            ))}
+          </div>
+        ) : undefined
       }
       badge={event.output ? <span className="text-green-500">✓</span> : undefined}
       isRunning={!event.output}
