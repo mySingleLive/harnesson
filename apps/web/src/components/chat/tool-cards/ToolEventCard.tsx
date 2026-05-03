@@ -32,3 +32,8 @@ export function ToolEventCardList({ events }: { events: AgentStreamEvent[] }) {
     </div>
   );
 }
+
+export function SingleToolEventCard({ event }: { event: PairedToolEvent }) {
+  const Card = toolCardMap[event.tool] ?? GenericCard;
+  return <Card event={event} />;
+}
