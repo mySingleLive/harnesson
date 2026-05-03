@@ -140,3 +140,85 @@ export async function getGraphHistory(projectPath: string): Promise<import('@har
   if (!res.ok) throw new Error(`Failed to get history: ${res.status}`);
   return res.json();
 }
+
+// --- Agent API ---
+
+export interface CreateAgentResponse {
+  id: string;
+  name: string;
+  type: string;
+  status: string;
+  cwd: string;
+  model?: string;
+  createdAt: string;
+  permissionMode: 'auto' | 'manual';
+}
+
+export interface AgentInfoResponse {
+  id: string;
+  name: string;
+  type: string;
+  status: string;
+  cwd: string;
+  branch: string;
+  model?: string;
+  createdAt: string;
+  error?: string;
+  permissionMode: 'auto' | 'manual';
+  sessionContext?: { taskTitle?: string; tokenUsage?: number };
+}
+
+export async function createAgent(opts: {
+  cwd: string;
+  type: string;
+  model?: string;
+  permissionMode?: 'auto' | 'manual';
+  systemPrompt?: string;
+  maxTurns?: number;
+}): Promise<CreateAgentResponse> {
+  const res = await fetch('/api/agents', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      cwd: opts.cwd,
+      type: opts.type,
+      model: opts.model,
+      permissionMode: opts.permissionMode ?? 'auto',
+      systemPrompt: opts.systemPrompt,
+      maxTurns: opts.maxTurns,
+    }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new Error(body?.error ?? `Failed to create agent: ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function listAgents(): Promise<AgentInfoResponse[]> {
+  const res = await fetch('/api/agents');
+  if (!res.ok) throw new Error(`Failed to list agents: ${res.status}`);
+  return res.json();
+}
+
+export async function sendAgentMessage(agentId: string, message: string): Promise<void> {
+  const res = await fetch(`/api/agents/${encodeURIComponent(agentId)}/message`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    throw new Error(body?.error ?? `Failed to send message: ${res.status}`);
+  }
+}
+
+export async function abortAgent(agentId: string): Promise<void> {
+  const res = await fetch(`/api/agents/${encodeURIComponent(agentId)}/abort`, { method: 'POST' });
+  if (!res.ok) throw new Error(`Failed to abort agent: ${res.status}`);
+}
+
+export async function destroyAgent(agentId: string): Promise<void> {
+  const res = await fetch(`/api/agents/${encodeURIComponent(agentId)}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error(`Failed to destroy agent: ${res.status}`);
+}
