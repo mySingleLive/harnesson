@@ -6,6 +6,8 @@ export interface PairedToolEvent {
   output?: string;
   isError?: boolean;
   duration?: number;
+  subEvents?: PairedToolEvent[];
+  subTexts?: string[];
 }
 
 export function pairEvents(events: AgentStreamEvent[]): PairedToolEvent[] {
