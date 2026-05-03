@@ -78,6 +78,7 @@ export class ClaudeCodeAdapter implements AgentAdapter {
       });
 
       let sessionId: string | undefined;
+      const toolNameById = new Map<string, string>();
 
       for await (const sdkMessage of messageStream) {
         if (abortController.signal.aborted) break;
@@ -96,6 +97,9 @@ export class ClaudeCodeAdapter implements AgentAdapter {
               if (block.type === 'text' && typeof block.text === 'string') {
                 yield { type: 'agent.text', text: block.text };
               } else if (block.type === 'tool_use') {
+                if (block.id && typeof block.id === 'string') {
+                  toolNameById.set(block.id, block.name as string);
+                }
                 yield {
                   type: 'agent.tool_use',
                   tool: block.name as string,
@@ -106,9 +110,11 @@ export class ClaudeCodeAdapter implements AgentAdapter {
           }
         } else if (msg.type === 'user' && msg.tool_use_result) {
           const result = msg.tool_use_result as Record<string, unknown>;
+          const toolId = msg.parent_tool_use_id as string | undefined;
+          const toolName = toolId ? (toolNameById.get(toolId) ?? 'unknown') : 'unknown';
           yield {
             type: 'agent.tool_result',
-            tool: (msg.parent_tool_use_id as string) ?? 'unknown',
+            tool: toolName,
             output: typeof result.content === 'string' ? result.content : JSON.stringify(result.content),
             isError: result.is_error === true,
           };
