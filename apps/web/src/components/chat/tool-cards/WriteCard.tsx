@@ -14,6 +14,7 @@ export function WriteCard({ event }: { event: PairedToolEvent }) {
   const displayLines = contentLines.slice(0, 30);
   const remaining = contentLines.length - displayLines.length;
   const size = formatBytes(new Blob([content]).size);
+  const previewLines = contentLines.slice(0, 2);
 
   return (
     <CollapsibleCard
@@ -26,6 +27,18 @@ export function WriteCard({ event }: { event: PairedToolEvent }) {
           <span className="text-gray-600">·</span>
           <span className="text-gray-500">{size}</span>
         </>
+      }
+      preview={
+        previewLines.length > 0 && previewLines[0].trim().length > 0 ? (
+          <div className="space-y-0.5">
+            {previewLines.map((line, i) => (
+              <div key={i} className="flex gap-2 font-mono text-[11px]">
+                <span className="w-8 shrink-0 text-right text-gray-700 select-none">{i + 1}</span>
+                <span className="text-gray-600 truncate">{line}</span>
+              </div>
+            ))}
+          </div>
+        ) : undefined
       }
       badge={event.output ? <span className="text-green-500">✓</span> : undefined}
       isRunning={!event.output}
