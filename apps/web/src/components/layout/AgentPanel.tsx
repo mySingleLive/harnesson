@@ -1,42 +1,44 @@
 import { useState } from 'react';
-import { Plus, Layers, GitBranch, ImageIcon, FileText, Terminal, Wrench, Network, ChevronDown, ArrowUp } from 'lucide-react';
-import type { Agent } from '@harnesson/shared';
-import { cn } from '@/lib/utils';
+import { Plus, Layers, GitBranch, ImageIcon, FileText, Terminal, Wrench, Network, ChevronDown, ArrowUp, StopCircle } from 'lucide-react';
+import type { Agent, AgentMessage } from '@harnesson/shared';
+import { useAgentStore } from '@/stores/agentStore';
 import { AgentContextHeader } from './AgentContextHeader';
-
-interface ChatMessage {
-  id: string;
-  role: 'user' | 'agent';
-  content: string;
-  diffBlocks?: DiffBlock[];
-}
-
-interface DiffBlock {
-  fileName: string;
-  added: number;
-  removed: number;
-  lines: DiffLine[];
-}
-
-interface DiffLine {
-  type: 'context' | 'added' | 'removed';
-  lineNum: string;
-  content: string;
-}
+import { MessageRenderer } from '@/components/chat/MessageRenderer';
 
 interface AgentPanelProps {
   agent: Agent;
-  messages: ChatMessage[];
+  messages: AgentMessage[];
+  isStreaming: boolean;
   isMaximized: boolean;
   onToggleMaximize: () => void;
   onClose: () => void;
 }
 
-export function AgentPanel({ agent, messages, isMaximized, onToggleMaximize, onClose }: AgentPanelProps) {
+export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggleMaximize, onClose }: AgentPanelProps) {
   const [input, setInput] = useState('');
   const [showPlusMenu, setShowPlusMenu] = useState(false);
+  const sendMessage = useAgentStore((s) => s.sendMessage);
+  const abortAgent = useAgentStore((s) => s.abortAgent);
 
   const width = isMaximized ? 'flex-1' : 'w-[440px] flex-shrink-0';
+
+  const handleSend = async () => {
+    const text = input.trim();
+    if (!text || isStreaming) return;
+    setInput('');
+    await sendMessage(agent.id, text);
+  };
+
+  const handleAbort = async () => {
+    await abortAgent(agent.id);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
 
   return (
     <div className={`relative flex h-full flex-col border-r border-harness-border bg-harness-chat ${width}`}>
@@ -46,41 +48,28 @@ export function AgentPanel({ agent, messages, isMaximized, onToggleMaximize, onC
         onClose={onClose}
       />
 
-      {/* 消息区 */}
       <div className="flex-1 overflow-y-auto">
         {messages.map((msg) => (
-          <div
+          <MessageRenderer
             key={msg.id}
-            className={cn(
-              'border-b border-white/[0.04] px-4 py-4',
-              msg.role === 'user' && 'bg-harness-accent/[0.04]',
-            )}
-          >
-            <div className="mb-1.5 flex items-center gap-1.5">
-              {msg.role === 'user' ? (
-                <span className="text-[11px] font-semibold uppercase tracking-wide text-harness-accent">
-                  You
-                </span>
-              ) : (
-                <span className="text-[11px] font-semibold uppercase tracking-wide text-green-500">
-                  {agent.name}
-                </span>
-              )}
-            </div>
-            <div className="text-[13px] leading-relaxed text-gray-300">{msg.content}</div>
-            {msg.diffBlocks?.map((diff, i) => (
-              <DiffCodeBlock key={i} diff={diff} />
-            ))}
-          </div>
+            message={msg}
+            agentName={agent.name}
+            isStreaming={isStreaming && msg === messages[messages.length - 1] && msg.role === 'agent'}
+          />
         ))}
+        {messages.length === 0 && (
+          <div className="flex h-full items-center justify-center text-[13px] text-gray-600">
+            Waiting for response...
+          </div>
+        )}
       </div>
 
-      {/* 输入区 */}
       <div className={`px-3 pb-3 ${isMaximized ? 'mx-auto w-full max-w-[800px]' : ''}`}>
         <div className="rounded-2xl border border-white/10 bg-harness-sidebar transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)]">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder={`Message ${agent.name}...  Type @ for files, / for commands`}
             className="h-auto max-h-[140px] min-h-[24px] w-full resize-none bg-transparent px-3.5 py-2.5 text-[13px] leading-relaxed text-harness-text outline-none placeholder:text-gray-600"
             rows={1}
@@ -121,48 +110,28 @@ export function AgentPanel({ agent, messages, isMaximized, onToggleMaximize, onC
                 {agent.model ?? 'Sonnet 4.7'}
                 <ChevronDown className="h-3 w-3" />
               </button>
-              <button className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-harness-accent text-white hover:bg-[#7c3aed]">
-                <ArrowUp className="h-[15px] w-[15px]" />
-              </button>
+              {isStreaming ? (
+                <button
+                  onClick={handleAbort}
+                  className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                >
+                  <StopCircle className="h-[15px] w-[15px]" />
+                </button>
+              ) : (
+                <button
+                  onClick={handleSend}
+                  disabled={!input.trim()}
+                  className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-harness-accent text-white hover:brightness-110 disabled:opacity-40"
+                >
+                  <ArrowUp className="h-[15px] w-[15px]" />
+                </button>
+              )}
             </div>
           </div>
         </div>
         <div className="mt-1.5 text-center text-[10px] text-gray-600">
-          <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">Enter</kbd> 发送 · <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">Shift+Enter</kbd> 换行 · <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">@</kbd> 引用文件 · <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">/</kbd> 斜杠命令
+          <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">Enter</kbd> 发送 · <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">Shift+Enter</kbd> 换行
         </div>
-      </div>
-    </div>
-  );
-}
-
-function DiffCodeBlock({ diff }: { diff: DiffBlock }) {
-  return (
-    <div className="mt-2 overflow-hidden rounded-md border border-harness-border bg-harness-bg">
-      <div className="flex items-center justify-between bg-[#1a1a2e] px-2.5 py-1 text-[11px] text-gray-500">
-        <span>{diff.fileName}</span>
-        <div className="flex gap-2">
-          <span className="text-green-500">+{diff.added}</span>
-          <span className="text-red-500">-{diff.removed}</span>
-        </div>
-      </div>
-      <div className="py-2 font-mono text-[12px] leading-[1.7]">
-        {diff.lines.map((line, i) => (
-          <div
-            key={i}
-            className={cn(
-              'px-2.5 whitespace-pre',
-              line.type === 'added' && 'bg-green-500/10 text-green-400',
-              line.type === 'removed' && 'bg-red-500/10 text-red-400',
-              line.type === 'context' && 'text-gray-600',
-            )}
-          >
-            <span className="inline-block w-[30px] text-right mr-3 text-gray-700">{line.lineNum}</span>
-            <span className="inline-block w-3.5 opacity-60">
-              {line.type === 'added' ? '+' : line.type === 'removed' ? '-' : ' '}
-            </span>
-            {line.content}
-          </div>
-        ))}
       </div>
     </div>
   );
