@@ -20,12 +20,13 @@ export function pairEvents(events: AgentStreamEvent[]): PairedToolEvent[] {
     if (event.type === 'agent.tool_use') {
       pending.push({ tool: event.tool ?? 'unknown', input: event.input ?? {} });
     } else if (event.type === 'agent.tool_result') {
-      const toolName = event.tool ?? 'unknown';
-      const idx = pending.findIndex((p) => p.tool === toolName);
-      if (idx !== -1) {
-        const { tool, input } = pending.splice(idx, 1)[0];
+      // Sequential pairing: match with the oldest pending tool_use.
+      // Claude Code runs tools one at a time, so FIFO is reliable.
+      const toolName = event.tool;
+      if (pending.length > 0) {
+        const { tool, input } = pending.shift()!;
         paired.push({
-          tool,
+          tool: toolName && toolName !== 'unknown' ? toolName : tool,
           input,
           output: event.output,
           isError: event.isError,
@@ -33,7 +34,7 @@ export function pairEvents(events: AgentStreamEvent[]): PairedToolEvent[] {
         });
       } else {
         paired.push({
-          tool: toolName,
+          tool: toolName ?? 'unknown',
           input: {},
           output: event.output,
           isError: event.isError,
