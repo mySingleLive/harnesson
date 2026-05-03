@@ -7,16 +7,30 @@ export function EditCard({ event }: { event: PairedToolEvent }) {
   const newStr = (event.input.new_string as string) ?? '';
   const oldLines = oldStr.split('\n');
   const newLines = newStr.split('\n');
+  const oldPreview = oldLines[0] ?? '';
+  const newPreview = newLines[0] ?? '';
 
   return (
     <CollapsibleCard
-      icon={<span>✏️</span>}
+      icon={<span>📝</span>}
       summary={
         <>
           <span className="font-medium text-gray-400">Edit</span>
           <span className="text-gray-600">·</span>
           <span className="font-mono text-gray-500">{filePath}</span>
         </>
+      }
+      preview={
+        oldPreview || newPreview ? (
+          <div className="space-y-0.5">
+            {oldPreview && (
+              <div className="font-mono text-[11px] text-red-400/60 truncate">- {oldPreview}</div>
+            )}
+            {newPreview && (
+              <div className="font-mono text-[11px] text-green-400/60 truncate">+ {newPreview}</div>
+            )}
+          </div>
+        ) : undefined
       }
       badge={event.output ? <span className="text-green-500">✓</span> : event.isError ? <span className="text-red-400">✗</span> : undefined}
       isRunning={!event.output}
