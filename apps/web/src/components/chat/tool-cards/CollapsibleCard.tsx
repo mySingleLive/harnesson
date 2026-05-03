@@ -3,12 +3,13 @@ import { useState, type ReactNode } from 'react';
 interface CollapsibleCardProps {
   icon: ReactNode;
   summary: ReactNode;
+  preview?: ReactNode;
   badge?: ReactNode;
   children?: ReactNode;
   isRunning?: boolean;
 }
 
-export function CollapsibleCard({ icon, summary, badge, children, isRunning }: CollapsibleCardProps) {
+export function CollapsibleCard({ icon, summary, preview, badge, children, isRunning }: CollapsibleCardProps) {
   const [open, setOpen] = useState(false);
   const hasDetail = Boolean(children);
 
@@ -23,6 +24,7 @@ export function CollapsibleCard({ icon, summary, badge, children, isRunning }: C
             running...
           </span>
         </div>
+        {preview && <div className="px-2.5 pb-1 text-[11px] text-gray-600">{preview}</div>}
       </div>
     );
   }
@@ -39,6 +41,7 @@ export function CollapsibleCard({ icon, summary, badge, children, isRunning }: C
         {summary}
         {badge && <span className="ml-auto">{badge}</span>}
       </button>
+      {preview && <div className="px-2.5 pb-1 text-[11px] text-gray-600">{preview}</div>}
       {open && hasDetail && (
         <div className="max-h-[300px] overflow-y-auto border-t border-harness-border px-2.5 py-2">
           {children}

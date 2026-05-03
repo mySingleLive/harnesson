@@ -12,6 +12,7 @@ export function GlobCard({ event }: { event: PairedToolEvent }) {
   const fileCount = files.length;
   const displayFiles = files.slice(0, 20);
   const remaining = fileCount - displayFiles.length;
+  const previewFiles = files.slice(0, 2);
 
   return (
     <CollapsibleCard
@@ -22,6 +23,15 @@ export function GlobCard({ event }: { event: PairedToolEvent }) {
           <span className="text-gray-600">·</span>
           <span className="font-mono text-gray-500">{pattern}</span>
         </>
+      }
+      preview={
+        previewFiles.length > 0 ? (
+          <div className="space-y-0.5">
+            {previewFiles.map((f, i) => (
+              <div key={i} className="font-mono text-[11px] text-gray-600 truncate">{f}</div>
+            ))}
+          </div>
+        ) : undefined
       }
       badge={
         event.output ? (
