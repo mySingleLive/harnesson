@@ -47,11 +47,11 @@ function AgentMessageBubble({ events, agentName, isStreaming }: {
 
       {segments.map((seg, i) =>
         seg.type === 'text' ? (
-          <div key={i} className="border-l-2 border-green-500/40 pl-3 text-[13px] leading-relaxed text-gray-300 prose prose-invert prose-sm max-w-none prose-headings:text-gray-200 prose-p:text-gray-300 prose-strong:text-gray-200 prose-code:text-harness-accent prose-code:before:content-none prose-code:after:content-none prose-pre:bg-harness-sidebar prose-a:text-harness-accent prose-li:text-gray-300">
+          <div key={i} className="mb-3 border-l-2 border-green-500/40 pl-3 text-[13px] leading-relaxed text-gray-300 prose prose-invert prose-sm max-w-none prose-headings:text-gray-200 prose-p:text-gray-300 prose-strong:text-gray-200 prose-code:text-harness-accent prose-code:before:content-none prose-code:after:content-none prose-pre:bg-harness-sidebar prose-a:text-harness-accent prose-li:text-gray-300">
             <Markdown remarkPlugins={[remarkGfm]}>{seg.content}</Markdown>
           </div>
         ) : (
-          <div key={i} className="mt-2">
+          <div key={i} className="mb-2">
             <SingleToolEventCard event={seg.event} />
           </div>
         )
