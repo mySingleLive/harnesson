@@ -9,6 +9,8 @@ function formatDuration(ms: number): string {
 export function BashCard({ event }: { event: PairedToolEvent }) {
   const command = (event.input.command as string) ?? '';
   const truncatedCmd = command.length > 60 ? command.slice(0, 60) + '...' : command;
+  const outputLines = (event.output ?? '').split('\n').filter((l) => l.trim().length > 0);
+  const previewLines = outputLines.slice(0, 2);
 
   return (
     <CollapsibleCard
@@ -19,6 +21,15 @@ export function BashCard({ event }: { event: PairedToolEvent }) {
           <span className="text-gray-600">·</span>
           <span className="truncate font-mono text-gray-500">{truncatedCmd}</span>
         </>
+      }
+      preview={
+        previewLines.length > 0 ? (
+          <div className="space-y-0.5">
+            {previewLines.map((line, i) => (
+              <div key={i} className="font-mono text-[11px] text-gray-600 truncate">{line}</div>
+            ))}
+          </div>
+        ) : undefined
       }
       badge={
         event.output ? (
