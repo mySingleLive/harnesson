@@ -14,7 +14,7 @@ export function MessageRenderer({ message, agentName, isStreaming }: MessageRend
     return <UserMessage content={message.content} />;
   }
 
-  return <AgentMessageBubble events={message.events ?? []} content={message.content} agentName={agentName} isStreaming={isStreaming} />;
+  return <AgentMessageBubble events={message.events ?? []} agentName={agentName} isStreaming={isStreaming} />;
 }
 
 function UserMessage({ content }: { content: string }) {
@@ -28,7 +28,6 @@ function UserMessage({ content }: { content: string }) {
 
 function AgentMessageBubble({ events, agentName, isStreaming }: {
   events: AgentMessage['events'];
-  content: string;
   agentName: string;
   isStreaming: boolean;
 }) {
