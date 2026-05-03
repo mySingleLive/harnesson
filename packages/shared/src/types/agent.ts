@@ -42,6 +42,8 @@ export interface AgentStreamEvent {
   sessionId?: string;
   tokenUsage?: number;
   reason?: string;
+  parentToolUseId?: string;
+  depth?: number;
 }
 
 export interface AgentMessage {
