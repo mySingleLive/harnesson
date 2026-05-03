@@ -30,6 +30,9 @@ export function GlobCard({ event }: { event: PairedToolEvent }) {
             {previewFiles.map((f, i) => (
               <div key={i} className="font-mono text-[11px] text-gray-600 truncate">{f}</div>
             ))}
+            {fileCount > 2 && (
+              <div className="text-[11px] text-gray-500 italic">... +{fileCount - 2} lines (click to expand)</div>
+            )}
           </div>
         ) : undefined
       }

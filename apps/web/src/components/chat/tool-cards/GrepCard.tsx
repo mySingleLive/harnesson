@@ -32,6 +32,9 @@ export function GrepCard({ event }: { event: PairedToolEvent }) {
             {previewLines.map((l, i) => (
               <div key={i} className="font-mono text-[11px] text-gray-600 truncate">{l}</div>
             ))}
+            {matchCount > 2 && (
+              <div className="text-[11px] text-gray-500 italic">... +{matchCount - 2} lines (click to expand)</div>
+            )}
           </div>
         ) : undefined
       }

@@ -29,6 +29,9 @@ export function EditCard({ event }: { event: PairedToolEvent }) {
             {newPreview && (
               <div className="font-mono text-[11px] text-green-400/60 truncate">+ {newPreview}</div>
             )}
+            {(oldLines.length + newLines.length) > 2 && (
+              <div className="text-[11px] text-gray-500 italic">... +{oldLines.length + newLines.length - 2} lines (click to expand)</div>
+            )}
           </div>
         ) : undefined
       }

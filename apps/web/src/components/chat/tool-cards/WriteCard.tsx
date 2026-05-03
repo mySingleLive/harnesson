@@ -37,6 +37,9 @@ export function WriteCard({ event }: { event: PairedToolEvent }) {
                 <span className="text-gray-600 truncate">{line}</span>
               </div>
             ))}
+            {contentLines.length > 2 && (
+              <div className="text-[11px] text-gray-500 italic">... +{contentLines.length - 2} lines (click to expand)</div>
+            )}
           </div>
         ) : undefined
       }

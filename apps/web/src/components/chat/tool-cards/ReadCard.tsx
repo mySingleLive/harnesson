@@ -27,6 +27,9 @@ export function ReadCard({ event }: { event: PairedToolEvent }) {
                 <span className="text-gray-600 truncate">{line}</span>
               </div>
             ))}
+            {outputLines.length > 2 && (
+              <div className="text-[11px] text-gray-500 italic">... +{outputLines.length - 2} lines (click to expand)</div>
+            )}
           </div>
         ) : undefined
       }

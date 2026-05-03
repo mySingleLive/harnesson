@@ -28,6 +28,9 @@ export function BashCard({ event }: { event: PairedToolEvent }) {
             {previewLines.map((line, i) => (
               <div key={i} className="font-mono text-[11px] text-gray-600 truncate">{line}</div>
             ))}
+            {outputLines.length > 2 && (
+              <div className="text-[11px] text-gray-500 italic">... +{outputLines.length - 2} lines (click to expand)</div>
+            )}
           </div>
         ) : undefined
       }
