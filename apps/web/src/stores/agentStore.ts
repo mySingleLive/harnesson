@@ -21,7 +21,7 @@ interface AgentState {
     taskTitle?: string;
   }) => Promise<Agent>;
 
-  sendMessage: (agentId: string, text: string) => Promise<void>;
+  sendMessage: (agentId: string, text: string, model?: string) => Promise<void>;
   appendStreamEvent: (agentId: string, event: AgentStreamEvent) => void;
   connectSSE: (agentId: string) => void;
   disconnectSSE: (agentId: string) => void;
@@ -57,6 +57,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
       type: opts.type,
       model: opts.model,
       permissionMode: opts.permissionMode ?? 'auto',
+      prompt: opts.taskTitle,
     });
 
     const agent: Agent = {
@@ -84,7 +85,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
     return agent;
   },
 
-  sendMessage: async (agentId, text) => {
+  sendMessage: async (agentId, text, model) => {
     const userMsg: AgentMessage = {
       id: crypto.randomUUID(),
       role: 'user',
@@ -101,7 +102,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
     }));
 
     try {
-      await api.sendAgentMessage(agentId, text);
+      await api.sendAgentMessage(agentId, text, model);
     } catch (err) {
       get().appendStreamEvent(agentId, {
         type: 'agent.error',

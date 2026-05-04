@@ -143,6 +143,22 @@ export async function getGraphHistory(projectPath: string): Promise<import('@har
 
 // --- Agent API ---
 
+export interface ModelInfo {
+  value: string;
+  displayName: string;
+  description: string;
+}
+
+export async function getSupportedModels(): Promise<ModelInfo[]> {
+  try {
+    const res = await fetch('/api/models');
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
+}
+
 export interface CreateAgentResponse {
   id: string;
   name: string;
@@ -175,6 +191,7 @@ export async function createAgent(opts: {
   permissionMode?: 'auto' | 'manual';
   systemPrompt?: string;
   maxTurns?: number;
+  prompt?: string;
 }): Promise<CreateAgentResponse> {
   const res = await fetch('/api/agents', {
     method: 'POST',
@@ -186,6 +203,7 @@ export async function createAgent(opts: {
       permissionMode: opts.permissionMode ?? 'auto',
       systemPrompt: opts.systemPrompt,
       maxTurns: opts.maxTurns,
+      prompt: opts.prompt,
     }),
   });
   if (!res.ok) {
@@ -201,11 +219,11 @@ export async function listAgents(): Promise<AgentInfoResponse[]> {
   return res.json();
 }
 
-export async function sendAgentMessage(agentId: string, message: string): Promise<void> {
+export async function sendAgentMessage(agentId: string, message: string, model?: string): Promise<void> {
   const res = await fetch(`/api/agents/${encodeURIComponent(agentId)}/message`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message }),
+    body: JSON.stringify({ message, model }),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => null);
