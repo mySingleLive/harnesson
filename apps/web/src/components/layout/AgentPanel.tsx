@@ -1,12 +1,18 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Plus, Layers, GitBranch, ImageIcon, FileText, Terminal, Wrench, Network, ChevronDown, ArrowUp, ArrowDown, StopCircle } from 'lucide-react';
 import type { Agent, AgentMessage } from '@harnesson/shared';
 import { useAgentStore } from '@/stores/agentStore';
+import { useSlashCommandStore } from '@/stores/slashCommandStore';
+import { useSlashCompletion } from '@/hooks/useSlashCompletion';
+import { parseSlashCommand } from '@/lib/slashCommandUtils';
+import * as api from '@/lib/serverApi';
 import { AgentContextHeader } from './AgentContextHeader';
 import { ModelDropdown } from './ModelDropdown';
 import { MessageRenderer } from '@/components/chat/MessageRenderer';
-import { useAutoScroll } from '@/hooks/useAutoScroll';
 import { ThinkingBar } from '@/components/chat/ThinkingBar';
+import { SlashCommandPopup } from '@/components/chat/SlashCommandPopup';
+import { HighlightOverlay } from '@/components/chat/HighlightOverlay';
+import { useAutoScroll } from '@/hooks/useAutoScroll';
 
 interface AgentPanelProps {
   agent: Agent;
@@ -21,11 +27,27 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
   const [input, setInput] = useState('');
   const [showPlusMenu, setShowPlusMenu] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { isAtBottom, scrollToBottom } = useAutoScroll(scrollRef, [messages, isStreaming]);
   const sendMessage = useAgentStore((s) => s.sendMessage);
   const abortAgent = useAgentStore((s) => s.abortAgent);
   const updateAgent = useAgentStore((s) => s.updateAgent);
+  const appendStreamEvent = useAgentStore((s) => s.appendStreamEvent);
+  const commands = useSlashCommandStore((s) => s.commands);
+  const isComposing = useRef(false);
+
+  const {
+    isOpen: isPopupOpen,
+    filteredCommands,
+    selectedIndex,
+    handleInput: handleCompletionInput,
+    handleKeyDown: handleCompletionKeyDown,
+    selectCommand,
+    closePopup,
+    hoveredIndex,
+    setHoveredIndex,
+  } = useSlashCompletion(input, setInput, textareaRef);
 
   const width = isMaximized ? 'flex-1' : 'w-[440px] flex-shrink-0';
 
@@ -34,13 +56,45 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
     if (!el) return;
     el.style.height = 'auto';
     el.style.height = el.scrollHeight + 'px';
+    if (overlayRef.current) {
+      overlayRef.current.scrollTop = el.scrollTop;
+    }
   };
 
   const handleSend = async () => {
     const text = input.trim();
     if (!text || isStreaming) return;
+
+    const parsed = parseSlashCommand(text, commands);
+    if (parsed && parsed.command.type === 'builtin') {
+      setInput('');
+      if (textareaRef.current) textareaRef.current.style.height = 'auto';
+      closePopup();
+
+      const result = await api.executeCommand(agent.id, parsed.command.name, parsed.args || undefined);
+      if (result.success) {
+        appendStreamEvent(agent.id, {
+          type: 'agent.text',
+          text: `✓ ${result.message}`,
+        });
+        appendStreamEvent(agent.id, { type: 'agent.done' });
+
+        if (parsed.command.name === 'model' && parsed.args) {
+          updateAgent(agent.id, { model: parsed.args });
+        }
+      } else {
+        appendStreamEvent(agent.id, {
+          type: 'agent.error',
+          message: result.error ?? 'Command failed',
+          code: 'COMMAND_ERROR',
+        });
+      }
+      return;
+    }
+
     setInput('');
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
+    closePopup();
     await sendMessage(agent.id, text, agent.model);
   };
 
@@ -49,11 +103,26 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (handleCompletionKeyDown(e)) return;
+
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value;
+    setInput(val);
+    adjustHeight();
+    handleCompletionInput(val, e.target.selectionStart);
+  };
+
+  const handleScroll = useCallback(() => {
+    if (overlayRef.current && textareaRef.current) {
+      overlayRef.current.scrollTop = textareaRef.current.scrollTop;
+    }
+  }, []);
 
   return (
     <div className={`relative flex h-full flex-col border-r border-harness-border bg-harness-chat ${width}`}>
@@ -91,19 +160,35 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
       </div>
 
       <div className={`px-3 pb-3 ${isMaximized ? 'mx-auto w-full max-w-[800px]' : ''}`}>
-        <div className="rounded-2xl border border-white/10 transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)]" style={{ background: '#2a2a48' }}>
+        <div className="slash-input-container rounded-2xl border border-white/10 transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)]" style={{ background: '#2a2a48' }}>
+          <HighlightOverlay text={input} commands={commands} />
           <textarea
             ref={textareaRef}
             value={input}
-            onChange={(e) => {
-              setInput(e.target.value);
-              adjustHeight();
-            }}
+            onChange={handleTextareaChange}
+            onScroll={handleScroll}
             onKeyDown={handleKeyDown}
+            onCompositionStart={() => { isComposing.current = true; }}
+            onCompositionEnd={() => {
+              isComposing.current = false;
+              if (textareaRef.current) {
+                handleCompletionInput(textareaRef.current.value, textareaRef.current.selectionStart);
+              }
+            }}
             placeholder="Send a message..."
-            className="h-auto max-h-[140px] min-h-[24px] w-full resize-none bg-transparent px-3.5 py-2.5 text-[13px] leading-relaxed text-harness-text outline-none placeholder:text-gray-600"
+            className="slash-textarea-transparent h-auto max-h-[140px] min-h-[24px] w-full resize-none bg-transparent px-3.5 py-2.5 text-[13px] leading-relaxed outline-none placeholder:text-gray-600"
             rows={1}
           />
+          {isPopupOpen && (
+            <SlashCommandPopup
+              commands={filteredCommands}
+              selectedIndex={selectedIndex}
+              onSelect={selectCommand}
+              onClose={closePopup}
+              hoveredIndex={hoveredIndex}
+              onHover={setHoveredIndex}
+            />
+          )}
           <div className="flex items-center justify-between px-2.5 pb-2">
             <div className="flex items-center gap-1">
               <div className="relative">
