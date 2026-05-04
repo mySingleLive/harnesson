@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Agent, AgentPanelState, AgentStreamEvent, AgentMessage } from '@harnesson/shared';
+import type { Agent, AgentPanelState, AgentStreamEvent, AgentMessage, TodoItem } from '@harnesson/shared';
 import * as api from '@/lib/serverApi';
 
 interface AgentState {
@@ -8,6 +8,7 @@ interface AgentState {
   messages: Record<string, AgentMessage[]>;
   eventSources: Record<string, EventSource>;
   isStreaming: Record<string, boolean>;
+  todos: Record<string, TodoItem[]>;
 
   setActiveAgent: (id: string | null) => void;
   updatePanelState: (id: string, state: Partial<AgentPanelState>) => void;
@@ -28,6 +29,10 @@ interface AgentState {
   abortAgent: (agentId: string) => Promise<void>;
   destroyAgent: (agentId: string) => Promise<void>;
   loadAgents: () => Promise<void>;
+
+  addTodo: (agentId: string, item: TodoItem) => void;
+  updateTodo: (agentId: string, id: string, updates: Partial<TodoItem>) => void;
+  clearTodos: (agentId: string) => void;
 }
 
 export const useAgentStore = create<AgentState>((set, get) => ({
@@ -36,6 +41,30 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   messages: {},
   eventSources: {},
   isStreaming: {},
+  todos: {},
+
+  addTodo: (agentId, item) =>
+    set((s) => ({
+      todos: {
+        ...s.todos,
+        [agentId]: [...(s.todos[agentId] ?? []), item],
+      },
+    })),
+
+  updateTodo: (agentId, id, updates) =>
+    set((s) => ({
+      todos: {
+        ...s.todos,
+        [agentId]: (s.todos[agentId] ?? []).map((t) =>
+          t.id === id ? { ...t, ...updates } : t,
+        ),
+      },
+    })),
+
+  clearTodos: (agentId) =>
+    set((s) => ({
+      todos: { ...s.todos, [agentId]: [] },
+    })),
 
   setActiveAgent: (id) => set({ activeAgentId: id }),
 
