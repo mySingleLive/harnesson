@@ -9,8 +9,9 @@ import { useAgentStore } from '@/stores/agentStore';
 import { useProjectStore } from '@/stores/projectStore';
 
 export function MainLayout() {
-  const { agents, activeAgentId, setActiveAgent, updatePanelState } = useAgentStore();
+  const { agents, activeAgentId, setActiveAgent, updatePanelState, messages, isStreaming, loadAgents } = useAgentStore();
   const switchProject = useProjectStore((s) => s.switchProject);
+  const loadProjects = useProjectStore((s) => s.loadProjects);
   const activeAgent = agents.find((a) => a.id === activeAgentId);
   const runningCount = agents.filter((a) => a.status === 'running').length;
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -38,6 +39,11 @@ export function MainLayout() {
   const location = useLocation();
 
   useEffect(() => {
+    loadProjects();
+    loadAgents();
+  }, [loadProjects, loadAgents]);
+
+  useEffect(() => {
     if (location.pathname === '/' && activeAgentId) {
       updatePanelState(activeAgentId, { isOpen: false });
       setActiveAgent(null);
@@ -62,7 +68,8 @@ export function MainLayout() {
         {showPanel && (
           <AgentPanel
             agent={activeAgent}
-            messages={mockMessages}
+            messages={messages[activeAgent.id] ?? []}
+            isStreaming={isStreaming[activeAgent.id] ?? false}
             isMaximized={activeAgent.panelState.isMaximized}
             onToggleMaximize={handleToggleMaximize}
             onClose={handleClose}
@@ -84,33 +91,3 @@ export function MainLayout() {
     </div>
   );
 }
-
-const mockMessages = [
-  {
-    id: '1',
-    role: 'user' as const,
-    content: 'Implement JWT authentication for the login API endpoint.',
-  },
-  {
-    id: '2',
-    role: 'agent' as const,
-    content: "I'll implement JWT authentication. Let me update the auth module:",
-    diffBlocks: [
-      {
-        fileName: 'auth/jwt.ts',
-        added: 5,
-        removed: 2,
-        lines: [
-          { type: 'context' as const, lineNum: ' 5', content: "import express from 'express';" },
-          { type: 'removed' as const, lineNum: ' 6', content: "import crypto from 'crypto';" },
-          { type: 'removed' as const, lineNum: ' 7', content: "const SECRET = 'hardcoded-secret';" },
-          { type: 'added' as const, lineNum: ' 6', content: "import jwt from 'jsonwebtoken';" },
-          { type: 'added' as const, lineNum: ' 7', content: "import bcrypt from 'bcryptjs';" },
-          { type: 'added' as const, lineNum: ' 8', content: 'const SECRET = config().JWT_SECRET;' },
-          { type: 'added' as const, lineNum: ' 9', content: "const EXPIRES = '24h';" },
-          { type: 'added' as const, lineNum: '10', content: "const REFRESH_EXPIRES = '7d';" },
-        ],
-      },
-    ],
-  },
-];

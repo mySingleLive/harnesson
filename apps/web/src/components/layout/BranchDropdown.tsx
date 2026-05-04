@@ -4,6 +4,7 @@ import { useProjectStore } from '@/stores/projectStore';
 
 export function BranchDropdown() {
   const [open, setOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const activeProjectId = useProjectStore((s) => s.activeProjectId);
@@ -11,9 +12,9 @@ export function BranchDropdown() {
   const isBranchLoading = useProjectStore((s) => s.isBranchLoading);
   const doCheckout = useProjectStore((s) => s.checkoutBranch);
 
-  // Click outside to close
   useEffect(() => {
     if (!open) return;
+    setError(null);
     const handler = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
         setOpen(false);
@@ -32,9 +33,13 @@ export function BranchDropdown() {
       setOpen(false);
       return;
     }
+    setError(null);
     const result = await doCheckout(activeProjectId, branch);
     if (result.success) {
       setOpen(false);
+    } else {
+      const msg = result.error || 'Checkout failed';
+      setError(msg.replace(/^error:\s*/, ''));
     }
   };
 
@@ -51,6 +56,11 @@ export function BranchDropdown() {
 
       {open && (
         <div className="absolute left-0 top-full z-50 mt-1 w-56 rounded-lg border border-harness-border bg-harness-sidebar shadow-xl">
+          {error && (
+            <div className="mx-2 mt-1 rounded-md bg-red-500/10 px-2.5 py-2 text-[11px] leading-relaxed text-red-400">
+              {error}
+            </div>
+          )}
           {!branches.isGitRepo ? (
             <div className="p-4 text-center">
               <p className="text-xs text-gray-500">此项目不是 Git 仓库</p>

@@ -1,95 +1,249 @@
 import { create } from 'zustand';
-import type { Agent, AgentPanelState } from '@harnesson/shared';
+import type { Agent, AgentPanelState, AgentStreamEvent, AgentMessage } from '@harnesson/shared';
+import * as api from '@/lib/serverApi';
 
 interface AgentState {
   agents: Agent[];
   activeAgentId: string | null;
+  messages: Record<string, AgentMessage[]>;
+  eventSources: Record<string, EventSource>;
+  isStreaming: Record<string, boolean>;
+
   setActiveAgent: (id: string | null) => void;
   updatePanelState: (id: string, state: Partial<AgentPanelState>) => void;
-  addAgent: (agent: Agent) => void;
   updateAgent: (id: string, updates: Partial<Agent>) => void;
-  removeAgent: (id: string) => void;
-  createAgent: (opts: { projectId: string; branch: string; model?: string; taskTitle?: string }) => Agent;
+
+  createAgent: (opts: {
+    cwd: string;
+    type: string;
+    model?: string;
+    permissionMode?: 'auto' | 'manual';
+    taskTitle?: string;
+  }) => Promise<Agent>;
+
+  sendMessage: (agentId: string, text: string, model?: string) => Promise<void>;
+  appendStreamEvent: (agentId: string, event: AgentStreamEvent) => void;
+  connectSSE: (agentId: string) => void;
+  disconnectSSE: (agentId: string) => void;
+  abortAgent: (agentId: string) => Promise<void>;
+  destroyAgent: (agentId: string) => Promise<void>;
+  loadAgents: () => Promise<void>;
 }
 
-const mockAgents: Agent[] = [
-  {
-    id: 'agent-a',
-    name: 'Agent A',
-    type: 'claude-code',
-    status: 'running',
-    projectId: 'My Project A',
-    branch: 'main',
-    worktreePath: '/tmp/worktree-a',
-    model: 'Sonnet 4.7',
-    createdAt: new Date(Date.now() - 754_000).toISOString(),
-    panelState: { isOpen: false, isMaximized: false },
-    sessionContext: { taskTitle: '实现 JWT 认证', tokenUsage: 2400 },
-  },
-  {
-    id: 'agent-b',
-    name: 'Agent B',
-    type: 'claude-code',
-    status: 'running',
-    projectId: 'My Project A',
-    branch: 'tree-1',
-    worktreePath: '/tmp/worktree-b',
-    model: 'Sonnet 4.7',
-    createdAt: new Date(Date.now() - 320_000).toISOString(),
-    panelState: { isOpen: false, isMaximized: false },
-    sessionContext: { taskTitle: '添加用户注册接口', tokenUsage: 1200 },
-  },
-  {
-    id: 'agent-c',
-    name: 'Agent C',
-    type: 'gpt',
-    status: 'idle',
-    projectId: 'My Project B',
-    branch: 'dev',
-    worktreePath: '/tmp/worktree-c',
-    createdAt: new Date(Date.now() - 180_000).toISOString(),
-    panelState: { isOpen: false, isMaximized: false },
-  },
-];
-
 export const useAgentStore = create<AgentState>((set, get) => ({
-  agents: mockAgents,
+  agents: [],
   activeAgentId: null,
+  messages: {},
+  eventSources: {},
+  isStreaming: {},
+
   setActiveAgent: (id) => set({ activeAgentId: id }),
+
   updatePanelState: (id, state) =>
     set((s) => ({
       agents: s.agents.map((a) =>
         a.id === id ? { ...a, panelState: { ...a.panelState, ...state } } : a,
       ),
     })),
-  addAgent: (agent) => set((s) => ({ agents: [...s.agents, agent] })),
+
   updateAgent: (id, updates) =>
     set((s) => ({
       agents: s.agents.map((a) => (a.id === id ? { ...a, ...updates } : a)),
     })),
-  removeAgent: (id) =>
-    set((s) => ({ agents: s.agents.filter((a) => a.id !== id) })),
-  createAgent: (opts) => {
-    const id = crypto.randomUUID();
-    const agents = get().agents;
-    const usedIndices = agents
-      .map((a) => { const m = a.name.match(/^Agent ([A-Z])$/); return m ? m[1].charCodeAt(0) - 65 : -1; })
-      .filter((n) => n >= 0);
-    const nextIndex = usedIndices.length > 0 ? Math.max(...usedIndices) + 1 : 0;
+
+  createAgent: async (opts) => {
+    const response = await api.createAgent({
+      cwd: opts.cwd,
+      type: opts.type,
+      model: opts.model,
+      permissionMode: opts.permissionMode ?? 'auto',
+      prompt: opts.taskTitle,
+    });
+
     const agent: Agent = {
-      id,
-      name: `Agent ${String.fromCharCode(65 + (nextIndex % 26))}`,
-      type: 'claude-code',
-      status: 'running',
-      projectId: opts.projectId,
-      branch: opts.branch,
-      worktreePath: `/tmp/worktree-${id.slice(0, 8)}`,
-      model: opts.model ?? 'Sonnet 4.7',
-      createdAt: new Date().toISOString(),
+      id: response.id,
+      name: response.name,
+      type: response.type as Agent['type'],
+      status: 'idle',
+      projectId: '',
+      branch: '',
+      worktreePath: response.cwd,
+      model: response.model,
+      createdAt: response.createdAt,
       panelState: { isOpen: true, isMaximized: true },
       sessionContext: { taskTitle: opts.taskTitle ?? '', tokenUsage: 0 },
     };
-    set((s) => ({ agents: [...s.agents, agent], activeAgentId: agent.id }));
+
+    set((s) => ({
+      agents: [...s.agents, agent],
+      activeAgentId: agent.id,
+      messages: { ...s.messages, [agent.id]: [] },
+    }));
+
+    get().connectSSE(agent.id);
+
     return agent;
+  },
+
+  sendMessage: async (agentId, text, model) => {
+    const userMsg: AgentMessage = {
+      id: crypto.randomUUID(),
+      role: 'user',
+      content: text,
+      timestamp: new Date().toISOString(),
+    };
+
+    set((s) => ({
+      messages: {
+        ...s.messages,
+        [agentId]: [...(s.messages[agentId] ?? []), userMsg],
+      },
+      isStreaming: { ...s.isStreaming, [agentId]: true },
+    }));
+
+    try {
+      await api.sendAgentMessage(agentId, text, model);
+    } catch (err) {
+      get().appendStreamEvent(agentId, {
+        type: 'agent.error',
+        message: err instanceof Error ? err.message : 'Failed to send message',
+        code: 'SEND_ERROR',
+      });
+    }
+  },
+
+  appendStreamEvent: (agentId, event) => {
+    set((s) => {
+      const msgs = s.messages[agentId] ?? [];
+      const lastMsg = msgs[msgs.length - 1];
+
+      if (event.type === 'agent.done' || event.type === 'agent.error') {
+        return {
+          isStreaming: { ...s.isStreaming, [agentId]: false },
+          agents: s.agents.map((a) =>
+            a.id === agentId
+              ? { ...a, status: event.type === 'agent.error' ? 'error' : 'idle', error: event.type === 'agent.error' ? event.message : undefined }
+              : a,
+          ),
+        };
+      }
+
+      if (lastMsg && lastMsg.role === 'agent') {
+        const updatedMsg = { ...lastMsg, events: [...(lastMsg.events ?? []), event] };
+        if (event.type === 'agent.text' && event.text) {
+          updatedMsg.content = (lastMsg.content ?? '') + event.text;
+        }
+        return {
+          messages: {
+            ...s.messages,
+            [agentId]: [...msgs.slice(0, -1), updatedMsg],
+          },
+        };
+      }
+
+      const agentMsg: AgentMessage = {
+        id: crypto.randomUUID(),
+        role: 'agent',
+        content: event.type === 'agent.text' ? (event.text ?? '') : '',
+        timestamp: new Date().toISOString(),
+        events: [event],
+      };
+      return {
+        messages: {
+          ...s.messages,
+          [agentId]: [...msgs, agentMsg],
+        },
+      };
+    });
+  },
+
+  connectSSE: (agentId) => {
+    const existing = get().eventSources[agentId];
+    if (existing) {
+      existing.close();
+    }
+
+    const es = new EventSource(`/api/agents/${encodeURIComponent(agentId)}/stream`);
+
+    const eventTypes = [
+      'agent.thinking',
+      'agent.text',
+      'agent.tool_use',
+      'agent.tool_result',
+      'agent.error',
+      'agent.done',
+    ];
+
+    for (const type of eventTypes) {
+      es.addEventListener(type, (e: MessageEvent) => {
+        try {
+          const data = JSON.parse(e.data) as AgentStreamEvent;
+          get().appendStreamEvent(agentId, data);
+        } catch {}
+      });
+    }
+
+    es.onerror = () => {};
+
+    set((s) => ({
+      eventSources: { ...s.eventSources, [agentId]: es },
+    }));
+  },
+
+  disconnectSSE: (agentId) => {
+    const es = get().eventSources[agentId];
+    if (es) {
+      es.close();
+      set((s) => {
+        const { [agentId]: _, ...rest } = s.eventSources;
+        return { eventSources: rest };
+      });
+    }
+  },
+
+  abortAgent: async (agentId) => {
+    await api.abortAgent(agentId);
+  },
+
+  destroyAgent: async (agentId) => {
+    get().disconnectSSE(agentId);
+    await api.destroyAgent(agentId);
+    set((s) => {
+      const { [agentId]: _msg, ...restMsgs } = s.messages;
+      const { [agentId]: _stream, ...restStreams } = s.isStreaming;
+      return {
+        agents: s.agents.filter((a) => a.id !== agentId),
+        messages: restMsgs,
+        isStreaming: restStreams,
+        activeAgentId: s.activeAgentId === agentId ? null : s.activeAgentId,
+      };
+    });
+  },
+
+  loadAgents: async () => {
+    try {
+      const agentsInfo = await api.listAgents();
+      const agents: Agent[] = agentsInfo.map((info) => ({
+        id: info.id,
+        name: info.name,
+        type: info.type as Agent['type'],
+        status: info.status as Agent['status'],
+        projectId: '',
+        branch: info.branch,
+        worktreePath: info.cwd,
+        model: info.model,
+        createdAt: info.createdAt,
+        error: info.error,
+        panelState: { isOpen: false, isMaximized: false },
+        sessionContext: info.sessionContext,
+      }));
+      set({ agents });
+
+      for (const agent of agents) {
+        if (agent.status === 'running') {
+          get().connectSSE(agent.id);
+        }
+      }
+    } catch {}
   },
 }));

@@ -23,7 +23,7 @@ export function AgentContextHeader({ agent, onToggleMaximize, onClose }: AgentCo
   const isMaximized = agent.panelState.isMaximized;
 
   return (
-    <div className="flex-shrink-0 border-b border-harness-border">
+    <div className="flex-shrink-0">
       {/* 第一行：名称 + 状态 + 运行时间 + 按钮 */}
       <div className="flex items-center gap-2 px-4 py-2.5">
         <span className="text-[14px] font-semibold text-gray-200">{agent.name}</span>
