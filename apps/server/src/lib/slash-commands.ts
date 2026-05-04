@@ -1,4 +1,4 @@
-import { readdir, stat } from 'node:fs/promises';
+import { readdir, stat, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
 import type { SlashCommand } from '@harnesson/shared';
@@ -15,11 +15,30 @@ export async function getAvailableCommands(): Promise<SlashCommand[]> {
   return [...BUILTIN_COMMANDS, ...skills];
 }
 
+function parseDescription(frontmatter: string): string | null {
+  const match = frontmatter.match(/^description:\s*["']?(.+?)["']?\s*$/m);
+  return match ? match[1] : null;
+}
+
+async function readSkillDescription(skillDir: string): Promise<string | null> {
+  try {
+    const content = await readFile(join(skillDir, 'SKILL.md'), 'utf-8');
+    const fmMatch = content.match(/^---\n([\s\S]*?)\n---/);
+    if (fmMatch) {
+      return parseDescription(fmMatch[1]);
+    }
+  } catch {}
+  return null;
+}
+
 async function scanSkills(): Promise<SlashCommand[]> {
   const skillsDir = join(homedir(), '.claude', 'plugins', 'cache');
   const commands: SlashCommand[] = [];
 
-  async function scanDirectoryForSkills(dir: string): Promise<SlashCommand[]> {
+  async function scanDirectoryForSkills(
+    dir: string,
+    pluginName: string,
+  ): Promise<SlashCommand[]> {
     const results: SlashCommand[] = [];
     try {
       const entries = await readdir(dir);
@@ -28,7 +47,9 @@ async function scanSkills(): Promise<SlashCommand[]> {
         try {
           const s = await stat(entryPath);
           if (s.isDirectory()) {
-            results.push({ name: entry, type: 'skill', description: `Skill: ${entry}` });
+            const description =
+              (await readSkillDescription(entryPath)) ?? `Skill: ${entry}`;
+            results.push({ name: entry, type: 'skill', description, plugin: pluginName });
           }
         } catch {}
       }
@@ -53,7 +74,10 @@ async function scanSkills(): Promise<SlashCommand[]> {
             try {
               const vs = await stat(versionPath);
               if (vs.isDirectory()) {
-                const skills = await scanDirectoryForSkills(join(versionPath, 'skills'));
+                const skills = await scanDirectoryForSkills(
+                  join(versionPath, 'skills'),
+                  pluginDir,
+                );
                 for (const skill of skills) {
                   if (!commands.some((c) => c.name === skill.name)) {
                     commands.push(skill);
@@ -65,7 +89,10 @@ async function scanSkills(): Promise<SlashCommand[]> {
         } catch {}
 
         // Also scan top-level skills in any plugin
-        const topLevelSkills = await scanDirectoryForSkills(join(pluginPath, 'skills'));
+        const topLevelSkills = await scanDirectoryForSkills(
+          join(pluginPath, 'skills'),
+          pluginDir,
+        );
         for (const skill of topLevelSkills) {
           if (!commands.some((c) => c.name === skill.name)) {
             commands.push(skill);
