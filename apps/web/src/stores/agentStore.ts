@@ -11,6 +11,7 @@ interface AgentState {
   eventSources: Record<string, EventSource>;
   isStreaming: Record<string, boolean>;
   todos: Record<string, TodoItem[]>;
+  pendingQuestion: Record<string, import('@harnesson/shared').PendingQuestion | null>;
 
   setActiveAgent: (id: string | null) => void;
   updatePanelState: (id: string, state: Partial<AgentPanelState>) => void;
@@ -35,6 +36,8 @@ interface AgentState {
   addTodo: (agentId: string, item: TodoItem) => void;
   updateTodo: (agentId: string, id: string, updates: Partial<TodoItem>) => void;
   clearTodos: (agentId: string) => void;
+
+  submitQuestionAnswer: (agentId: string, answer: string | string[]) => Promise<void>;
 }
 
 export const useAgentStore = create<AgentState>((set, get) => ({
@@ -44,6 +47,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   eventSources: {},
   isStreaming: {},
   todos: {},
+  pendingQuestion: {},
 
   addTodo: (agentId, item) =>
     set((s) => ({
@@ -67,6 +71,28 @@ export const useAgentStore = create<AgentState>((set, get) => ({
     set((s) => ({
       todos: { ...s.todos, [agentId]: [] },
     })),
+
+  submitQuestionAnswer: async (agentId, answer) => {
+    const pending = get().pendingQuestion[agentId];
+    if (!pending) return;
+
+    try {
+      await fetch(`/api/agents/${encodeURIComponent(agentId)}/tool-result`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answer }),
+      });
+    } catch {
+      // Network error - still clear pending state
+    }
+
+    set((s) => ({
+      pendingQuestion: {
+        ...s.pendingQuestion,
+        [agentId]: null,
+      },
+    }));
+  },
 
   setActiveAgent: (id) => set({ activeAgentId: id }),
 
@@ -168,6 +194,24 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   },
 
   appendStreamEvent: (agentId, event) => {
+    // Handle AskUserQuestion events
+    if (event.type === 'agent.question') {
+      const questionData = event.question as unknown as import('@harnesson/shared').QuestionData;
+      const toolUseId = (event as Record<string, unknown>).tool_use_id as string;
+      if (questionData && toolUseId) {
+        set((s) => ({
+          pendingQuestion: {
+            ...s.pendingQuestion,
+            [agentId]: {
+              toolUseId,
+              question: questionData,
+            },
+          },
+        }));
+      }
+      return;
+    }
+
     // Handle TodoWrite tool events — replaces entire todo list each call
     if (event.type === 'agent.tool_use' && event.tool === 'TodoWrite' && event.input) {
       const inputTodos = event.input.todos;
@@ -263,6 +307,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
       'agent.tool_result',
       'agent.error',
       'agent.done',
+      'agent.question',
     ];
 
     for (const type of eventTypes) {
