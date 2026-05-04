@@ -43,11 +43,12 @@ function AgentMessageBubble({ events, agentName, isStreaming }: {
   }
 
   return (
-    <div className="border-b border-white/[0.04] px-4 py-4">
-      <div className="mb-1.5 flex items-center gap-1.5">
-        <span className="text-[11px] font-semibold uppercase tracking-wide text-green-500">{agentName}</span>
-        {isStreaming && <ThinkingIndicator size="sm" />}
-      </div>
+    <div className="border-b border-white/[0.04] px-5 py-3.5">
+      {isStreaming && (
+        <div className="mb-1.5">
+          <ThinkingIndicator size="sm" />
+        </div>
+      )}
 
       {segments.map((seg, i) =>
         seg.type === 'text' ? (
