@@ -149,8 +149,12 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
             isStreaming={isStreaming && msg === messages[messages.length - 1] && msg.role === 'agent'}
           />
         ))}
-        {isStreaming && <ThinkingBar />}
-        {todos && todos.length > 0 && <TodoBar todos={todos} />}
+        {(isStreaming || (todos && todos.length > 0)) && (
+          <div className="sticky bottom-0 bg-harness-chat pt-1">
+            {isStreaming && <ThinkingBar />}
+            {todos && todos.length > 0 && <TodoBar todos={todos} />}
+          </div>
+        )}
         {messages.length === 0 && !isStreaming && (
           <div className="flex h-full items-center justify-center text-[13px] text-gray-600">
             Waiting for response...
