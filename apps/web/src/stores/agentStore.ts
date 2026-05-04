@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import type { Agent, AgentPanelState, AgentStreamEvent, AgentMessage, TodoItem } from '@harnesson/shared';
 import * as api from '@/lib/serverApi';
 
+const completionTimers: Record<string, ReturnType<typeof setTimeout>> = {};
+
 interface AgentState {
   agents: Agent[];
   activeAgentId: string | null;
@@ -115,6 +117,11 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   },
 
   sendMessage: async (agentId, text, model) => {
+    // Cancel pending completion timer
+    if (completionTimers[agentId]) {
+      clearTimeout(completionTimers[agentId]);
+      delete completionTimers[agentId];
+    }
     // Snapshot any active todos into message flow before starting new reply
     const currentTodos = get().todos[agentId] ?? [];
     if (currentTodos.length > 0) {
@@ -174,17 +181,19 @@ export const useAgentStore = create<AgentState>((set, get) => ({
     }
     if (event.type === 'agent.tool_use' && event.tool === 'TaskUpdate' && event.input) {
       const input = event.input;
-      get().updateTodo(agentId, String(input.taskId), {
-        status: (input.status as TodoItem['status']) ?? undefined,
-        subject: input.subject ? String(input.subject) : undefined,
-        activeForm: input.activeForm ? String(input.activeForm) : undefined,
-      });
+      const updates: Partial<TodoItem> = {};
+      if (input.status) updates.status = input.status as TodoItem['status'];
+      if (input.subject) updates.subject = String(input.subject);
+      if (input.activeForm) updates.activeForm = String(input.activeForm);
+      get().updateTodo(agentId, String(input.taskId), updates);
 
       // Check if all todos are completed after update
       const todos = get().todos[agentId] ?? [];
       if (todos.length > 0 && todos.every((t) => t.status === 'completed')) {
         const snapshot = [...todos];
-        setTimeout(() => {
+        if (completionTimers[agentId]) clearTimeout(completionTimers[agentId]);
+        completionTimers[agentId] = setTimeout(() => {
+          delete completionTimers[agentId];
           const todoMsg: AgentMessage = {
             id: crypto.randomUUID(),
             role: 'agent',
@@ -295,15 +304,21 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   },
 
   destroyAgent: async (agentId) => {
+    if (completionTimers[agentId]) {
+      clearTimeout(completionTimers[agentId]);
+      delete completionTimers[agentId];
+    }
     get().disconnectSSE(agentId);
     await api.destroyAgent(agentId);
     set((s) => {
       const { [agentId]: _msg, ...restMsgs } = s.messages;
       const { [agentId]: _stream, ...restStreams } = s.isStreaming;
+      const { [agentId]: _todos, ...restTodos } = s.todos;
       return {
         agents: s.agents.filter((a) => a.id !== agentId),
         messages: restMsgs,
         isStreaming: restStreams,
+        todos: restTodos,
         activeAgentId: s.activeAgentId === agentId ? null : s.activeAgentId,
       };
     });

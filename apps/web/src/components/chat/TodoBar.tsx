@@ -20,7 +20,7 @@ export function TodoBar({ todos }: TodoBarProps) {
                   ? 'text-harness-text'
                   : 'text-gray-500'
             }>
-              {item.subject}
+              {item.status === 'in_progress' && item.activeForm ? item.activeForm : item.subject}
             </span>
           </div>
         ))}

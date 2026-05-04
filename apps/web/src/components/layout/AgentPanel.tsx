@@ -149,9 +149,7 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
             isStreaming={isStreaming && msg === messages[messages.length - 1] && msg.role === 'agent'}
           />
         ))}
-        {isStreaming && <ThinkingBar />}
-        {todos.length > 0 && <TodoBar todos={todos} />}
-        {messages.length === 0 && (
+        {messages.length === 0 && !isStreaming && (
           <div className="flex h-full items-center justify-center text-[13px] text-gray-600">
             Waiting for response...
           </div>
@@ -167,6 +165,9 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
           </div>
         )}
       </div>
+
+      {isStreaming && <ThinkingBar />}
+      {todos.length > 0 && <TodoBar todos={todos} />}
 
       <div className={`px-3 pb-3 ${isMaximized ? 'mx-auto w-full max-w-[800px]' : ''}`}>
         <div className="slash-input-container rounded-2xl border border-white/10 transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)]" style={{ background: '#2a2a48' }}>
