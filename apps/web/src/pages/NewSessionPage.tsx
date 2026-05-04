@@ -1,9 +1,13 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { Plus, Layers, GitBranch, ChevronDown, ArrowUp, Sparkles, Bug, Code, TestTube } from 'lucide-react';
 import { useAgentStore } from '@/stores/agentStore';
 import { useProjectStore } from '@/stores/projectStore';
+import { useSlashCommandStore } from '@/stores/slashCommandStore';
+import { useSlashCompletion } from '@/hooks/useSlashCompletion';
 import { ModelDropdown } from '@/components/layout/ModelDropdown';
+import { SlashCommandPopup } from '@/components/chat/SlashCommandPopup';
+import { HighlightOverlay } from '@/components/chat/HighlightOverlay';
 
 const quickActions = [
   { label: '创建新功能', icon: Sparkles, prompt: 'Help me create a new feature: ' },
@@ -17,9 +21,24 @@ export function NewSessionPage() {
   const [isCreating, setIsCreating] = useState(false);
   const [selectedModel, setSelectedModel] = useState<string | undefined>(undefined);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const createAgent = useAgentStore((s) => s.createAgent);
   const { activeProjectId, activeBranch, projects } = useProjectStore();
+  const commands = useSlashCommandStore((s) => s.commands);
   const navigate = useNavigate();
+  const isComposing = useRef(false);
+
+  const {
+    isOpen: isPopupOpen,
+    filteredCommands,
+    selectedIndex,
+    handleInput: handleCompletionInput,
+    handleKeyDown: handleCompletionKeyDown,
+    selectCommand,
+    closePopup,
+    hoveredIndex,
+    setHoveredIndex,
+  } = useSlashCompletion(input, setInput, textareaRef);
 
   const project = projects.find((p) => p.id === activeProjectId);
   const projectPath = project?.path ?? '';
@@ -30,6 +49,9 @@ export function NewSessionPage() {
     if (!el) return;
     el.style.height = 'auto';
     el.style.height = el.scrollHeight + 'px';
+    if (overlayRef.current) {
+      overlayRef.current.scrollTop = el.scrollTop;
+    }
   };
 
   const handleSend = async () => {
@@ -50,6 +72,7 @@ export function NewSessionPage() {
       }
       navigate('/projects');
       setInput('');
+      closePopup();
       if (textareaRef.current) textareaRef.current.style.height = 'auto';
     } catch (err) {
       console.error('Failed to create agent:', err);
@@ -63,11 +86,25 @@ export function NewSessionPage() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (handleCompletionKeyDown(e)) return;
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value;
+    setInput(val);
+    adjustHeight();
+    handleCompletionInput(val, e.target.selectionStart);
+  };
+
+  const handleScroll = useCallback(() => {
+    if (overlayRef.current && textareaRef.current) {
+      overlayRef.current.scrollTop = textareaRef.current.scrollTop;
+    }
+  }, []);
 
   return (
     <div className="flex h-full flex-col items-center justify-center bg-harness-content px-4">
@@ -76,20 +113,36 @@ export function NewSessionPage() {
       </h1>
 
       <div className="w-full max-w-[700px]">
-        <div className="rounded-2xl border border-white/10 transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)]" style={{ background: '#2a2a48' }}>
+        <div className="slash-input-container rounded-2xl border border-white/10 transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)]" style={{ background: '#2a2a48' }}>
+          <HighlightOverlay text={input} commands={commands} />
           <textarea
             ref={textareaRef}
             value={input}
-            onChange={(e) => {
-              setInput(e.target.value);
-              adjustHeight();
-            }}
+            onChange={handleTextareaChange}
+            onScroll={handleScroll}
             onKeyDown={handleKeyDown}
-            placeholder={projectPath ? "Message Harnesson...  Type @ for files, / for commands" : "请先选择或创建一个项目"}
-            className="h-auto max-h-[140px] min-h-[24px] w-full resize-none bg-transparent px-3.5 py-2.5 text-[13px] leading-relaxed text-harness-text outline-none placeholder:text-gray-600"
+            onCompositionStart={() => { isComposing.current = true; }}
+            onCompositionEnd={() => {
+              isComposing.current = false;
+              if (textareaRef.current) {
+                handleCompletionInput(textareaRef.current.value, textareaRef.current.selectionStart);
+              }
+            }}
+            placeholder={projectPath ? "Message Harnesson...  Type / for commands" : "请先选择或创建一个项目"}
+            className="slash-textarea-transparent h-auto max-h-[140px] min-h-[24px] w-full resize-none bg-transparent px-3.5 py-2.5 text-[13px] leading-relaxed outline-none placeholder:text-gray-600"
             rows={1}
             disabled={!projectPath || isCreating}
           />
+          {isPopupOpen && (
+            <SlashCommandPopup
+              commands={filteredCommands}
+              selectedIndex={selectedIndex}
+              onSelect={selectCommand}
+              onClose={closePopup}
+              hoveredIndex={hoveredIndex}
+              onHover={setHoveredIndex}
+            />
+          )}
           <div className="flex items-center justify-between px-2.5 pb-2">
             <div className="flex items-center gap-1">
               <button className="flex h-[30px] w-[30px] items-center justify-center rounded-lg text-gray-500 hover:bg-white/5 hover:text-gray-300">
