@@ -28,16 +28,21 @@ interface AgentState {
 }
 
 async function generateTitle(prompt: string): Promise<string> {
-  if (!prompt.trim()) return '新会话';
-  if (prompt.length <= 10) return prompt;
+  const trimmed = prompt.trim();
+  if (!trimmed) return '新会话';
+  const capped = trimmed.length > 200 ? trimmed.slice(0, 200) : trimmed;
+  if (capped.length <= 10) return capped;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5_000);
 
   try {
     const stream = query({
-      prompt,
+      prompt: capped,
       options: {
         maxTurns: 1,
         systemPrompt: '请用不超过10个中文字符总结以下任务的标题。只返回标题文字本身，不要加引号、编号或其他格式。',
-        abortController: new AbortController(),
+        abortController: controller,
       },
     });
 
@@ -54,12 +59,16 @@ async function generateTitle(prompt: string): Promise<string> {
             }
           }
         }
+        break;
       }
     }
     (stream as unknown as { abort?: () => void }).abort?.();
-    return title.trim() || prompt.slice(0, 10);
+    return title.trim() || capped.slice(0, 10);
   } catch {
-    return prompt.slice(0, 10);
+    return capped.slice(0, 10);
+  } finally {
+    clearTimeout(timeout);
+    controller.abort();
   }
 }
 
