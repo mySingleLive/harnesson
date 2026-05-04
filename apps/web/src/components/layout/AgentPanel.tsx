@@ -72,22 +72,15 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
       closePopup();
 
       const result = await api.executeCommand(agent.id, parsed.command.name, parsed.args || undefined);
-      if (result.success) {
-        appendStreamEvent(agent.id, {
-          type: 'agent.text',
-          text: `✓ ${result.message}`,
-        });
-        appendStreamEvent(agent.id, { type: 'agent.done' });
+      const icon = result.success ? '✓' : '✗';
+      appendStreamEvent(agent.id, {
+        type: 'agent.text',
+        text: `${icon} ${result.success ? result.message : result.error}`,
+      });
+      appendStreamEvent(agent.id, { type: 'agent.done' });
 
-        if (parsed.command.name === 'model' && parsed.args) {
-          updateAgent(agent.id, { model: parsed.args });
-        }
-      } else {
-        appendStreamEvent(agent.id, {
-          type: 'agent.error',
-          message: result.error ?? 'Command failed',
-          code: 'COMMAND_ERROR',
-        });
+      if (result.success && parsed.command.name === 'model' && parsed.args) {
+        updateAgent(agent.id, { model: parsed.args });
       }
       return;
     }
