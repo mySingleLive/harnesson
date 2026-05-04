@@ -16,6 +16,7 @@ function pairSubEvents(buffer: { texts: string[]; toolEvents: Array<{ tool: stri
 
 const DEFAULT_ALLOWED_TOOLS = [
   'Read', 'Write', 'Edit', 'Bash', 'LSP', 'Glob', 'Grep', 'Agent',
+  'TaskCreate', 'TaskUpdate',
 ];
 
 interface SessionState {
@@ -137,6 +138,10 @@ export class ClaudeCodeAdapter implements AgentAdapter {
                 if (agentStack.length > 0) {
                   const buffer = subEventBuffers.get(agentStack[agentStack.length - 1]);
                   if (buffer) buffer.toolEvents.push({ tool: toolName, input: toolInput });
+                  // Yield TaskCreate/TaskUpdate immediately for real-time UI updates
+                  if (toolName === 'TaskCreate' || toolName === 'TaskUpdate') {
+                    yield { type: 'agent.tool_use', tool: toolName, input: toolInput };
+                  }
                 } else {
                   yield { type: 'agent.tool_use', tool: toolName, input: toolInput };
                 }
@@ -204,6 +209,10 @@ export class ClaudeCodeAdapter implements AgentAdapter {
                     if (pendingIdx >= 0 && buffer) {
                       buffer.toolEvents[pendingIdx].output = output;
                       buffer.toolEvents[pendingIdx].isError = isError;
+                    }
+                    // Yield TaskCreate/TaskUpdate results immediately
+                    if (toolName === 'TaskCreate' || toolName === 'TaskUpdate') {
+                      yield { type: 'agent.tool_result', tool: toolName, output, isError };
                     }
                   } else {
                     yield {
