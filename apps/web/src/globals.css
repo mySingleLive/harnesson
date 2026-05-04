@@ -165,6 +165,7 @@ body {
   font-size: 13px;
   font-weight: 500;
   flex-shrink: 0;
+  min-width: 180px;
   font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
 }
 
