@@ -308,3 +308,12 @@ const toolCardMap = {
 ```
 
 Agent may call AskUserQuestion again immediately after resuming — the client transitions directly to the next waiting state without passing through normal.
+
+## SSE Event Routing for Message History
+
+When the server intercepts an AskUserQuestion tool_use, it sends both:
+
+1. `agent.question` — triggers the popup (immediately)
+2. `agent.tool_use` — flows through the normal event pipeline for message history (the existing tool event pair system pairs it with the subsequent `agent.tool_result`)
+
+This way the `AskUserQuestionCard` in toolCardMap renders the historical record in the message stream, while the popup handles the interactive portion. The `agent.tool_use` event is sent BEFORE the server pauses, so the client accumulates it into the message events immediately. The `agent.tool_result` event arrives later when the user answers and the agent resumes.
