@@ -71,6 +71,19 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
       if (textareaRef.current) textareaRef.current.style.height = 'auto';
       closePopup();
 
+      // Add user message first
+      useAgentStore.setState((s) => ({
+        messages: {
+          ...s.messages,
+          [agent.id]: [...(s.messages[agent.id] ?? []), {
+            id: crypto.randomUUID(),
+            role: 'user' as const,
+            content: text,
+            timestamp: new Date().toISOString(),
+          }],
+        },
+      }));
+
       const result = await api.executeCommand(agent.id, parsed.command.name, parsed.args || undefined);
       const icon = result.success ? '✓' : '✗';
       appendStreamEvent(agent.id, {
