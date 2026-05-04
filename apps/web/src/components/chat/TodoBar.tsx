@@ -8,7 +8,7 @@ export function TodoBar({ todos }: TodoBarProps) {
   if (todos.length === 0) return null;
 
   return (
-    <div className="ml-10 mr-3 mt-3 mb-2 overflow-hidden rounded-lg border border-harness-border bg-harness-sidebar/80 backdrop-blur-sm animate-todo-slide-in">
+    <div className="ml-[68px] mr-3 mt-3 mb-2 overflow-hidden rounded-lg border border-harness-border bg-harness-sidebar/80 backdrop-blur-sm animate-todo-slide-in">
       <div className="max-h-[40vh] overflow-y-auto px-4 py-2.5">
         {todos.map((item) => (
           <div key={item.id} className="flex items-center gap-2.5 py-[3px] text-[12px] leading-snug">
