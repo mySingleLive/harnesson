@@ -240,3 +240,25 @@ export async function destroyAgent(agentId: string): Promise<void> {
   const res = await fetch(`/api/agents/${encodeURIComponent(agentId)}`, { method: 'DELETE' });
   if (!res.ok) throw new Error(`Failed to destroy agent: ${res.status}`);
 }
+
+// --- Slash Command API ---
+
+export async function getSlashCommands(): Promise<import('@harnesson/shared').SlashCommand[]> {
+  try {
+    const res = await fetch('/api/slash-commands');
+    if (!res.ok) return [];
+    const data = await res.json() as { commands: import('@harnesson/shared').SlashCommand[] };
+    return data.commands;
+  } catch {
+    return [];
+  }
+}
+
+export async function executeCommand(agentId: string, command: string, args?: string): Promise<{ success: boolean; message?: string; error?: string }> {
+  const res = await fetch(`/api/agents/${encodeURIComponent(agentId)}/command`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ command, args }),
+  });
+  return res.json();
+}
