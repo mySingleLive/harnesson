@@ -22,7 +22,7 @@ function UserMessage({ content }: { content: string }) {
   return (
     <div className="border-b border-white/[0.04] px-5 py-4 flex justify-start">
       <div
-        className="max-w-[85%] rounded-xl rounded-bl px-3.5 py-2.5 text-[13px] leading-relaxed text-gray-300"
+        className="flex-1 rounded-xl rounded-bl px-3.5 py-2.5 text-[13px] leading-relaxed text-gray-300"
         style={{ background: '#454560', border: '1px solid rgba(255,255,255,0.1)', borderBottomLeftRadius: '4px' }}
       >
         {content}
