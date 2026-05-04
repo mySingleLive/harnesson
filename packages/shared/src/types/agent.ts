@@ -1,6 +1,6 @@
 export type AgentType = 'claude-code' | 'gpt' | 'cursor' | string;
 
-export type AgentStatus = 'running' | 'waiting' | 'completed' | 'error' | 'idle';
+export type AgentStatus = 'running' | 'waiting' | 'waiting_for_input' | 'completed' | 'error' | 'idle';
 
 export interface AgentPanelState {
   isOpen: boolean;

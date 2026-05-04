@@ -1,4 +1,4 @@
-import type { AgentStreamEvent, AgentInfo, CreateAgentRequest, CreateAgentResponse, AgentStatus } from '@harnesson/shared';
+import type { AgentStreamEvent, AgentInfo, CreateAgentRequest, CreateAgentResponse, AgentStatus, QuestionData } from '@harnesson/shared';
 import type { AgentAdapter, ModelInfo } from './agent-adapter.js';
 import { ClaudeCodeAdapter } from './claude-code-adapter.js';
 
@@ -35,6 +35,10 @@ function generateTitle(prompt: string): string {
 
 export class AgentService {
   private agents = new Map<string, AgentState>();
+  private pendingAnswers = new Map<string, {
+    resolve: (answer: string | string[]) => void;
+    question: QuestionData;
+  }>();
   private sharedAdapter = new ClaudeCodeAdapter();
 
   async create(req: CreateAgentRequest): Promise<CreateAgentResponse> {
@@ -109,6 +113,84 @@ export class AgentService {
     agent.messageQueue = agent.messageQueue.then(async () => {
       try {
         for await (const event of agent.adapter.sendMessage(agentId, message)) {
+          // Intercept AskUserQuestion tool_use
+          if (
+            event.type === 'agent.tool_use' &&
+            event.tool === 'AskUserQuestion' &&
+            event.input
+          ) {
+            const questions = event.input.questions as Array<Record<string, unknown>> | undefined;
+            const q = questions?.[0];
+            if (!q) {
+              this.broadcast(agentId, event);
+              continue;
+            }
+
+            const questionData: QuestionData = {
+              question: String(q.question ?? ''),
+              header: String(q.header ?? ''),
+              options: (q.options as Array<Record<string, unknown>> | undefined)?.map((o) => ({
+                label: String(o.label ?? ''),
+                description: o.description ? String(o.description) : undefined,
+                preview: o.preview ? String(o.preview) : undefined,
+              })) ?? [],
+              multiSelect: q.multiSelect === true,
+            };
+
+            const toolUseId = event.tool_use_id ?? crypto.randomUUID();
+
+            // Broadcast tool_use event for message history
+            this.broadcast(agentId, event);
+
+            // Broadcast agent.question event to trigger popup
+            this.broadcast(agentId, {
+              type: 'agent.question',
+              tool_use_id: toolUseId,
+              question: questionData,
+            } as unknown as AgentStreamEvent);
+
+            // Abort current stream
+            agent.adapter.abort(agentId);
+
+            // Wait for user answer
+            agent.status = 'waiting_for_input';
+            const answer = await new Promise<string | string[]>((resolve) => {
+              this.pendingAnswers.set(agentId, { resolve, question: questionData });
+            });
+
+            // User answered, clear pending
+            this.pendingAnswers.delete(agentId);
+
+            // Broadcast done for current turn
+            this.broadcast(agentId, {
+              type: 'agent.done',
+            });
+
+            // Send answer as new message to Agent
+            const answerStr = Array.isArray(answer) ? answer.join(', ') : answer;
+            const contextMsg = `[User answered question: "${questionData.question}"]\nAnswer: ${answerStr}`;
+
+            agent.status = 'running';
+            agent.error = undefined;
+            this.broadcast(agentId, { type: 'agent.thinking', text: '' });
+
+            for await (const answerEvent of agent.adapter.sendMessage(agentId, contextMsg)) {
+              this.broadcast(agentId, answerEvent);
+              if (answerEvent.type === 'agent.done') {
+                agent.tokenUsage = answerEvent.tokenUsage ?? agent.tokenUsage;
+              }
+              if (answerEvent.type === 'agent.error') {
+                agent.error = answerEvent.message;
+              }
+            }
+
+            agent.status = agent.error ? 'error' : 'idle';
+            if (agent.status === 'idle') {
+              agent.error = undefined;
+            }
+            return;
+          }
+
           this.broadcast(agentId, event);
 
           if (event.type === 'agent.done') {
@@ -158,11 +240,31 @@ export class AgentService {
     agent.adapter.abort(agentId);
   }
 
+  submitAnswer(agentId: string, answer: string | string[]): boolean {
+    const pending = this.pendingAnswers.get(agentId);
+    if (!pending) return false;
+    pending.resolve(answer);
+    this.pendingAnswers.delete(agentId);
+    return true;
+  }
+
+  getPendingQuestion(agentId: string): QuestionData | undefined {
+    return this.pendingAnswers.get(agentId)?.question;
+  }
+
   async destroy(agentId: string): Promise<void> {
     const agent = this.agents.get(agentId);
     if (!agent) return;
 
     agent.adapter.abort(agentId);
+
+    // Clean up pending answers
+    const pending = this.pendingAnswers.get(agentId);
+    if (pending) {
+      pending.resolve('');
+      this.pendingAnswers.delete(agentId);
+    }
+
     await agent.adapter.destroySession(agentId);
 
     for (const client of agent.sseClients) {
