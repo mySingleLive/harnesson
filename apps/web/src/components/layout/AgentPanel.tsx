@@ -3,8 +3,10 @@ import { Plus, Layers, GitBranch, ImageIcon, FileText, Terminal, Wrench, Network
 import type { Agent, AgentMessage } from '@harnesson/shared';
 import { useAgentStore } from '@/stores/agentStore';
 import { AgentContextHeader } from './AgentContextHeader';
+import { ModelDropdown } from './ModelDropdown';
 import { MessageRenderer } from '@/components/chat/MessageRenderer';
 import { useAutoScroll } from '@/hooks/useAutoScroll';
+import { ThinkingBar } from '@/components/chat/ThinkingBar';
 
 interface AgentPanelProps {
   agent: Agent;
@@ -18,18 +20,28 @@ interface AgentPanelProps {
 export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggleMaximize, onClose }: AgentPanelProps) {
   const [input, setInput] = useState('');
   const [showPlusMenu, setShowPlusMenu] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { isAtBottom, scrollToBottom } = useAutoScroll(scrollRef, [messages, isStreaming]);
   const sendMessage = useAgentStore((s) => s.sendMessage);
   const abortAgent = useAgentStore((s) => s.abortAgent);
+  const updateAgent = useAgentStore((s) => s.updateAgent);
 
   const width = isMaximized ? 'flex-1' : 'w-[440px] flex-shrink-0';
+
+  const adjustHeight = () => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  };
 
   const handleSend = async () => {
     const text = input.trim();
     if (!text || isStreaming) return;
     setInput('');
-    await sendMessage(agent.id, text);
+    if (textareaRef.current) textareaRef.current.style.height = 'auto';
+    await sendMessage(agent.id, text, agent.model);
   };
 
   const handleAbort = async () => {
@@ -77,11 +89,17 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
         )}
       </div>
 
+      {isStreaming && <ThinkingBar />}
+
       <div className={`px-3 pb-3 ${isMaximized ? 'mx-auto w-full max-w-[800px]' : ''}`}>
         <div className="rounded-2xl border border-white/10 bg-harness-sidebar transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)]">
           <textarea
+            ref={textareaRef}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => {
+              setInput(e.target.value);
+              adjustHeight();
+            }}
             onKeyDown={handleKeyDown}
             placeholder={`Message ${agent.name}...  Type @ for files, / for commands`}
             className="h-auto max-h-[140px] min-h-[24px] w-full resize-none bg-transparent px-3.5 py-2.5 text-[13px] leading-relaxed text-harness-text outline-none placeholder:text-gray-600"
@@ -118,11 +136,10 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
               </button>
             </div>
             <div className="flex items-center gap-2">
-              <button className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] text-gray-500 hover:bg-white/5 hover:text-gray-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-harness-accent" />
-                {agent.model ?? 'Sonnet 4.7'}
-                <ChevronDown className="h-3 w-3" />
-              </button>
+              <ModelDropdown
+                value={agent.model}
+                onChange={(modelId) => updateAgent(agent.id, { model: modelId })}
+              />
               {isStreaming ? (
                 <button
                   onClick={handleAbort}
