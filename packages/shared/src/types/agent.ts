@@ -100,6 +100,7 @@ export interface SlashCommand {
   name: string;
   type: SlashCommandType;
   description: string;
+  plugin?: string;
 }
 
 export interface SlashCommandResponse {
