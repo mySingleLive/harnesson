@@ -58,16 +58,3 @@ export function filterCommands(
       cmd.description.toLowerCase().includes(search),
   );
 }
-
-/**
- * Check if a text fragment is a complete registered command.
- */
-export function isRegisteredCommand(
-  text: string,
-  commands: SlashCommand[],
-): boolean {
-  if (!text.startsWith('/')) return false;
-  return commands.some(
-    (cmd) => text === `/${cmd.name}`,
-  );
-}

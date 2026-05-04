@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { forwardRef, useMemo } from 'react';
 import type { SlashCommand } from '@harnesson/shared';
 
 interface HighlightOverlayProps {
@@ -6,7 +6,8 @@ interface HighlightOverlayProps {
   commands: SlashCommand[];
 }
 
-export function HighlightOverlay({ text, commands }: HighlightOverlayProps) {
+export const HighlightOverlay = forwardRef<HTMLDivElement, HighlightOverlayProps>(
+  function HighlightOverlay({ text, commands }, ref) {
   const highlighted = useMemo(() => {
     if (commands.length === 0 || !text) return text;
 
@@ -41,8 +42,9 @@ export function HighlightOverlay({ text, commands }: HighlightOverlayProps) {
   }, [text, commands]);
 
   return (
-    <div className="slash-highlight-overlay" aria-hidden="true">
+    <div ref={ref} className="slash-highlight-overlay" aria-hidden="true">
       {highlighted}
     </div>
   );
-}
+  },
+);

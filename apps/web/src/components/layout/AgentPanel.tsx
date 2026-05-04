@@ -35,7 +35,6 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
   const updateAgent = useAgentStore((s) => s.updateAgent);
   const appendStreamEvent = useAgentStore((s) => s.appendStreamEvent);
   const commands = useSlashCommandStore((s) => s.commands);
-  const isComposing = useRef(false);
 
   const {
     isOpen: isPopupOpen,
@@ -47,6 +46,7 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
     closePopup,
     hoveredIndex,
     setHoveredIndex,
+    setIsComposing,
   } = useSlashCompletion(input, setInput, textareaRef);
 
   const width = isMaximized ? 'flex-1' : 'w-[440px] flex-shrink-0';
@@ -161,16 +161,16 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
 
       <div className={`px-3 pb-3 ${isMaximized ? 'mx-auto w-full max-w-[800px]' : ''}`}>
         <div className="slash-input-container rounded-2xl border border-white/10 transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)]" style={{ background: '#2a2a48' }}>
-          <HighlightOverlay text={input} commands={commands} />
+          <HighlightOverlay ref={overlayRef} text={input} commands={commands} />
           <textarea
             ref={textareaRef}
             value={input}
             onChange={handleTextareaChange}
             onScroll={handleScroll}
             onKeyDown={handleKeyDown}
-            onCompositionStart={() => { isComposing.current = true; }}
+            onCompositionStart={() => setIsComposing(true)}
             onCompositionEnd={() => {
-              isComposing.current = false;
+              setIsComposing(false);
               if (textareaRef.current) {
                 handleCompletionInput(textareaRef.current.value, textareaRef.current.selectionStart);
               }
@@ -184,7 +184,6 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
               commands={filteredCommands}
               selectedIndex={selectedIndex}
               onSelect={selectCommand}
-              onClose={closePopup}
               hoveredIndex={hoveredIndex}
               onHover={setHoveredIndex}
             />

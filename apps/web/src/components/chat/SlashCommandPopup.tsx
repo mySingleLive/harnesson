@@ -5,7 +5,6 @@ interface SlashCommandPopupProps {
   commands: SlashCommand[];
   selectedIndex: number;
   onSelect: (command: SlashCommand) => void;
-  onClose: () => void;
   hoveredIndex: number | null;
   onHover: (idx: number | null) => void;
 }
@@ -22,8 +21,8 @@ export function SlashCommandPopup({
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const el = listRef.current?.children[selectedIndex] as HTMLElement | undefined;
-    el?.scrollIntoView({ block: 'nearest' });
+    const items = listRef.current?.querySelectorAll('.slash-popup-item');
+    items?.[selectedIndex]?.scrollIntoView({ block: 'nearest' });
   }, [selectedIndex]);
 
   if (commands.length === 0) {

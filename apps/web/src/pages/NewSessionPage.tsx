@@ -26,7 +26,6 @@ export function NewSessionPage() {
   const { activeProjectId, activeBranch, projects } = useProjectStore();
   const commands = useSlashCommandStore((s) => s.commands);
   const navigate = useNavigate();
-  const isComposing = useRef(false);
 
   const {
     isOpen: isPopupOpen,
@@ -38,6 +37,7 @@ export function NewSessionPage() {
     closePopup,
     hoveredIndex,
     setHoveredIndex,
+    setIsComposing,
   } = useSlashCompletion(input, setInput, textareaRef);
 
   const project = projects.find((p) => p.id === activeProjectId);
@@ -114,16 +114,16 @@ export function NewSessionPage() {
 
       <div className="w-full max-w-[700px]">
         <div className="slash-input-container rounded-2xl border border-white/10 transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)]" style={{ background: '#2a2a48' }}>
-          <HighlightOverlay text={input} commands={commands} />
+          <HighlightOverlay ref={overlayRef} text={input} commands={commands} />
           <textarea
             ref={textareaRef}
             value={input}
             onChange={handleTextareaChange}
             onScroll={handleScroll}
             onKeyDown={handleKeyDown}
-            onCompositionStart={() => { isComposing.current = true; }}
+            onCompositionStart={() => setIsComposing(true)}
             onCompositionEnd={() => {
-              isComposing.current = false;
+              setIsComposing(false);
               if (textareaRef.current) {
                 handleCompletionInput(textareaRef.current.value, textareaRef.current.selectionStart);
               }
@@ -138,7 +138,6 @@ export function NewSessionPage() {
               commands={filteredCommands}
               selectedIndex={selectedIndex}
               onSelect={selectCommand}
-              onClose={closePopup}
               hoveredIndex={hoveredIndex}
               onHover={setHoveredIndex}
             />

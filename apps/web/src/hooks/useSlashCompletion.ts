@@ -14,6 +14,7 @@ interface UseSlashCompletionReturn {
   selectCommand: (cmd: SlashCommand) => void;
   hoveredIndex: number | null;
   setHoveredIndex: (idx: number | null) => void;
+  setIsComposing: (val: boolean) => void;
 }
 
 export function useSlashCompletion(
@@ -141,6 +142,10 @@ export function useSlashCompletion(
     [isOpen, filteredCommands, hoveredIndex, selectedIndex, selectCommand, closePopup],
   );
 
+  const setIsComposing = useCallback((val: boolean) => {
+    isComposing.current = val;
+  }, []);
+
   return {
     isOpen,
     filteredCommands,
@@ -152,5 +157,6 @@ export function useSlashCompletion(
     selectCommand,
     hoveredIndex,
     setHoveredIndex,
+    setIsComposing,
   };
 }
