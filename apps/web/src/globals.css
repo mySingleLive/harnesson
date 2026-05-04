@@ -171,6 +171,10 @@ body {
 .slash-popup-desc {
   color: #888;
   font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .slash-popup-plugin {
