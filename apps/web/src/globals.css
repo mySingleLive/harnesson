@@ -153,11 +153,17 @@ body {
 
 .slash-popup-item {
   grid-column: 1 / -1;
-  display: contents;
+  display: grid;
+  grid-template-columns: subgrid;
+  gap: 0 10px;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.1s;
 }
 
-.slash-popup-item-active .slash-popup-cmd,
-.slash-popup-item-active .slash-popup-desc {
+.slash-popup-item-active {
   background: rgba(139, 92, 246, 0.15);
 }
 
@@ -166,8 +172,6 @@ body {
   font-size: 13px;
   font-weight: 500;
   white-space: nowrap;
-  padding: 6px 0 6px 8px;
-  border-radius: 6px 0 0 6px;
   font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
 }
 
@@ -178,18 +182,16 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
-  padding: 6px 8px 6px 0;
-  border-radius: 0 6px 6px 0;
 }
 
 .slash-popup-plugin {
   color: #a78bfa;
   margin-right: 6px;
   font-weight: 500;
-  flex-shrink: 0;
 }
 
 .slash-popup-divider {
+  grid-column: 1 / -1;
   height: 1px;
   background: rgba(255, 255, 255, 0.06);
   margin: 4px 0;
