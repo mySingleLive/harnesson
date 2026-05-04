@@ -30,7 +30,7 @@ export interface Agent {
 }
 
 export interface AgentStreamEvent {
-  type: 'agent.thinking' | 'agent.text' | 'agent.tool_use' | 'agent.tool_result' | 'agent.error' | 'agent.done';
+  type: 'agent.thinking' | 'agent.text' | 'agent.tool_use' | 'agent.tool_result' | 'agent.error' | 'agent.done' | 'agent.question';
   text?: string;
   tool?: string;
   input?: Record<string, unknown>;
@@ -44,6 +44,8 @@ export interface AgentStreamEvent {
   reason?: string;
   parentToolUseId?: string;
   depth?: number;
+  tool_use_id?: string;
+  question?: QuestionData;
 }
 
 export interface TodoItem {
@@ -124,5 +126,23 @@ export interface ExecuteCommandResponse {
   success: boolean;
   message?: string;
   error?: string;
+}
+
+export interface QuestionOption {
+  label: string;
+  description?: string;
+  preview?: string;
+}
+
+export interface QuestionData {
+  question: string;
+  header: string;
+  options: QuestionOption[];
+  multiSelect: boolean;
+}
+
+export interface PendingQuestion {
+  toolUseId: string;
+  question: QuestionData;
 }
 
