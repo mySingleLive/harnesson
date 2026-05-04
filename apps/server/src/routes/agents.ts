@@ -70,6 +70,21 @@ agentsRoute.post('/api/agents/:id/message', async (c) => {
   }
 });
 
+// POST /api/agents/:id/tool-result — submit answer to pending question
+agentsRoute.post('/api/agents/:id/tool-result', async (c) => {
+  const agentId = c.req.param('id');
+  const agent = agentService.get(agentId);
+  if (!agent) return c.json({ error: 'Agent not found' }, 404);
+
+  const body = await c.req.json() as { answer?: string | string[] };
+  if (body.answer === undefined) return c.json({ error: 'answer is required' }, 400);
+
+  const resolved = agentService.submitAnswer(agentId, body.answer);
+  if (!resolved) return c.json({ error: 'No pending question' }, 404);
+
+  return c.json({ ok: true });
+});
+
 // GET /api/agents/:id/stream — SSE stream
 agentsRoute.get('/api/agents/:id/stream', async (c) => {
   const agentId = c.req.param('id');
