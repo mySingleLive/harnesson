@@ -34,6 +34,10 @@ function AgentMessageBubble({ events, agentName, isStreaming }: {
 }) {
   const segments = segmentEvents(events ?? []);
 
+  if (segments.length === 0 && !isStreaming) {
+    return null;
+  }
+
   return (
     <div className="border-b border-white/[0.04] px-4 py-4">
       <div className="mb-1.5 flex items-center gap-1.5">
