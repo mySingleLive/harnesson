@@ -16,7 +16,7 @@ function pairSubEvents(buffer: { texts: string[]; toolEvents: Array<{ tool: stri
 
 const DEFAULT_ALLOWED_TOOLS = [
   'Read', 'Write', 'Edit', 'Bash', 'LSP', 'Glob', 'Grep', 'Agent',
-  'TodoWrite',
+  'TodoWrite', 'AskUserQuestion',
 ];
 
 interface SessionState {
@@ -140,10 +140,10 @@ export class ClaudeCodeAdapter implements AgentAdapter {
                   if (buffer) buffer.toolEvents.push({ tool: toolName, input: toolInput });
                   // Yield TodoWrite immediately for real-time UI updates
                   if (toolName === 'TodoWrite') {
-                    yield { type: 'agent.tool_use', tool: toolName, input: toolInput };
+                    yield { type: 'agent.tool_use', tool: toolName, input: toolInput, tool_use_id: toolUseId };
                   }
                 } else {
-                  yield { type: 'agent.tool_use', tool: toolName, input: toolInput };
+                  yield { type: 'agent.tool_use', tool: toolName, input: toolInput, tool_use_id: toolUseId };
                 }
               }
             }
