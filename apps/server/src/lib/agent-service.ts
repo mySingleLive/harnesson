@@ -1,6 +1,7 @@
 import type { AgentStreamEvent, AgentInfo, CreateAgentRequest, CreateAgentResponse, AgentStatus } from '@harnesson/shared';
-import type { AgentAdapter } from './agent-adapter.js';
+import type { AgentAdapter, ModelInfo } from './agent-adapter.js';
 import { ClaudeCodeAdapter } from './claude-code-adapter.js';
+import { query } from '@anthropic-ai/claude-agent-sdk';
 
 interface SSEClient {
   write: (event: string, data: Record<string, unknown>) => Promise<void>;
@@ -26,19 +27,49 @@ interface AgentState {
   messageQueue: Promise<void>;
 }
 
-let agentCounter = 0;
+async function generateTitle(prompt: string): Promise<string> {
+  if (!prompt.trim()) return '新会话';
+  if (prompt.length <= 10) return prompt;
 
-function nextAgentName(): string {
-  agentCounter++;
-  return `Agent ${String.fromCharCode(65 + ((agentCounter - 1) % 26))}`;
+  try {
+    const stream = query({
+      prompt,
+      options: {
+        maxTurns: 1,
+        systemPrompt: '请用不超过10个中文字符总结以下任务的标题。只返回标题文字本身，不要加引号、编号或其他格式。',
+        abortController: new AbortController(),
+      },
+    });
+
+    let title = '';
+    for await (const msg of stream) {
+      const m = msg as Record<string, unknown>;
+      if (m.type === 'assistant') {
+        const betaMessage = m.message as Record<string, unknown> | undefined;
+        const content = betaMessage?.content as Array<Record<string, unknown>> | undefined;
+        if (content) {
+          for (const block of content) {
+            if (block.type === 'text' && typeof block.text === 'string') {
+              title += block.text;
+            }
+          }
+        }
+      }
+    }
+    (stream as unknown as { abort?: () => void }).abort?.();
+    return title.trim() || prompt.slice(0, 10);
+  } catch {
+    return prompt.slice(0, 10);
+  }
 }
 
 export class AgentService {
   private agents = new Map<string, AgentState>();
+  private sharedAdapter = new ClaudeCodeAdapter();
 
   async create(req: CreateAgentRequest): Promise<CreateAgentResponse> {
     const id = crypto.randomUUID();
-    const name = nextAgentName();
+    const name = await generateTitle(req.prompt ?? '');
 
     const adapter = new ClaudeCodeAdapter();
     const allowedTools = req.permissionMode === 'auto'
@@ -47,6 +78,7 @@ export class AgentService {
 
     await adapter.createSession(id, {
       cwd: req.cwd,
+      model: req.model,
       systemPrompt: req.systemPrompt,
       allowedTools,
       maxTurns: req.maxTurns ?? 50,
@@ -91,10 +123,15 @@ export class AgentService {
     };
   }
 
-  async sendMessage(agentId: string, message: string): Promise<void> {
+  async sendMessage(agentId: string, message: string, model?: string): Promise<void> {
     const agent = this.agents.get(agentId);
     if (!agent) throw new Error('Agent not found');
     if (agent.status === 'running') throw new Error('Agent is already processing');
+
+    if (model !== undefined) {
+      agent.model = model;
+      agent.adapter.updateSessionModel(agentId, model);
+    }
 
     agent.status = 'running';
     this.broadcast(agentId, { type: 'agent.thinking', text: '' });
@@ -163,6 +200,10 @@ export class AgentService {
     }
 
     this.agents.delete(agentId);
+  }
+
+  async getSupportedModels(): Promise<ModelInfo[]> {
+    return this.sharedAdapter.getSupportedModels();
   }
 
   list(): AgentInfo[] {
