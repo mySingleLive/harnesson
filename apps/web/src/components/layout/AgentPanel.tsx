@@ -150,7 +150,7 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
           />
         ))}
         {(isStreaming || (todos && todos.length > 0)) && (
-          <div className="sticky bottom-0 bg-harness-chat pt-1">
+          <div className="sticky bottom-0 bg-harness-chat pt-1 pb-2">
             {isStreaming && <ThinkingBar />}
             {todos && todos.length > 0 && <TodoBar todos={todos} />}
           </div>
