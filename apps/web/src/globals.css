@@ -134,10 +134,15 @@ body {
 }
 
 .slash-popup-list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0 10px;
+  align-items: center;
   overflow-y: auto;
 }
 
 .slash-popup-group {
+  grid-column: 1 / -1;
   padding: 4px 8px 4px;
   font-size: 11px;
   color: #8b5cf6;
@@ -147,17 +152,12 @@ body {
 }
 
 .slash-popup-item {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 8px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.1s;
+  grid-column: 1 / -1;
+  display: contents;
 }
 
-.slash-popup-item-active {
+.slash-popup-item-active .slash-popup-cmd,
+.slash-popup-item-active .slash-popup-desc {
   background: rgba(139, 92, 246, 0.15);
 }
 
@@ -166,6 +166,8 @@ body {
   font-size: 13px;
   font-weight: 500;
   white-space: nowrap;
+  padding: 6px 0 6px 8px;
+  border-radius: 6px 0 0 6px;
   font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
 }
 
@@ -176,7 +178,8 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
-  flex: 1;
+  padding: 6px 8px 6px 0;
+  border-radius: 0 6px 6px 0;
 }
 
 .slash-popup-plugin {
