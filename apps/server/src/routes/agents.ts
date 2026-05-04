@@ -11,6 +11,16 @@ function validatePath(path: string | undefined): string | null {
 
 export const agentsRoute = new Hono();
 
+// GET /api/models — list available models
+agentsRoute.get('/api/models', async (c) => {
+  try {
+    const models = await agentService.getSupportedModels();
+    return c.json(models);
+  } catch (err) {
+    return c.json({ error: err instanceof Error ? err.message : 'Failed to fetch models' }, 500);
+  }
+});
+
 // POST /api/agents — create new agent
 agentsRoute.post('/api/agents', async (c) => {
   const body = await c.req.json() as CreateAgentRequest;
@@ -50,7 +60,7 @@ agentsRoute.post('/api/agents/:id/message', async (c) => {
   if (!body.message?.trim()) return c.json({ error: 'message is required' }, 400);
 
   try {
-    await agentService.sendMessage(agentId, body.message);
+    await agentService.sendMessage(agentId, body.message, body.model);
     return c.json({ status: 'accepted' }, 202);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

@@ -1,6 +1,6 @@
 import { query } from '@anthropic-ai/claude-agent-sdk';
 import type { AgentStreamEvent } from '@harnesson/shared';
-import type { AgentAdapter, SessionConfig } from './agent-adapter.js';
+import type { AgentAdapter, ModelInfo, SessionConfig } from './agent-adapter.js';
 
 function pairSubEvents(buffer: { texts: string[]; toolEvents: Array<{ tool: string; input: Record<string, unknown>; output?: string; isError?: boolean; duration?: number }> }): Array<{ tool: string; input: Record<string, unknown>; output?: string; isError?: boolean; duration?: number; subEvents?: unknown[]; subTexts?: string[] }> {
   return buffer.toolEvents.map((e) => ({
@@ -26,6 +26,7 @@ interface SessionState {
 
 export class ClaudeCodeAdapter implements AgentAdapter {
   private sessions = new Map<string, SessionState>();
+  private cachedModels: ModelInfo[] | null = null;
 
   async createSession(agentId: string, config: SessionConfig): Promise<void> {
     this.sessions.set(agentId, {
@@ -82,6 +83,10 @@ export class ClaudeCodeAdapter implements AgentAdapter {
 
       if (session.config.systemPrompt) {
         sdkOptions.systemPrompt = session.config.systemPrompt;
+      }
+
+      if (session.config.model) {
+        sdkOptions.model = session.config.model;
       }
 
       const messageStream = query({
@@ -240,5 +245,30 @@ export class ClaudeCodeAdapter implements AgentAdapter {
     } finally {
       session.abortController = null;
     }
+  }
+
+  updateSessionModel(agentId: string, model: string): void {
+    const session = this.sessions.get(agentId);
+    if (session) {
+      session.config.model = model;
+    }
+  }
+
+  async getSupportedModels(): Promise<ModelInfo[]> {
+    if (this.cachedModels) return this.cachedModels;
+
+    const messageStream = query({
+      prompt: '__list_models__',
+      options: { abortController: new AbortController() },
+    });
+
+    const models = await messageStream.supportedModels();
+    this.cachedModels = models.map((m) => ({
+      value: m.value,
+      displayName: m.displayName,
+      description: m.description,
+    }));
+    (messageStream as unknown as { abort?: () => void }).abort?.();
+    return this.cachedModels;
   }
 }

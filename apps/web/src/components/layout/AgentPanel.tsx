@@ -72,6 +72,7 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
             isStreaming={isStreaming && msg === messages[messages.length - 1] && msg.role === 'agent'}
           />
         ))}
+        {isStreaming && <ThinkingBar />}
         {messages.length === 0 && (
           <div className="flex h-full items-center justify-center text-[13px] text-gray-600">
             Waiting for response...
@@ -89,10 +90,8 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
         )}
       </div>
 
-      {isStreaming && <ThinkingBar />}
-
       <div className={`px-3 pb-3 ${isMaximized ? 'mx-auto w-full max-w-[800px]' : ''}`}>
-        <div className="rounded-2xl border border-white/10 bg-harness-sidebar transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)]">
+        <div className="rounded-2xl border border-white/10 transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)]" style={{ background: '#2a2a48' }}>
           <textarea
             ref={textareaRef}
             value={input}
@@ -101,7 +100,7 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
               adjustHeight();
             }}
             onKeyDown={handleKeyDown}
-            placeholder={`Message ${agent.name}...  Type @ for files, / for commands`}
+            placeholder="Send a message..."
             className="h-auto max-h-[140px] min-h-[24px] w-full resize-none bg-transparent px-3.5 py-2.5 text-[13px] leading-relaxed text-harness-text outline-none placeholder:text-gray-600"
             rows={1}
           />

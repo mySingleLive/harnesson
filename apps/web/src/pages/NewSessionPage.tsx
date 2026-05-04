@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { Plus, Layers, GitBranch, ChevronDown, ArrowUp, Sparkles, Bug, Code, TestTube } from 'lucide-react';
 import { useAgentStore } from '@/stores/agentStore';
 import { useProjectStore } from '@/stores/projectStore';
+import { ModelDropdown } from '@/components/layout/ModelDropdown';
 
 const quickActions = [
   { label: '创建新功能', icon: Sparkles, prompt: 'Help me create a new feature: ' },
@@ -14,6 +15,8 @@ const quickActions = [
 export function NewSessionPage() {
   const [input, setInput] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<string | undefined>(undefined);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const createAgent = useAgentStore((s) => s.createAgent);
   const { activeProjectId, activeBranch, projects } = useProjectStore();
   const navigate = useNavigate();
@@ -21,6 +24,13 @@ export function NewSessionPage() {
   const project = projects.find((p) => p.id === activeProjectId);
   const projectPath = project?.path ?? '';
   const branch = activeBranch ?? 'main';
+
+  const adjustHeight = () => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  };
 
   const handleSend = async () => {
     const text = input.trim();
@@ -31,14 +41,16 @@ export function NewSessionPage() {
       await createAgent({
         cwd: projectPath,
         type: 'claude-code',
+        model: selectedModel,
         taskTitle: text,
       });
       const agentId = useAgentStore.getState().activeAgentId;
       if (agentId) {
-        await useAgentStore.getState().sendMessage(agentId, text);
+        await useAgentStore.getState().sendMessage(agentId, text, selectedModel);
       }
       navigate('/projects');
       setInput('');
+      if (textareaRef.current) textareaRef.current.style.height = 'auto';
     } catch (err) {
       console.error('Failed to create agent:', err);
     } finally {
@@ -64,10 +76,14 @@ export function NewSessionPage() {
       </h1>
 
       <div className="w-full max-w-[700px]">
-        <div className="rounded-2xl border border-white/10 bg-harness-sidebar transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)]">
+        <div className="rounded-2xl border border-white/10 transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)]" style={{ background: '#2a2a48' }}>
           <textarea
+            ref={textareaRef}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => {
+              setInput(e.target.value);
+              adjustHeight();
+            }}
             onKeyDown={handleKeyDown}
             placeholder={projectPath ? "Message Harnesson...  Type @ for files, / for commands" : "请先选择或创建一个项目"}
             className="h-auto max-h-[140px] min-h-[24px] w-full resize-none bg-transparent px-3.5 py-2.5 text-[13px] leading-relaxed text-harness-text outline-none placeholder:text-gray-600"
@@ -91,11 +107,7 @@ export function NewSessionPage() {
               </button>
             </div>
             <div className="flex items-center gap-2">
-              <button className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] text-gray-500 hover:bg-white/5 hover:text-gray-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-harness-accent" />
-                Sonnet 4.7
-                <ChevronDown className="h-3 w-3" />
-              </button>
+              <ModelDropdown value={selectedModel} onChange={setSelectedModel} />
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || !projectPath || isCreating}

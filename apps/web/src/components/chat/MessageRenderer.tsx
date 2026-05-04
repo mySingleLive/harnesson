@@ -23,7 +23,7 @@ function UserMessage({ content }: { content: string }) {
     <div className="px-5 py-4 flex justify-start">
       <div
         className="flex-1 rounded-xl px-3.5 py-2.5 text-[13px] leading-relaxed text-gray-300"
-        style={{ background: '#454560', border: '1px solid rgba(255,255,255,0.1)' }}
+        style={{ background: '#2a2a48', border: '1px solid rgba(255,255,255,0.1)' }}
       >
         {content}
       </div>
@@ -43,13 +43,7 @@ function AgentMessageBubble({ events, agentName, isStreaming }: {
   }
 
   return (
-    <div className="px-5 py-3.5">
-      {isStreaming && (
-        <div className="mb-1.5">
-          <ThinkingIndicator size="sm" />
-        </div>
-      )}
-
+    <div className="py-3.5 pl-10 pr-5">
       {segments.map((seg, i) =>
         seg.type === 'text' ? (
           <div key={i} className="mb-5 text-[13px] leading-relaxed text-gray-300 prose prose-invert prose-sm max-w-none prose-headings:text-gray-200 prose-p:text-gray-300 prose-strong:text-gray-200 prose-code:text-harness-accent prose-code:before:content-none prose-code:after:content-none prose-pre:bg-harness-sidebar prose-a:text-harness-accent prose-li:text-gray-300">

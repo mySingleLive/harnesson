@@ -1,7 +1,6 @@
 import type { AgentStreamEvent, AgentInfo, CreateAgentRequest, CreateAgentResponse, AgentStatus } from '@harnesson/shared';
 import type { AgentAdapter, ModelInfo } from './agent-adapter.js';
 import { ClaudeCodeAdapter } from './claude-code-adapter.js';
-import { query } from '@anthropic-ai/claude-agent-sdk';
 
 interface SSEClient {
   write: (event: string, data: Record<string, unknown>) => Promise<void>;
@@ -27,49 +26,11 @@ interface AgentState {
   messageQueue: Promise<void>;
 }
 
-async function generateTitle(prompt: string): Promise<string> {
+function generateTitle(prompt: string): string {
   const trimmed = prompt.trim();
   if (!trimmed) return '新会话';
-  const capped = trimmed.length > 200 ? trimmed.slice(0, 200) : trimmed;
-  if (capped.length <= 10) return capped;
-
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 5_000);
-
-  try {
-    const stream = query({
-      prompt: capped,
-      options: {
-        maxTurns: 1,
-        systemPrompt: '请用不超过10个中文字符总结以下任务的标题。只返回标题文字本身，不要加引号、编号或其他格式。',
-        abortController: controller,
-      },
-    });
-
-    let title = '';
-    for await (const msg of stream) {
-      const m = msg as Record<string, unknown>;
-      if (m.type === 'assistant') {
-        const betaMessage = m.message as Record<string, unknown> | undefined;
-        const content = betaMessage?.content as Array<Record<string, unknown>> | undefined;
-        if (content) {
-          for (const block of content) {
-            if (block.type === 'text' && typeof block.text === 'string') {
-              title += block.text;
-            }
-          }
-        }
-        break;
-      }
-    }
-    (stream as unknown as { abort?: () => void }).abort?.();
-    return title.trim() || capped.slice(0, 10);
-  } catch {
-    return capped.slice(0, 10);
-  } finally {
-    clearTimeout(timeout);
-    controller.abort();
-  }
+  if (trimmed.length <= 12) return trimmed;
+  return trimmed.slice(0, 12) + '...';
 }
 
 export class AgentService {
@@ -78,7 +39,7 @@ export class AgentService {
 
   async create(req: CreateAgentRequest): Promise<CreateAgentResponse> {
     const id = crypto.randomUUID();
-    const name = await generateTitle(req.prompt ?? '');
+    const name = generateTitle(req.prompt ?? '');
 
     const adapter = new ClaudeCodeAdapter();
     const allowedTools = req.permissionMode === 'auto'
