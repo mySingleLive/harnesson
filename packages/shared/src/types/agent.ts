@@ -61,6 +61,7 @@ export interface CreateAgentRequest {
   systemPrompt?: string;
   permissionMode: 'auto' | 'manual';
   maxTurns?: number;
+  prompt?: string;
 }
 
 export interface CreateAgentResponse {
@@ -76,6 +77,7 @@ export interface CreateAgentResponse {
 
 export interface SendMessageRequest {
   message: string;
+  model?: string;
 }
 
 export interface AgentInfo {
@@ -91,3 +93,4 @@ export interface AgentInfo {
   permissionMode: 'auto' | 'manual';
   sessionContext?: AgentSessionContext;
 }
+
