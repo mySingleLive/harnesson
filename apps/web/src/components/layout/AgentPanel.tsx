@@ -35,7 +35,7 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
   const abortAgent = useAgentStore((s) => s.abortAgent);
   const updateAgent = useAgentStore((s) => s.updateAgent);
   const appendStreamEvent = useAgentStore((s) => s.appendStreamEvent);
-  const todos = useAgentStore((s) => s.todos[agent.id] ?? []);
+  const todos = useAgentStore((s) => s.todos[agent.id]);
   const commands = useSlashCommandStore((s) => s.commands);
 
   const {
@@ -167,7 +167,7 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
       </div>
 
       {isStreaming && <ThinkingBar />}
-      {todos.length > 0 && <TodoBar todos={todos} />}
+      {todos && todos.length > 0 && <TodoBar todos={todos} />}
 
       <div className={`px-3 pb-3 ${isMaximized ? 'mx-auto w-full max-w-[800px]' : ''}`}>
         <div className="slash-input-container rounded-2xl border border-white/10 transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)]" style={{ background: '#2a2a48' }}>
