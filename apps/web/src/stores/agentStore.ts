@@ -142,6 +142,25 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   },
 
   appendStreamEvent: (agentId, event) => {
+    // Handle TaskCreate/TaskUpdate tool events
+    if (event.type === 'agent.tool_use' && event.tool === 'TaskCreate' && event.input) {
+      const input = event.input;
+      get().addTodo(agentId, {
+        id: String(input.taskId ?? crypto.randomUUID()),
+        subject: String(input.subject ?? ''),
+        description: input.description ? String(input.description) : undefined,
+        status: 'pending',
+        activeForm: input.activeForm ? String(input.activeForm) : undefined,
+      });
+    }
+    if (event.type === 'agent.tool_use' && event.tool === 'TaskUpdate' && event.input) {
+      const input = event.input;
+      get().updateTodo(agentId, String(input.taskId), {
+        status: (input.status as TodoItem['status']) ?? undefined,
+        subject: input.subject ? String(input.subject) : undefined,
+        activeForm: input.activeForm ? String(input.activeForm) : undefined,
+      });
+    }
     set((s) => {
       const msgs = s.messages[agentId] ?? [];
       const lastMsg = msgs[msgs.length - 1];
