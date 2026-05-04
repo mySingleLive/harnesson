@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useLayoutEffect } from 'react';
 import type { SlashCommand } from '@harnesson/shared';
 import { useSlashCommandStore } from '@/stores/slashCommandStore';
 import { filterCommands, getCurrentSlashFragment } from '@/lib/slashCommandUtils';
@@ -30,10 +30,23 @@ export function useSlashCompletion(
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const isComposing = useRef(false);
+  const pendingCursorPos = useRef<number | null>(null);
 
   useEffect(() => {
     fetchCommands();
   }, [fetchCommands]);
+
+  useLayoutEffect(() => {
+    if (pendingCursorPos.current !== null) {
+      const pos = pendingCursorPos.current;
+      pendingCursorPos.current = null;
+      const ta = textareaRef.current;
+      if (ta) {
+        ta.selectionStart = pos;
+        ta.selectionEnd = pos;
+      }
+    }
+  }, [input, textareaRef]);
 
   const activeIndex = hoveredIndex ?? selectedIndex;
 
@@ -84,18 +97,23 @@ export function useSlashCompletion(
       if (!fragment) return;
 
       const before = input.slice(0, fragment.start);
-      const replacement = `/${cmd.name} `;
+      const fullName = cmd.plugin && cmd.type === 'skill' ? `${cmd.plugin}:${cmd.name}` : cmd.name;
+      const replacement = `/${fullName} `;
       const newValue = before + replacement + afterCursor;
       setInput(newValue);
 
       const newCursorPos = before.length + replacement.length;
-      requestAnimationFrame(() => {
-        textarea.selectionStart = newCursorPos;
-        textarea.selectionEnd = newCursorPos;
-        textarea.focus();
-      });
-
+      pendingCursorPos.current = newCursorPos;
       closePopup();
+
+      requestAnimationFrame(() => {
+        const ta = textareaRef.current;
+        if (ta) {
+          ta.selectionStart = newCursorPos;
+          ta.selectionEnd = newCursorPos;
+          ta.focus();
+        }
+      });
     },
     [input, setInput, textareaRef, closePopup],
   );

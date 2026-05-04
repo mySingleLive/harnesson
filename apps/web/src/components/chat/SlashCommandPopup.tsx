@@ -40,19 +40,17 @@ export function SlashCommandPopup({
   const renderItem = (cmd: SlashCommand) => {
     const idx = globalIdx++;
     const isActive = idx === selectedIndex;
+    const displayName = cmd.plugin && cmd.type === 'skill' ? `${cmd.plugin}:${cmd.name}` : cmd.name;
     return (
       <div
-        key={cmd.name}
+        key={`${cmd.plugin ?? ''}:${cmd.name}`}
         className={`slash-popup-item ${isActive ? 'slash-popup-item-active' : ''}`}
         onClick={() => onSelect(cmd)}
         onMouseEnter={() => onHover(idx)}
         onMouseLeave={() => onHover(null)}
       >
-        <code className="slash-popup-cmd">/{cmd.name}</code>
+        <code className="slash-popup-cmd">/{displayName}</code>
         <span className="slash-popup-desc">
-          {cmd.plugin && (
-            <span className="slash-popup-plugin">({cmd.plugin})</span>
-          )}
           {cmd.description}
         </span>
       </div>

@@ -55,6 +55,7 @@ export function filterCommands(
   return commands.filter(
     (cmd) =>
       cmd.name.toLowerCase().startsWith(search) ||
-      cmd.description.toLowerCase().includes(search),
+      cmd.description.toLowerCase().includes(search) ||
+      cmd.plugin?.toLowerCase().includes(search),
   );
 }

@@ -97,8 +97,6 @@ body {
   color: #8b5cf6;
   background: rgba(139, 92, 246, 0.1);
   border-radius: 3px;
-  padding: 0 2px;
-  font-weight: 500;
 }
 
 /* Highlight overlay — mirrors textarea exactly */

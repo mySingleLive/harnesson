@@ -11,7 +11,10 @@ export const HighlightOverlay = forwardRef<HTMLDivElement, HighlightOverlayProps
   const highlighted = useMemo(() => {
     if (commands.length === 0 || !text) return text;
 
-    const names = commands.map((c) => `\\/${c.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).join('|');
+    const names = commands.map((c) => {
+      const name = c.plugin && c.type === 'skill' ? `${c.plugin}:${c.name}` : c.name;
+      return `\\/${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`;
+    }).join('|');
     const regex = new RegExp(`(${names})(?=\\s|$)`, 'g');
 
     const parts: Array<{ text: string; highlight: boolean }> = [];
