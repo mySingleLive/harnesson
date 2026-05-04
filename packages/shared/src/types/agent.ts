@@ -94,3 +94,26 @@ export interface AgentInfo {
   sessionContext?: AgentSessionContext;
 }
 
+export type SlashCommandType = 'builtin' | 'skill';
+
+export interface SlashCommand {
+  name: string;
+  type: SlashCommandType;
+  description: string;
+}
+
+export interface SlashCommandResponse {
+  commands: SlashCommand[];
+}
+
+export interface ExecuteCommandRequest {
+  command: string;
+  args?: string;
+}
+
+export interface ExecuteCommandResponse {
+  success: boolean;
+  message?: string;
+  error?: string;
+}
+
