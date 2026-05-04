@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { streamSSE } from 'hono/streaming';
 import { isAbsolute, normalize } from 'node:path';
 import { agentService } from '../lib/agent-service.js';
+import { getAvailableCommands } from '../lib/slash-commands.js';
 import type { CreateAgentRequest, SendMessageRequest } from '@harnesson/shared';
 
 function validatePath(path: string | undefined): string | null {
@@ -111,6 +112,33 @@ agentsRoute.post('/api/agents/:id/abort', (c) => {
 
   agentService.abort(agentId);
   return c.json({ status: 'aborted' });
+});
+
+// GET /api/slash-commands — list available slash commands
+agentsRoute.get('/api/slash-commands', async (c) => {
+  try {
+    const commands = await getAvailableCommands();
+    return c.json({ commands });
+  } catch (err) {
+    return c.json({ error: err instanceof Error ? err.message : 'Failed to fetch commands' }, 500);
+  }
+});
+
+// POST /api/agents/:id/command — execute a slash command
+agentsRoute.post('/api/agents/:id/command', async (c) => {
+  const agentId = c.req.param('id');
+  const agent = agentService.get(agentId);
+  if (!agent) return c.json({ error: 'Agent not found' }, 404);
+
+  const body = await c.req.json() as { command: string; args?: string };
+  if (!body.command?.trim()) return c.json({ error: 'command is required' }, 400);
+
+  try {
+    const result = await agentService.executeCommand(agentId, body.command, body.args);
+    return c.json(result, result.success ? 200 : 400);
+  } catch (err) {
+    return c.json({ success: false, error: err instanceof Error ? err.message : 'Command failed' }, 500);
+  }
 });
 
 // DELETE /api/agents/:id — destroy agent

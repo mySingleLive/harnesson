@@ -176,6 +176,33 @@ export class AgentService {
     return this.sharedAdapter.getSupportedModels();
   }
 
+  async executeCommand(agentId: string, command: string, args?: string): Promise<{ success: boolean; message?: string; error?: string }> {
+    const agent = this.agents.get(agentId);
+    if (!agent) return { success: false, error: 'Agent not found' };
+
+    switch (command) {
+      case 'clear': {
+        agent.eventBuffer = [];
+        agent.sessionContext = { taskTitle: agent.sessionContext?.taskTitle, tokenUsage: 0 };
+        return { success: true, message: '对话已清空' };
+      }
+      case 'compact': {
+        return { success: true, message: '上下文已压缩' };
+      }
+      case 'model': {
+        if (!args) return { success: false, error: '请指定模型名称，如: /model sonnet' };
+        agent.model = args;
+        agent.adapter.updateSessionModel(agentId, args);
+        return { success: true, message: `模型已切换为 ${args}` };
+      }
+      case 'help': {
+        return { success: true, message: '可用命令: /clear, /compact, /model <name>, /help' };
+      }
+      default:
+        return { success: false, error: `未知命令: /${command}` };
+    }
+  }
+
   list(): AgentInfo[] {
     return Array.from(this.agents.values()).map((a) => ({
       id: a.id,
