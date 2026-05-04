@@ -165,7 +165,10 @@ body {
   font-size: 13px;
   font-weight: 500;
   flex-shrink: 0;
-  min-width: 180px;
+  width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
 }
 
