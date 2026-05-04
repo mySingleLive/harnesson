@@ -20,7 +20,7 @@ export function MessageRenderer({ message, agentName, isStreaming }: MessageRend
 
 function UserMessage({ content }: { content: string }) {
   return (
-    <div className="border-b border-white/[0.04] px-5 py-4 flex justify-start">
+    <div className="px-5 py-4 flex justify-start">
       <div
         className="flex-1 rounded-xl px-3.5 py-2.5 text-[13px] leading-relaxed text-gray-300"
         style={{ background: '#454560', border: '1px solid rgba(255,255,255,0.1)' }}
@@ -43,7 +43,7 @@ function AgentMessageBubble({ events, agentName, isStreaming }: {
   }
 
   return (
-    <div className="border-b border-white/[0.04] px-5 py-3.5">
+    <div className="px-5 py-3.5">
       {isStreaming && (
         <div className="mb-1.5">
           <ThinkingIndicator size="sm" />
