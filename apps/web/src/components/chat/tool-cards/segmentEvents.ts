@@ -39,9 +39,12 @@ export function segmentEvents(events: AgentStreamEvent[]): Segment[] {
       }
     } else if (event.type === 'agent.tool_use') {
       flushText();
-      pendingTools.push({ tool: event.tool ?? 'unknown', input: event.input ?? {} });
+      if (event.tool !== 'TaskCreate' && event.tool !== 'TaskUpdate') {
+        pendingTools.push({ tool: event.tool ?? 'unknown', input: event.input ?? {} });
+      }
     } else if (event.type === 'agent.tool_result') {
       flushText();
+      if (event.tool === 'TaskCreate' || event.tool === 'TaskUpdate') continue;
       const toolName = event.tool;
       if (pendingTools.length > 0) {
         const { tool, input } = pendingTools.shift()!;

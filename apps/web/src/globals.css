@@ -92,6 +92,21 @@ body {
   }
 }
 
+@keyframes todo-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-todo-slide-in {
+  animation: todo-slide-in 200ms ease-out;
+}
+
 /* Slash command highlight */
 .slash-cmd-highlight {
   color: #8b5cf6;
