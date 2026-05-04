@@ -37,7 +37,7 @@ async function scanSkills(): Promise<SlashCommand[]> {
 
   async function scanDirectoryForSkills(
     dir: string,
-    pluginName: string,
+    pluginName?: string,
   ): Promise<SlashCommand[]> {
     const results: SlashCommand[] = [];
     try {
@@ -49,7 +49,7 @@ async function scanSkills(): Promise<SlashCommand[]> {
           if (s.isDirectory()) {
             const description =
               (await readSkillDescription(entryPath)) ?? `Skill: ${entry}`;
-            results.push({ name: entry, type: 'skill', description, plugin: pluginName });
+            results.push({ name: entry, type: 'skill', description, ...(pluginName && { plugin: pluginName }) });
           }
         } catch {}
       }
@@ -65,33 +65,40 @@ async function scanSkills(): Promise<SlashCommand[]> {
         const s = await stat(pluginPath);
         if (!s.isDirectory()) continue;
 
-        // Look for superpowers skills pattern (superpowers/<version>/skills/)
-        const superpowersPath = join(pluginPath, 'superpowers');
+        // Scan all plugin subdirectories: <publisher>/<plugin>/<version>/skills/
         try {
-          const versionDirs = await readdir(superpowersPath);
-          for (const versionDir of versionDirs) {
-            const versionPath = join(superpowersPath, versionDir);
+          const subDirs = await readdir(pluginPath);
+          for (const subDir of subDirs) {
+            const subDirPath = join(pluginPath, subDir);
             try {
-              const vs = await stat(versionPath);
-              if (vs.isDirectory()) {
-                const skills = await scanDirectoryForSkills(
-                  join(versionPath, 'skills'),
-                  pluginDir,
-                );
-                for (const skill of skills) {
-                  if (!commands.some((c) => c.name === skill.name)) {
-                    commands.push(skill);
+              const ss = await stat(subDirPath);
+              if (!ss.isDirectory()) continue;
+              const versionDirs = await readdir(subDirPath);
+              for (const versionDir of versionDirs) {
+                const versionPath = join(subDirPath, versionDir);
+                try {
+                  const vs = await stat(versionPath);
+                  if (vs.isDirectory()) {
+                    const skills = await scanDirectoryForSkills(
+                      join(versionPath, 'skills'),
+                      subDir, // Use actual plugin name (e.g. "superpowers")
+                    );
+                    for (const skill of skills) {
+                      if (!commands.some((c) => c.name === skill.name)) {
+                        commands.push(skill);
+                      }
+                    }
                   }
-                }
+                } catch {}
               }
             } catch {}
           }
         } catch {}
 
-        // Also scan top-level skills in any plugin
+        // Top-level skills (no specific plugin)
         const topLevelSkills = await scanDirectoryForSkills(
           join(pluginPath, 'skills'),
-          pluginDir,
+          undefined,
         );
         for (const skill of topLevelSkills) {
           if (!commands.some((c) => c.name === skill.name)) {
