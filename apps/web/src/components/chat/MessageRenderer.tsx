@@ -2,6 +2,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { AgentMessage } from '@harnesson/shared';
 import { segmentEvents, SingleToolEventCard } from './tool-cards';
+import { ThinkingIndicator } from './ThinkingIndicator';
 
 interface MessageRendererProps {
   message: AgentMessage;
@@ -37,12 +38,7 @@ function AgentMessageBubble({ events, agentName, isStreaming }: {
     <div className="border-b border-white/[0.04] px-4 py-4">
       <div className="mb-1.5 flex items-center gap-1.5">
         <span className="text-[11px] font-semibold uppercase tracking-wide text-green-500">{agentName}</span>
-        {isStreaming && (
-          <span className="flex items-center gap-1 text-[11px] text-purple-400">
-            <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-purple-400" />
-            thinking...
-          </span>
-        )}
+        {isStreaming && <ThinkingIndicator size="sm" />}
       </div>
 
       {segments.map((seg, i) =>
