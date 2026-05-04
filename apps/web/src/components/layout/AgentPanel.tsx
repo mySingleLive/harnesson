@@ -11,6 +11,7 @@ import { ModelDropdown } from './ModelDropdown';
 import { MessageRenderer } from '@/components/chat/MessageRenderer';
 import { ThinkingBar } from '@/components/chat/ThinkingBar';
 import { TodoBar } from '@/components/chat/TodoBar';
+import { AskUserQuestionPanel } from '../chat/AskUserQuestionPanel';
 import { SlashCommandPopup } from '@/components/chat/SlashCommandPopup';
 import { HighlightOverlay } from '@/components/chat/HighlightOverlay';
 import { useAutoScroll } from '@/hooks/useAutoScroll';
@@ -36,6 +37,8 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
   const updateAgent = useAgentStore((s) => s.updateAgent);
   const appendStreamEvent = useAgentStore((s) => s.appendStreamEvent);
   const todos = useAgentStore((s) => s.todos[agent.id]);
+  const pendingQuestion = useAgentStore((s) => s.pendingQuestion[agent.id]);
+  const hasPendingQuestion = pendingQuestion !== null && pendingQuestion !== undefined;
   const commands = useSlashCommandStore((s) => s.commands);
 
   const {
@@ -149,10 +152,18 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
             isStreaming={isStreaming && msg === messages[messages.length - 1] && msg.role === 'agent'}
           />
         ))}
-        {(isStreaming || (todos && todos.length > 0)) && (
+        {(isStreaming || (todos && todos.length > 0) || hasPendingQuestion) && (
           <div className="sticky bottom-0 bg-harness-chat pt-1 pb-2">
-            {isStreaming && <ThinkingBar />}
+            {isStreaming && !hasPendingQuestion && <ThinkingBar />}
             {todos && todos.length > 0 && <TodoBar todos={todos} />}
+            {hasPendingQuestion && (
+              <AskUserQuestionPanel
+                question={pendingQuestion.question}
+                onSubmit={(answer) =>
+                  useAgentStore.getState().submitQuestionAnswer(agent.id, answer)
+                }
+              />
+            )}
           </div>
         )}
         {messages.length === 0 && !isStreaming && (
@@ -172,6 +183,7 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
         )}
       </div>
 
+      {!hasPendingQuestion && (
       <div className={`px-3 pb-3 ${isMaximized ? 'mx-auto w-full max-w-[800px]' : ''}`}>
         <div className="slash-input-container rounded-2xl border border-white/10 transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)]" style={{ background: '#2a2a48' }}>
           <HighlightOverlay ref={overlayRef} text={input} commands={commands} />
@@ -259,6 +271,7 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
           <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">Enter</kbd> 发送 · <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">Shift+Enter</kbd> 换行
         </div>
       </div>
+      )}
     </div>
   );
 }
