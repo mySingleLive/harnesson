@@ -164,7 +164,7 @@ body {
   color: #e0e0e0;
   font-size: 13px;
   font-weight: 500;
-  min-width: 90px;
+  flex-shrink: 0;
   font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
 }
 
@@ -175,12 +175,14 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
+  flex: 1;
 }
 
 .slash-popup-plugin {
   color: #a78bfa;
   margin-right: 6px;
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 .slash-popup-divider {
