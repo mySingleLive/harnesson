@@ -46,12 +46,21 @@ export interface AgentStreamEvent {
   depth?: number;
 }
 
+export interface TodoItem {
+  id: string;
+  subject: string;
+  description?: string;
+  status: 'pending' | 'in_progress' | 'completed';
+  activeForm?: string;
+}
+
 export interface AgentMessage {
   id: string;
   role: 'user' | 'agent';
   content: string;
   timestamp: string;
   events?: AgentStreamEvent[];
+  todoSnapshot?: TodoItem[];
 }
 
 export interface CreateAgentRequest {
