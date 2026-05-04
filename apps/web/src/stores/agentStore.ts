@@ -168,47 +168,40 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   },
 
   appendStreamEvent: (agentId, event) => {
-    // Handle TaskCreate/TaskUpdate tool events
-    if (event.type === 'agent.tool_use' && event.tool === 'TaskCreate' && event.input) {
-      const input = event.input;
-      get().addTodo(agentId, {
-        id: String(input.taskId ?? crypto.randomUUID()),
-        subject: String(input.subject ?? ''),
-        description: input.description ? String(input.description) : undefined,
-        status: 'pending',
-        activeForm: input.activeForm ? String(input.activeForm) : undefined,
-      });
-    }
-    if (event.type === 'agent.tool_use' && event.tool === 'TaskUpdate' && event.input) {
-      const input = event.input;
-      const updates: Partial<TodoItem> = {};
-      if (input.status) updates.status = input.status as TodoItem['status'];
-      if (input.subject) updates.subject = String(input.subject);
-      if (input.activeForm) updates.activeForm = String(input.activeForm);
-      get().updateTodo(agentId, String(input.taskId), updates);
+    // Handle TodoWrite tool events — replaces entire todo list each call
+    if (event.type === 'agent.tool_use' && event.tool === 'TodoWrite' && event.input) {
+      const inputTodos = event.input.todos;
+      if (Array.isArray(inputTodos)) {
+        const todos: TodoItem[] = inputTodos.map((t: Record<string, unknown>, i: number) => ({
+          id: String(i),
+          content: String(t.content ?? ''),
+          status: (t.status as TodoItem['status']) ?? 'pending',
+          activeForm: t.activeForm ? String(t.activeForm) : undefined,
+        }));
+        set((s) => ({ todos: { ...s.todos, [agentId]: todos } }));
 
-      // Check if all todos are completed after update
-      const todos = get().todos[agentId] ?? [];
-      if (todos.length > 0 && todos.every((t) => t.status === 'completed')) {
-        const snapshot = [...todos];
-        if (completionTimers[agentId]) clearTimeout(completionTimers[agentId]);
-        completionTimers[agentId] = setTimeout(() => {
-          delete completionTimers[agentId];
-          const todoMsg: AgentMessage = {
-            id: crypto.randomUUID(),
-            role: 'agent',
-            content: '',
-            timestamp: new Date().toISOString(),
-            todoSnapshot: snapshot,
-          };
-          set((s) => ({
-            messages: {
-              ...s.messages,
-              [agentId]: [...(s.messages[agentId] ?? []), todoMsg],
-            },
-            todos: { ...s.todos, [agentId]: [] },
-          }));
-        }, 1500);
+        // Check if all todos are completed
+        if (todos.length > 0 && todos.every((t) => t.status === 'completed')) {
+          const snapshot = [...todos];
+          if (completionTimers[agentId]) clearTimeout(completionTimers[agentId]);
+          completionTimers[agentId] = setTimeout(() => {
+            delete completionTimers[agentId];
+            const todoMsg: AgentMessage = {
+              id: crypto.randomUUID(),
+              role: 'agent',
+              content: '',
+              timestamp: new Date().toISOString(),
+              todoSnapshot: snapshot,
+            };
+            set((s) => ({
+              messages: {
+                ...s.messages,
+                [agentId]: [...(s.messages[agentId] ?? []), todoMsg],
+              },
+              todos: { ...s.todos, [agentId]: [] },
+            }));
+          }, 1500);
+        }
       }
     }
     set((s) => {

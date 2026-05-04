@@ -39,12 +39,12 @@ export function segmentEvents(events: AgentStreamEvent[]): Segment[] {
       }
     } else if (event.type === 'agent.tool_use') {
       flushText();
-      if (event.tool !== 'TaskCreate' && event.tool !== 'TaskUpdate') {
+      if (event.tool !== 'TodoWrite') {
         pendingTools.push({ tool: event.tool ?? 'unknown', input: event.input ?? {} });
       }
     } else if (event.type === 'agent.tool_result') {
       flushText();
-      if (event.tool === 'TaskCreate' || event.tool === 'TaskUpdate') continue;
+      if (event.tool === 'TodoWrite') continue;
       const toolName = event.tool;
       if (pendingTools.length > 0) {
         const { tool, input } = pendingTools.shift()!;

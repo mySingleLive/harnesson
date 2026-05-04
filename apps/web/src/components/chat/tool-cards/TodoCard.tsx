@@ -30,7 +30,7 @@ export function TodoCard({ todos }: TodoCardProps) {
                 <path d="M3 6.5L5 8L9 4" className="stroke-emerald-400" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </span>
-            <span data-testid={`todo-check-${item.id}`} className="text-gray-400 line-through">{item.subject}</span>
+            <span data-testid={`todo-check-${item.id}`} className="text-gray-400 line-through">{item.content}</span>
           </div>
         ))}
       </div>

@@ -5,9 +5,9 @@ import { TodoCard } from '../tool-cards/TodoCard';
 import type { TodoItem } from '@harnesson/shared';
 
 const items: TodoItem[] = [
-  { id: '1', subject: 'Explore project', status: 'completed' },
-  { id: '2', subject: 'Write code', status: 'completed' },
-  { id: '3', subject: 'Test it', status: 'completed' },
+  { id: '1', content: 'Explore project', status: 'completed' },
+  { id: '2', content: 'Write code', status: 'completed' },
+  { id: '3', content: 'Test it', status: 'completed' },
 ];
 
 describe('TodoCard', () => {
