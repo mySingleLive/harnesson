@@ -173,6 +173,12 @@ body {
   font-size: 12px;
 }
 
+.slash-popup-plugin {
+  color: #a78bfa;
+  margin-right: 6px;
+  font-weight: 500;
+}
+
 .slash-popup-divider {
   height: 1px;
   background: rgba(255, 255, 255, 0.06);

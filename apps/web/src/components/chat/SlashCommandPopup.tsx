@@ -51,7 +51,12 @@ export function SlashCommandPopup({
           onMouseLeave={() => onHover(null)}
         >
           <code className="slash-popup-cmd">/{cmd.name}</code>
-          <span className="slash-popup-desc">{cmd.description}</span>
+          <span className="slash-popup-desc">
+            {cmd.plugin && (
+              <span className="slash-popup-plugin">({cmd.plugin})</span>
+            )}
+            {cmd.description}
+          </span>
         </div>
       );
     });
