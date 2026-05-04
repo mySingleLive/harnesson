@@ -10,6 +10,7 @@ import { AgentContextHeader } from './AgentContextHeader';
 import { ModelDropdown } from './ModelDropdown';
 import { MessageRenderer } from '@/components/chat/MessageRenderer';
 import { ThinkingBar } from '@/components/chat/ThinkingBar';
+import { TodoBar } from '@/components/chat/TodoBar';
 import { SlashCommandPopup } from '@/components/chat/SlashCommandPopup';
 import { HighlightOverlay } from '@/components/chat/HighlightOverlay';
 import { useAutoScroll } from '@/hooks/useAutoScroll';
@@ -34,6 +35,7 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
   const abortAgent = useAgentStore((s) => s.abortAgent);
   const updateAgent = useAgentStore((s) => s.updateAgent);
   const appendStreamEvent = useAgentStore((s) => s.appendStreamEvent);
+  const todos = useAgentStore((s) => s.todos[agent.id] ?? []);
   const commands = useSlashCommandStore((s) => s.commands);
 
   const {
@@ -148,6 +150,7 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
           />
         ))}
         {isStreaming && <ThinkingBar />}
+        {todos.length > 0 && <TodoBar todos={todos} />}
         {messages.length === 0 && (
           <div className="flex h-full items-center justify-center text-[13px] text-gray-600">
             Waiting for response...

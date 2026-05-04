@@ -2,6 +2,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { AgentMessage } from '@harnesson/shared';
 import { segmentEvents, SingleToolEventCard } from './tool-cards';
+import { TodoCard } from './tool-cards/TodoCard';
 import { ThinkingIndicator } from './ThinkingIndicator';
 
 interface MessageRendererProps {
@@ -11,6 +12,14 @@ interface MessageRendererProps {
 }
 
 export function MessageRenderer({ message, agentName, isStreaming }: MessageRendererProps) {
+  if (message.todoSnapshot) {
+    return (
+      <div className="py-3.5 pl-10 pr-5">
+        <TodoCard todos={message.todoSnapshot} />
+      </div>
+    );
+  }
+
   if (message.role === 'user') {
     return <UserMessage content={message.content} />;
   }

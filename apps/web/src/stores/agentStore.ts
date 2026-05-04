@@ -115,6 +115,25 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   },
 
   sendMessage: async (agentId, text, model) => {
+    // Snapshot any active todos into message flow before starting new reply
+    const currentTodos = get().todos[agentId] ?? [];
+    if (currentTodos.length > 0) {
+      const snapshotMsg: AgentMessage = {
+        id: crypto.randomUUID(),
+        role: 'agent',
+        content: '',
+        timestamp: new Date().toISOString(),
+        todoSnapshot: [...currentTodos],
+      };
+      set((s) => ({
+        todos: { ...s.todos, [agentId]: [] },
+        messages: {
+          ...s.messages,
+          [agentId]: [...(s.messages[agentId] ?? []), snapshotMsg],
+        },
+      }));
+    }
+
     const userMsg: AgentMessage = {
       id: crypto.randomUUID(),
       role: 'user',
@@ -160,6 +179,28 @@ export const useAgentStore = create<AgentState>((set, get) => ({
         subject: input.subject ? String(input.subject) : undefined,
         activeForm: input.activeForm ? String(input.activeForm) : undefined,
       });
+
+      // Check if all todos are completed after update
+      const todos = get().todos[agentId] ?? [];
+      if (todos.length > 0 && todos.every((t) => t.status === 'completed')) {
+        const snapshot = [...todos];
+        setTimeout(() => {
+          const todoMsg: AgentMessage = {
+            id: crypto.randomUUID(),
+            role: 'agent',
+            content: '',
+            timestamp: new Date().toISOString(),
+            todoSnapshot: snapshot,
+          };
+          set((s) => ({
+            messages: {
+              ...s.messages,
+              [agentId]: [...(s.messages[agentId] ?? []), todoMsg],
+            },
+            todos: { ...s.todos, [agentId]: [] },
+          }));
+        }, 1500);
+      }
     }
     set((s) => {
       const msgs = s.messages[agentId] ?? [];
