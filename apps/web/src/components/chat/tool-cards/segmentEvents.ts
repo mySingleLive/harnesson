@@ -11,7 +11,13 @@ export interface ToolSegment {
   event: PairedToolEvent;
 }
 
-export type Segment = TextSegment | ToolSegment;
+export interface QAResultSegment {
+  type: 'qa-result';
+  question: string;
+  answer: string;
+}
+
+export type Segment = TextSegment | ToolSegment | QAResultSegment;
 
 export function segmentEvents(events: AgentStreamEvent[]): Segment[] {
   const segments: Segment[] = [];
@@ -44,6 +50,29 @@ export function segmentEvents(events: AgentStreamEvent[]): Segment[] {
       }
     } else if (event.type === 'agent.tool_result') {
       flushText();
+
+      // Handle AskUserQuestion: generate qa-result segment
+      if (event.tool === 'AskUserQuestion') {
+        const question = (() => {
+          const paired = pendingTools.find(p => p.tool === 'AskUserQuestion');
+          if (paired) {
+            const questions = paired.input?.questions as Array<Record<string, unknown>> | undefined;
+            return String(questions?.[0]?.question ?? '');
+          }
+          return '';
+        })();
+        // Remove from pendingTools
+        const idx = pendingTools.findIndex(p => p.tool === 'AskUserQuestion');
+        if (idx >= 0) pendingTools.splice(idx, 1);
+
+        segments.push({
+          type: 'qa-result',
+          question,
+          answer: String(event.output ?? ''),
+        });
+        continue;
+      }
+
       if (event.tool === 'TodoWrite') continue;
       const toolName = event.tool;
       if (pendingTools.length > 0) {
