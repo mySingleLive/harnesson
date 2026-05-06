@@ -265,45 +265,66 @@ function PreviewLayout({
   multiSelect,
   selected,
   onSelect,
+  focusedIndex,
+  hoveredIndex,
+  isFocused,
+  onHover,
 }: {
   options: QuestionOption[];
   multiSelect: boolean;
   selected: Set<string>;
-  onSelect: (label: string) => void;
+  onSelect: (index: number) => void;
+  focusedIndex: number;
+  hoveredIndex: number;
+  isFocused: (index: number) => boolean;
+  onHover: (index: number) => void;
 }) {
   const [previewContent, setPreviewContent] = useState<string>(options[0]?.preview ?? '');
+
+  // Sync preview with focused option
+  useEffect(() => {
+    if (focusedIndex >= 0 && focusedIndex < options.length) {
+      const opt = options[focusedIndex];
+      if (opt?.preview) setPreviewContent(opt.preview);
+    }
+  }, [focusedIndex, options]);
 
   return (
     <div className="flex gap-3">
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-        {options.map((opt) => (
+        {options.map((opt, i) => (
           <button
             key={opt.label}
             onClick={() => {
-              onSelect(opt.label);
+              onSelect(i);
               if (opt.preview) setPreviewContent(opt.preview);
             }}
-            className={`w-full rounded-lg border px-3 py-2 text-left transition-colors ${
-              selected.has(opt.label)
-                ? 'border-harness-accent bg-[#1e1e3a]'
-                : 'border-[#2a2a4e] bg-[#1a1a2e] hover:border-[#3a3a5c]'
-            }`}
+            onMouseEnter={() => onHover(i)}
+            onMouseLeave={() => onHover(-1)}
+            className={cn(
+              'w-full rounded-lg border px-3 py-2 text-left transition-colors',
+              isFocused(i) && 'border-harness-accent bg-[#1e1e3a] shadow-[0_0_0_2px_rgba(139,92,246,0.25)]',
+              !isFocused(i) && hoveredIndex === i && 'border-[#3a3a5c] bg-[#1c1c32]',
+              !isFocused(i) && hoveredIndex !== i && selected.has(opt.label) && 'border-harness-accent bg-[#1e1e3a]',
+              !isFocused(i) && hoveredIndex !== i && !selected.has(opt.label) && 'border-[#2a2a4e] bg-[#1a1a2e]',
+            )}
           >
             <div className="flex items-center gap-2">
               {multiSelect ? (
-                <span className={`text-sm ${selected.has(opt.label) ? 'text-harness-accent' : 'text-gray-500'}`}>
+                <span className={cn('text-sm', selected.has(opt.label) ? 'text-harness-accent' : 'text-gray-500')}>
                   {selected.has(opt.label) ? '☑' : '☐'}
                 </span>
               ) : (
                 <div
-                  className={`h-4 w-4 rounded-full border-2 ${
-                    selected.has(opt.label) ? 'border-harness-accent' : 'border-[#4a4a6e]'
-                  } flex items-center justify-center`}
+                  className={cn(
+                    'h-4 w-4 rounded-full border-2 flex items-center justify-center',
+                    isFocused(i) || selected.has(opt.label) ? 'border-harness-accent' : 'border-[#4a4a6e]',
+                  )}
                 >
-                  {selected.has(opt.label) && <div className="h-2 w-2 rounded-full bg-harness-accent" />}
+                  {(isFocused(i) || selected.has(opt.label)) && <div className="h-2 w-2 rounded-full bg-harness-accent" />}
                 </div>
               )}
-              <span className={`text-sm font-medium ${selected.has(opt.label) ? 'text-[#e0e0f0]' : 'text-[#c0c0e0]'}`}>
+              <span className={cn('text-sm font-medium', isFocused(i) || selected.has(opt.label) ? 'text-[#e0e0f0]' : 'text-[#c0c0e0]')}>
                 {opt.label}
               </span>
             </div>
