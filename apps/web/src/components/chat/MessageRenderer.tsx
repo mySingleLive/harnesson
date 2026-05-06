@@ -2,6 +2,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { AgentMessage } from '@harnesson/shared';
 import { segmentEvents, SingleToolEventCard } from './tool-cards';
+import { QAResultCard } from './tool-cards/QAResultCard';
 import { TodoCard } from './tool-cards/TodoCard';
 import { ThinkingIndicator } from './ThinkingIndicator';
 
@@ -53,17 +54,27 @@ function AgentMessageBubble({ events, agentName, isStreaming }: {
 
   return (
     <div className="py-3.5 pl-10 pr-5">
-      {segments.map((seg, i) =>
-        seg.type === 'text' ? (
-          <div key={i} className="mb-5 text-[13px] leading-relaxed text-gray-300 prose prose-invert prose-sm max-w-none prose-headings:text-gray-200 prose-p:text-gray-300 prose-strong:text-gray-200 prose-code:text-harness-accent prose-code:before:content-none prose-code:after:content-none prose-pre:bg-harness-sidebar prose-a:text-harness-accent prose-li:text-gray-300">
-            <Markdown remarkPlugins={[remarkGfm]}>{seg.content}</Markdown>
-          </div>
-        ) : (
+      {segments.map((seg, i) => {
+        if (seg.type === 'text') {
+          return (
+            <div key={i} className="mb-5 text-[13px] leading-relaxed text-gray-300 prose prose-invert prose-sm max-w-none prose-headings:text-gray-200 prose-p:text-gray-300 prose-strong:text-gray-200 prose-code:text-harness-accent prose-code:before:content-none prose-code:after:content-none prose-pre:bg-harness-sidebar prose-a:text-harness-accent prose-li:text-gray-300">
+              <Markdown remarkPlugins={[remarkGfm]}>{seg.content}</Markdown>
+            </div>
+          );
+        }
+        if (seg.type === 'qa-result') {
+          return (
+            <div key={i} className="mb-3">
+              <QAResultCard question={seg.question} answer={seg.answer} />
+            </div>
+          );
+        }
+        return (
           <div key={i} className="mb-3">
             <SingleToolEventCard event={seg.event} />
           </div>
-        )
-      )}
+        );
+      })}
 
       {events?.filter((e) => e.type === 'agent.error').map((event, i) => (
         <div key={`error-${i}`} className="mt-2 rounded-md bg-red-500/10 px-3 py-2 text-[12px] text-red-400">
