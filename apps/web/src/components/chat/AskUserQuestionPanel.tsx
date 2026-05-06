@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import type { QuestionData, QuestionOption } from '@harnesson/shared';
+import { cn } from '../../lib/utils';
+import { useKeyboardNavigation } from '../../hooks/useKeyboardNavigation';
 
 interface AskUserQuestionPanelProps {
   question: QuestionData;
@@ -10,18 +12,73 @@ export function AskUserQuestionPanel({ question, onSubmit }: AskUserQuestionPane
   const [selectedOptions, setSelectedOptions] = useState<Set<string>>(new Set());
   const [customAnswer, setCustomAnswer] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState(-1);
+  const customInputRef = useRef<HTMLInputElement>(null);
+  const submitTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const optionCount = question.options.length;
+  const totalItems = optionCount + 1;
+
+  const handleSelect = useCallback(
+    (index: number) => {
+      if (index < optionCount) {
+        const label = question.options[index].label;
+        setSubmitted(true);
+        onSubmit(label);
+      }
+    },
+    [optionCount, question.options, onSubmit],
+  );
+
+  const handleToggle = useCallback(
+    (index: number) => {
+      if (index < optionCount) {
+        const label = question.options[index].label;
+        setSelectedOptions((prev) => {
+          const next = new Set(prev);
+          if (next.has(label)) next.delete(label);
+          else next.add(label);
+          return next;
+        });
+      }
+    },
+    [optionCount, question.options],
+  );
+
+  const { focusedIndex, isFocused, setFocused, containerProps } = useKeyboardNavigation({
+    itemCount: totalItems,
+    onSelect: handleSelect,
+    onToggle: question.multiSelect ? handleToggle : undefined,
+  });
+
+  useEffect(() => {
+    if (isFocused(optionCount) && customInputRef.current) {
+      customInputRef.current.focus();
+    }
+  }, [focusedIndex, optionCount, isFocused]);
+
+  useEffect(() => {
+    return () => {
+      if (submitTimerRef.current) clearTimeout(submitTimerRef.current);
+    };
+  }, []);
 
   if (submitted) return null;
 
   const hasPreview = question.options.some((o) => o.preview);
   const hasDescription = question.options.some((o) => o.description);
 
-  function handleSingleSelect(label: string) {
-    setSubmitted(true);
-    onSubmit(label);
+  function handleSingleSelect(index: number) {
+    setFocused(index);
+    submitTimerRef.current = setTimeout(() => {
+      const label = question.options[index].label;
+      setSubmitted(true);
+      onSubmit(label);
+    }, 300);
   }
 
-  function handleToggleOption(label: string) {
+  function handleMultiToggle(index: number) {
+    const label = question.options[index].label;
     setSelectedOptions((prev) => {
       const next = new Set(prev);
       if (next.has(label)) next.delete(label);
@@ -51,7 +108,10 @@ export function AskUserQuestionPanel({ question, onSubmit }: AskUserQuestionPane
   }
 
   return (
-    <div className="ml-[68px] mr-3 mb-2 rounded-[10px] border border-[#2a2a4e] bg-[#16162e] p-4 shadow-[0_-4px_16px_rgba(0,0,0,0.3)]">
+    <div
+      {...containerProps}
+      className="ml-[68px] mr-3 mb-2 rounded-[10px] border border-[#2a2a4e] bg-[#16162e] p-4 shadow-[0_-4px_16px_rgba(0,0,0,0.3)] outline-none"
+    >
       {/* Header */}
       <div className="mb-3 flex items-center gap-2">
         <div className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-harness-accent">
@@ -71,18 +131,28 @@ export function AskUserQuestionPanel({ question, onSubmit }: AskUserQuestionPane
           options={question.options}
           multiSelect={question.multiSelect}
           selected={selectedOptions}
-          onSelect={question.multiSelect ? handleToggleOption : (label) => handleSingleSelect(label)}
+          onSelect={question.multiSelect ? handleMultiToggle : handleSingleSelect}
+          focusedIndex={focusedIndex}
+          hoveredIndex={hoveredIndex}
+          isFocused={isFocused}
+          onHover={setHoveredIndex}
         />
       ) : (
         <div className="flex flex-col gap-1.5">
-          {question.options.map((opt) => (
+          {question.options.map((opt, i) => (
             <OptionItem
               key={opt.label}
               option={opt}
               multiSelect={question.multiSelect}
               selected={question.multiSelect ? selectedOptions.has(opt.label) : false}
-              onSelect={question.multiSelect ? () => handleToggleOption(opt.label) : () => handleSingleSelect(opt.label)}
+              focused={isFocused(i)}
+              hovered={hoveredIndex === i}
+              onSelect={
+                question.multiSelect ? () => handleMultiToggle(i) : () => handleSingleSelect(i)
+              }
               showDescription={hasDescription}
+              onMouseEnter={() => setHoveredIndex(i)}
+              onMouseLeave={() => setHoveredIndex(-1)}
             />
           ))}
         </div>
@@ -100,10 +170,16 @@ export function AskUserQuestionPanel({ question, onSubmit }: AskUserQuestionPane
       )}
 
       {/* Custom input */}
-      <div className="mt-3 border-t border-[#2a2a4e] pt-2.5">
+      <div
+        className={cn(
+          'mt-3 border-t pt-2.5 transition-colors',
+          isFocused(optionCount) ? 'border-harness-accent' : 'border-[#2a2a4e]',
+        )}
+      >
         <div className="mb-1.5 text-xs text-gray-500">自定义回答</div>
         <div className="flex gap-2">
           <input
+            ref={customInputRef}
             type="text"
             value={customAnswer}
             onChange={(e) => setCustomAnswer(e.target.value)}
@@ -128,39 +204,52 @@ function OptionItem({
   option,
   multiSelect,
   selected,
+  focused,
+  hovered,
   onSelect,
   showDescription,
+  onMouseEnter,
+  onMouseLeave,
 }: {
   option: QuestionOption;
   multiSelect: boolean;
   selected: boolean;
+  focused: boolean;
+  hovered: boolean;
   onSelect: () => void;
   showDescription: boolean;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
 }) {
   return (
     <button
       onClick={onSelect}
-      className={`w-full rounded-lg border px-3 py-2.5 text-left transition-colors ${
-        selected
-          ? 'border-harness-accent bg-[#1e1e3a]'
-          : 'border-[#2a2a4e] bg-[#1a1a2e] hover:border-[#3a3a5c]'
-      }`}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      className={cn(
+        'w-full rounded-lg border px-3 py-2.5 text-left transition-colors',
+        focused && 'border-harness-accent bg-[#1e1e3a] shadow-[0_0_0_2px_rgba(139,92,246,0.25)]',
+        !focused && hovered && 'border-[#3a3a5c] bg-[#1c1c32]',
+        !focused && !hovered && selected && 'border-harness-accent bg-[#1e1e3a]',
+        !focused && !hovered && !selected && 'border-[#2a2a4e] bg-[#1a1a2e]',
+      )}
     >
       <div className="flex items-center gap-2">
         {multiSelect ? (
-          <span className={`text-sm ${selected ? 'text-harness-accent' : 'text-gray-500'}`}>
+          <span className={cn('text-sm', selected ? 'text-harness-accent' : 'text-gray-500')}>
             {selected ? '☑' : '☐'}
           </span>
         ) : (
           <div
-            className={`h-4 w-4 rounded-full border-2 ${
-              selected ? 'border-harness-accent' : 'border-[#4a4a6e]'
-            } flex items-center justify-center`}
+            className={cn(
+              'h-4 w-4 rounded-full border-2 flex items-center justify-center',
+              focused || selected ? 'border-harness-accent' : 'border-[#4a4a6e]',
+            )}
           >
-            {selected && <div className="h-2 w-2 rounded-full bg-harness-accent" />}
+            {(focused || selected) && <div className="h-2 w-2 rounded-full bg-harness-accent" />}
           </div>
         )}
-        <span className={`text-sm font-medium ${selected ? 'text-[#e0e0f0]' : 'text-[#c0c0e0]'}`}>
+        <span className={cn('text-sm font-medium', focused || selected ? 'text-[#e0e0f0]' : 'text-[#c0c0e0]')}>
           {option.label}
         </span>
       </div>
