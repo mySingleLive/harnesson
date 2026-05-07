@@ -12,9 +12,10 @@ interface ProjectState {
   isLoading: boolean;
   branches: BranchInfo;
   isBranchLoading: boolean;
+  skipBranchOverride: boolean;
   loadProjects: () => Promise<void>;
   removeProject: (id: string) => Promise<void>;
-  switchProject: (projectId: string, branch: string) => void;
+  switchProject: (projectId: string, branch: string, skipBranchOverride?: boolean) => void;
   setViewMode: (mode: 'card' | 'list') => void;
   setSearchQuery: (query: string) => void;
   addProjectToList: (project: Project) => void;
@@ -29,6 +30,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   activeBranch: null,
   branches: { local: [], remote: [], current: null, isGitRepo: false },
   isBranchLoading: false,
+  skipBranchOverride: false,
   projects: [],
   viewMode: (localStorage.getItem(VIEW_MODE_KEY) as 'card' | 'list') ?? 'card',
   searchQuery: '',
@@ -49,10 +51,10 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     set({ projects: get().projects.filter((p) => p.id !== id) });
   },
 
-  switchProject: (projectId, branch) => {
+  switchProject: (projectId, branch, skipBranchOverride = false) => {
     const s = get();
     if (s.activeProjectId === projectId && s.activeBranch === branch) return;
-    set({ activeProjectId: projectId, activeBranch: branch });
+    set({ activeProjectId: projectId, activeBranch: branch, skipBranchOverride });
     get().loadBranches(projectId);
   },
 
@@ -60,7 +62,12 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     set({ isBranchLoading: true });
     try {
       const branches = await serverApi.getProjectBranches(projectId);
-      set({ branches, activeBranch: branches.current, isBranchLoading: false });
+      const { skipBranchOverride } = get();
+      if (skipBranchOverride) {
+        set({ branches, isBranchLoading: false, skipBranchOverride: false });
+      } else {
+        set({ branches, activeBranch: branches.current, isBranchLoading: false });
+      }
     } catch {
       set({ branches: { local: [], remote: [], current: null, isGitRepo: false }, isBranchLoading: false });
     }
