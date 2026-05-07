@@ -1,19 +1,16 @@
 import { useState, useRef, useCallback } from 'react';
-import { Plus, Layers, GitBranch, ImageIcon, FileText, Terminal, Wrench, Network, ChevronDown, ArrowUp, ArrowDown, StopCircle } from 'lucide-react';
-import type { Agent, AgentMessage } from '@harnesson/shared';
+import { ArrowDown } from 'lucide-react';
+import type { Agent, AgentMessage, ContentBlock, ImageAttachment } from '@harnesson/shared';
 import { useAgentStore } from '@/stores/agentStore';
 import { useSlashCommandStore } from '@/stores/slashCommandStore';
-import { useSlashCompletion } from '@/hooks/useSlashCompletion';
 import { parseSlashCommand } from '@/lib/slashCommandUtils';
 import * as api from '@/lib/serverApi';
 import { AgentContextHeader } from './AgentContextHeader';
-import { ModelDropdown } from './ModelDropdown';
 import { MessageRenderer } from '@/components/chat/MessageRenderer';
 import { ThinkingBar } from '@/components/chat/ThinkingBar';
 import { TodoBar } from '@/components/chat/TodoBar';
 import { AskUserQuestionPanel } from '../chat/AskUserQuestionPanel';
-import { SlashCommandPopup } from '@/components/chat/SlashCommandPopup';
-import { HighlightOverlay } from '@/components/chat/HighlightOverlay';
+import { RichTextInput } from '@/components/chat/RichTextInput';
 import { useAutoScroll } from '@/hooks/useAutoScroll';
 
 interface AgentPanelProps {
@@ -25,10 +22,6 @@ interface AgentPanelProps {
 }
 
 export function AgentPanel({ agent, messages, isMaximized, onToggleMaximize, onClose }: AgentPanelProps) {
-  const [input, setInput] = useState('');
-  const [showPlusMenu, setShowPlusMenu] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const isStreaming = useAgentStore((s) => s.isStreaming[agent.id] ?? false);
   const { isAtBottom, scrollToBottom } = useAutoScroll(scrollRef, [messages, isStreaming]);
@@ -41,41 +34,14 @@ export function AgentPanel({ agent, messages, isMaximized, onToggleMaximize, onC
   const hasPendingQuestion = pendingQuestion !== null && pendingQuestion !== undefined;
   const commands = useSlashCommandStore((s) => s.commands);
 
-  const {
-    isOpen: isPopupOpen,
-    filteredCommands,
-    selectedIndex,
-    handleInput: handleCompletionInput,
-    handleKeyDown: handleCompletionKeyDown,
-    selectCommand,
-    closePopup,
-    hoveredIndex,
-    setHoveredIndex,
-    setIsComposing,
-  } = useSlashCompletion(input, setInput, textareaRef);
-
   const width = isMaximized ? 'flex-1' : 'w-[440px] flex-shrink-0';
 
-  const adjustHeight = () => {
-    const el = textareaRef.current;
-    if (!el) return;
-    el.style.height = 'auto';
-    el.style.height = el.scrollHeight + 'px';
-    if (overlayRef.current) {
-      overlayRef.current.scrollTop = el.scrollTop;
-    }
-  };
-
-  const handleSend = async () => {
-    const text = input.trim();
-    if (!text || isStreaming) return;
+  const handleSend = async (data: { text: string; contentBlocks: ContentBlock[]; images: ImageAttachment[] }) => {
+    const text = data.text.trim();
+    if ((!text && data.images.length === 0) || isStreaming) return;
 
     const parsed = parseSlashCommand(text, commands);
     if (parsed && parsed.command.type === 'builtin') {
-      setInput('');
-      if (textareaRef.current) textareaRef.current.style.height = 'auto';
-      closePopup();
-
       // Add user message first
       useAgentStore.setState((s) => ({
         messages: {
@@ -103,37 +69,15 @@ export function AgentPanel({ agent, messages, isMaximized, onToggleMaximize, onC
       return;
     }
 
-    setInput('');
-    if (textareaRef.current) textareaRef.current.style.height = 'auto';
-    closePopup();
-    await sendMessage(agent.id, text, agent.model);
+    await sendMessage(agent.id, text, agent.model, {
+      contentBlocks: data.contentBlocks,
+      images: data.images,
+    });
   };
 
   const handleAbort = async () => {
     await abortAgent(agent.id);
   };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (handleCompletionKeyDown(e)) return;
-
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
-  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const val = e.target.value;
-    setInput(val);
-    adjustHeight();
-    handleCompletionInput(val, e.target.selectionStart);
-  };
-
-  const handleScroll = useCallback(() => {
-    if (overlayRef.current && textareaRef.current) {
-      overlayRef.current.scrollTop = textareaRef.current.scrollTop;
-    }
-  }, []);
 
   return (
     <div className={`relative flex h-full flex-col border-r border-harness-border bg-harness-chat ${width}`}>
@@ -184,103 +128,17 @@ export function AgentPanel({ agent, messages, isMaximized, onToggleMaximize, onC
         />
       ) : (
       <div className={`px-3 pb-3 ${isMaximized ? 'mx-auto w-full max-w-[800px]' : ''}`}>
-        <div className="slash-input-container rounded-2xl border border-white/10 transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)]" style={{ background: '#2a2a48' }}>
-          <HighlightOverlay ref={overlayRef} text={input} commands={commands} />
-          <textarea
-            ref={textareaRef}
-            value={input}
-            onChange={handleTextareaChange}
-            onScroll={handleScroll}
-            onKeyDown={handleKeyDown}
-            onCompositionStart={() => setIsComposing(true)}
-            onCompositionEnd={() => {
-              setIsComposing(false);
-              if (textareaRef.current) {
-                handleCompletionInput(textareaRef.current.value, textareaRef.current.selectionStart);
-              }
-            }}
-            placeholder="Send a message..."
-            className="slash-textarea-transparent h-auto max-h-[140px] min-h-[24px] w-full resize-none bg-transparent px-3.5 py-2.5 text-[13px] leading-relaxed outline-none placeholder:text-gray-600"
-            rows={1}
-          />
-          {isPopupOpen && (
-            <SlashCommandPopup
-              commands={filteredCommands}
-              selectedIndex={selectedIndex}
-              onSelect={selectCommand}
-              hoveredIndex={hoveredIndex}
-              onHover={setHoveredIndex}
-            />
-          )}
-          <div className="flex items-center justify-between px-2.5 pb-2">
-            <div className="flex items-center gap-1">
-              <div className="relative">
-                <button
-                  onClick={() => setShowPlusMenu(!showPlusMenu)}
-                  className="flex h-[30px] w-[30px] items-center justify-center rounded-lg text-gray-500 hover:bg-white/5 hover:text-gray-300"
-                >
-                  <Plus className="h-[18px] w-[18px]" />
-                </button>
-                {showPlusMenu && (
-                  <div className="absolute bottom-[38px] left-0 z-[9999] min-w-[200px] rounded-lg border border-white/10 bg-[#252540] p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.4)]">
-                    <DropdownItem icon={ImageIcon} label="Add Image" shortcut="⌘ V" />
-                    <DropdownItem icon={FileText} label="Reference File" shortcut="@" />
-                    <DropdownItem icon={Terminal} label="Slash Command" shortcut="/" />
-                    <DropdownItem icon={Wrench} label="Tools" />
-                    <DropdownItem icon={Network} label="MCP Servers" />
-                  </div>
-                )}
-              </div>
-              <button className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] text-gray-500 hover:bg-white/5 hover:text-gray-300">
-                <Layers className="h-3 w-3" />
-                <span className="font-medium text-gray-400">{agent.type === 'claude-code' ? 'Claude Code' : agent.type}</span>
-                <ChevronDown className="h-3 w-3 text-gray-600" />
-              </button>
-              <button className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] text-gray-500 hover:bg-white/5 hover:text-gray-300">
-                <GitBranch className="h-3 w-3" />
-                <span className="font-medium text-gray-400">{agent.branch}</span>
-                <ChevronDown className="h-3 w-3 text-gray-600" />
-              </button>
-            </div>
-            <div className="flex items-center gap-2">
-              <ModelDropdown
-                value={agent.model}
-                onChange={(modelId) => updateAgent(agent.id, { model: modelId })}
-              />
-              {isStreaming ? (
-                <button
-                  onClick={handleAbort}
-                  className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30"
-                >
-                  <StopCircle className="h-[15px] w-[15px]" />
-                </button>
-              ) : (
-                <button
-                  onClick={handleSend}
-                  disabled={!input.trim()}
-                  className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-harness-accent text-white hover:brightness-110 disabled:opacity-40"
-                >
-                  <ArrowUp className="h-[15px] w-[15px]" />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="mt-1.5 text-center text-[10px] text-gray-600">
-          <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">Enter</kbd> 发送 · <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">Shift+Enter</kbd> 换行
-        </div>
+        <RichTextInput
+          placeholder="Send a message..."
+          commands={commands}
+          modelValue={agent.model}
+          onModelChange={(modelId) => updateAgent(agent.id, { model: modelId })}
+          isStreaming={isStreaming}
+          onAbort={handleAbort}
+          onSend={handleSend}
+        />
       </div>
       )}
     </div>
-  );
-}
-
-function DropdownItem({ icon: Icon, label, shortcut }: { icon: React.ComponentType<{ className?: string }>; label: string; shortcut?: string }) {
-  return (
-    <button className="flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-[12px] text-gray-400 transition-colors hover:bg-white/5 hover:text-gray-200">
-      <Icon className="h-3.5 w-3.5 text-gray-500" />
-      {label}
-      {shortcut && <span className="ml-auto text-[11px] text-gray-600">{shortcut}</span>}
-    </button>
   );
 }
