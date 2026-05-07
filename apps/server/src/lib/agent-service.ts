@@ -101,7 +101,7 @@ export class AgentService {
     };
   }
 
-  async sendMessage(agentId: string, message: string, model?: string): Promise<void> {
+  async sendMessage(agentId: string, message: string, model?: string, extra?: { contentBlocks?: import('@harnesson/shared').ContentBlock[]; images?: import('@harnesson/shared').ImageAttachment[] }): Promise<void> {
     const runtime = this.runtime.get(agentId);
     if (!runtime) throw new Error('Agent not found');
 
@@ -117,7 +117,13 @@ export class AgentService {
 
     // Persist user message
     await prisma.message.create({
-      data: { agentId, role: 'user', content: message },
+      data: {
+        agentId,
+        role: 'user',
+        content: message,
+        images: extra?.images ? JSON.stringify(extra.images) : undefined,
+        contentBlocks: extra?.contentBlocks ? JSON.stringify(extra.contentBlocks) : undefined,
+      },
     });
 
     // Update status to running
@@ -127,7 +133,7 @@ export class AgentService {
 
     runtime.messageQueue = runtime.messageQueue.then(async () => {
       try {
-        await this.processStreamWithQuestions(agentId, message, (event) => {
+        await this.processStreamWithQuestions(agentId, message, extra?.contentBlocks, (event) => {
           collectedEvents.push(event);
         });
         // Determine final status
@@ -173,12 +179,13 @@ export class AgentService {
   private async processStreamWithQuestions(
     agentId: string,
     message: string,
+    contentBlocks: import('@harnesson/shared').ContentBlock[] | undefined,
     onEvent: (event: AgentStreamEvent) => void,
   ): Promise<void> {
     const runtime = this.runtime.get(agentId);
     if (!runtime) throw new Error('Agent not found');
 
-    for await (const event of runtime.adapter.sendMessage(agentId, message)) {
+    for await (const event of runtime.adapter.sendMessage(agentId, message, contentBlocks)) {
       // Intercept AskUserQuestion tool_use
       if (
         event.type === 'agent.tool_use' &&
@@ -268,7 +275,7 @@ export class AgentService {
         await prisma.agentSession.update({ where: { id: agentId }, data: { status: 'running' } });
         this.broadcast(agentId, { type: 'agent.thinking', text: '' });
 
-        await this.processStreamWithQuestions(agentId, contextMsg, onEvent);
+        await this.processStreamWithQuestions(agentId, contextMsg, undefined, onEvent);
         return;
       }
 
@@ -447,7 +454,12 @@ export class AgentService {
       orderBy: { createdAt: 'desc' },
       take: limit,
     });
-    return messages.map((m) => ({ ...m, events: m.events ? JSON.parse(m.events) : null }));
+    return messages.map((m) => ({
+      ...m,
+      images: m.images ? JSON.parse(m.images as string) : null,
+      contentBlocks: m.contentBlocks ? JSON.parse(m.contentBlocks as string) : null,
+      events: m.events ? JSON.parse(m.events) : null,
+    }));
   }
 
   async getTodos(agentId: string) {

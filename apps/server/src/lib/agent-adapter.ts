@@ -20,7 +20,7 @@ export interface AdapterSessionData {
 }
 
 export interface AgentAdapter {
-  sendMessage(agentId: string, message: string): AsyncIterable<AgentStreamEvent>;
+  sendMessage(agentId: string, message: string, contentBlocks?: import('@harnesson/shared').ContentBlock[]): AsyncIterable<AgentStreamEvent>;
   createSession(agentId: string, config: SessionConfig): Promise<void>;
   destroySession(agentId: string): Promise<void>;
   abort(agentId: string): void;

@@ -1,5 +1,6 @@
 import { query } from '@anthropic-ai/claude-agent-sdk';
-import type { AgentStreamEvent } from '@harnesson/shared';
+import type { SDKUserMessage } from '@anthropic-ai/claude-agent-sdk';
+import type { AgentStreamEvent, ContentBlock } from '@harnesson/shared';
 import type { AgentAdapter, ModelInfo, SessionConfig, AdapterSessionData } from './agent-adapter.js';
 
 function pairSubEvents(buffer: { texts: string[]; toolEvents: Array<{ tool: string; input: Record<string, unknown>; output?: string; isError?: boolean; duration?: number }> }): Array<{ tool: string; input: Record<string, unknown>; output?: string; isError?: boolean; duration?: number; subEvents?: unknown[]; subTexts?: string[] }> {
@@ -12,6 +13,46 @@ function pairSubEvents(buffer: { texts: string[]; toolEvents: Array<{ tool: stri
     subEvents: (e as { subEvents?: unknown[] }).subEvents,
     subTexts: (e as { subTexts?: string[] }).subTexts,
   }));
+}
+
+function buildSDKMessages(message: string, contentBlocks?: ContentBlock[]): AsyncIterable<SDKUserMessage> {
+  if (!contentBlocks || contentBlocks.length === 0) {
+    return (async function* () {
+      yield {
+        type: 'user' as const,
+        message: {
+          role: 'user' as const,
+          content: message,
+        },
+        parent_tool_use_id: null,
+      };
+    })();
+  }
+
+  const content = contentBlocks.map((block) => {
+    if (block.type === 'text') {
+      return { type: 'text' as const, text: block.text ?? '' };
+    }
+    return {
+      type: 'image' as const,
+      source: {
+        type: 'base64' as const,
+        media_type: block.image!.mediaType,
+        data: block.image!.base64,
+      },
+    };
+  }) as SDKUserMessage['message']['content'];
+
+  return (async function* () {
+    yield {
+      type: 'user' as const,
+      message: {
+        role: 'user' as const,
+        content,
+      },
+      parent_tool_use_id: null,
+    };
+  })();
 }
 
 const DEFAULT_ALLOWED_TOOLS = [
@@ -50,7 +91,7 @@ export class ClaudeCodeAdapter implements AgentAdapter {
     }
   }
 
-  async *sendMessage(agentId: string, message: string): AsyncIterable<AgentStreamEvent> {
+  async *sendMessage(agentId: string, message: string, contentBlocks?: ContentBlock[]): AsyncIterable<AgentStreamEvent> {
     const session = this.sessions.get(agentId);
     if (!session) {
       yield { type: 'agent.error', message: 'Session not found', code: 'SESSION_NOT_FOUND' };
@@ -91,7 +132,9 @@ export class ClaudeCodeAdapter implements AgentAdapter {
       }
 
       const messageStream = query({
-        prompt: message,
+        prompt: contentBlocks && contentBlocks.length > 0
+          ? buildSDKMessages(message, contentBlocks)
+          : message,
         options: sdkOptions,
       });
 

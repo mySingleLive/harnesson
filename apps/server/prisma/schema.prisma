@@ -52,6 +52,8 @@ model Message {
   agentId   String
   role      String
   content   String   @default("")
+  images       String?   // JSON serialized ImageAttachment[]
+  contentBlocks String?  // JSON serialized ContentBlock[]
   events    String?
   createdAt DateTime @default(now())
 

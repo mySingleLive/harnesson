@@ -74,10 +74,13 @@ agentsRoute.post('/api/agents/:id/message', async (c) => {
   if (!agent) return c.json({ error: 'Agent not found' }, 404);
 
   const body = await c.req.json() as SendMessageRequest;
-  if (!body.message?.trim()) return c.json({ error: 'message is required' }, 400);
+  if (!body.message?.trim() && (!body.contentBlocks?.length)) return c.json({ error: 'message is required' }, 400);
 
   try {
-    await agentService.sendMessage(agentId, body.message, body.model);
+    await agentService.sendMessage(agentId, body.message, body.model, {
+      contentBlocks: body.contentBlocks,
+      images: body.images,
+    });
     return c.json({ status: 'accepted' }, 202);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
