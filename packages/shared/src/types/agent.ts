@@ -55,10 +55,25 @@ export interface TodoItem {
   activeForm?: string;
 }
 
+export interface ImageAttachment {
+  id: string;
+  base64: string;       // Base64 encoded data WITHOUT data: prefix
+  mediaType: string;    // MIME type: "image/png", "image/jpeg", etc.
+  name?: string;        // Original filename (optional for clipboard screenshots)
+}
+
+export interface ContentBlock {
+  type: 'text' | 'image';
+  text?: string;
+  image?: ImageAttachment;
+}
+
 export interface AgentMessage {
   id: string;
   role: 'user' | 'agent';
   content: string;
+  images?: ImageAttachment[];
+  contentBlocks?: ContentBlock[];
   timestamp: string;
   events?: AgentStreamEvent[];
   todoSnapshot?: TodoItem[];
@@ -90,6 +105,8 @@ export interface CreateAgentResponse {
 export interface SendMessageRequest {
   message: string;
   model?: string;
+  images?: ImageAttachment[];
+  contentBlocks?: ContentBlock[];
 }
 
 export interface AgentInfo {
@@ -160,6 +177,8 @@ export interface PersistedMessage {
   agentId: string;
   role: string;
   content: string;
+  images?: string;          // JSON serialized ImageAttachment[]
+  contentBlocks?: string;   // JSON serialized ContentBlock[]
   events?: AgentStreamEvent[];
   createdAt: string;
 }
