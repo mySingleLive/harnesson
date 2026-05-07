@@ -220,13 +220,13 @@ export class AgentService {
         // Abort current stream
         runtime.adapter.abort(agentId);
 
-        // Persist question message
-        await prisma.message.create({
+        // Persist question message (will be updated with tool_result after answer)
+        const questionMessage = await prisma.message.create({
           data: {
             agentId,
             role: 'agent',
-            content: `[Question: ${questionData.question}]`,
-            events: JSON.stringify([event, { type: 'agent.question', tool_use_id: toolUseId, question: questionData }]),
+            content: '',
+            events: JSON.stringify([event]),
           },
         });
 
@@ -251,13 +251,16 @@ export class AgentService {
         this.broadcast(agentId, toolResultEvent);
         onEvent(toolResultEvent);
 
+        // Update question message with tool_result so qa-result card renders on reload
+        await prisma.message.update({
+          where: { id: questionMessage.id },
+          data: {
+            events: JSON.stringify([event, toolResultEvent]),
+          },
+        });
+
         // Broadcast done for current turn
         this.broadcast(agentId, { type: 'agent.done' });
-
-        // Persist answer message
-        await prisma.message.create({
-          data: { agentId, role: 'user', content: `[Answer: ${answerStr}]` },
-        });
 
         // Send answer as new message to Agent and recursively handle further questions
         const contextMsg = `[User answered question: "${questionData.question}"]\nAnswer: ${answerStr}`;
