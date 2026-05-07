@@ -402,12 +402,14 @@ export class AgentService {
       error: s.error ?? undefined,
       permissionMode: s.permissionMode as 'auto' | 'manual',
       sessionContext: s.config ? JSON.parse(s.config) as { taskTitle?: string; tokenUsage?: number } : undefined,
+      pendingQuestion: s.status === 'waiting_for_input' ? this.pendingAnswers.get(s.id)?.question : undefined,
     }));
   }
 
   async getFromDB(id: string): Promise<AgentInfo | null> {
     const s = await prisma.agentSession.findUnique({ where: { id } });
     if (!s) return null;
+    const pending = s.status === 'waiting_for_input' ? this.pendingAnswers.get(id)?.question : undefined;
     return {
       id: s.id,
       name: s.name,
@@ -420,6 +422,7 @@ export class AgentService {
       error: s.error ?? undefined,
       permissionMode: s.permissionMode as 'auto' | 'manual',
       sessionContext: s.config ? JSON.parse(s.config) as { taskTitle?: string; tokenUsage?: number } : undefined,
+      pendingQuestion: pending,
     };
   }
 
@@ -469,7 +472,7 @@ export class AgentService {
           await adapter.createSession(session.id, config);
         }
         let restoredStatus = session.status;
-        if (session.status === 'running' || session.status === 'thinking') restoredStatus = 'idle';
+        if (session.status === 'running' || session.status === 'thinking' || session.status === 'waiting_for_input') restoredStatus = 'idle';
         if (restoredStatus !== session.status) {
           await prisma.agentSession.update({ where: { id: session.id }, data: { status: restoredStatus } });
         }

@@ -395,6 +395,21 @@ export const useAgentStore = create<AgentState>((set, get) => ({
       }));
       set({ agents });
 
+      // Restore pending questions for sessions waiting for input
+      const pendingQuestions: Record<string, import('@harnesson/shared').PendingQuestion | null> = {};
+      for (const info of agentsInfo) {
+        if (info.status === 'waiting_for_input' && (info as { pendingQuestion?: unknown }).pendingQuestion) {
+          const q = (info as { pendingQuestion: import('@harnesson/shared').QuestionData }).pendingQuestion;
+          pendingQuestions[info.id] = {
+            toolUseId: '',
+            question: q,
+          };
+        }
+      }
+      if (Object.keys(pendingQuestions).length > 0) {
+        set((s) => ({ pendingQuestion: { ...s.pendingQuestion, ...pendingQuestions } }));
+      }
+
       for (const agent of agents) {
         if (agent.status === 'running') {
           get().connectSSE(agent.id);
@@ -427,6 +442,25 @@ export const useAgentStore = create<AgentState>((set, get) => ({
         }));
       } catch {}
     }
+
+    // Restore pending question if session is waiting for input
+    if (!get().pendingQuestion[id]) {
+      try {
+        const res = await fetch(`/api/agents/${encodeURIComponent(id)}`);
+        if (res.ok) {
+          const data = await res.json() as { status?: string; pendingQuestion?: import('@harnesson/shared').QuestionData };
+          if (data.status === 'waiting_for_input' && data.pendingQuestion) {
+            set((s) => ({
+              pendingQuestion: {
+                ...s.pendingQuestion,
+                [id]: { toolUseId: '', question: data.pendingQuestion },
+              },
+            }));
+          }
+        }
+      } catch {}
+    }
+
     get().connectSSE(id);
     get().updatePanelState(id, { isOpen: true });
   },

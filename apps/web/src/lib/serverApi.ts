@@ -185,6 +185,7 @@ export interface AgentInfoResponse {
   permissionMode: 'auto' | 'manual';
   sessionContext?: { taskTitle?: string; tokenUsage?: number };
   projectId?: string;
+  pendingQuestion?: import('@harnesson/shared').QuestionData;
 }
 
 export async function createAgent(opts: {

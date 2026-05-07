@@ -104,6 +104,7 @@ export interface AgentInfo {
   error?: string;
   permissionMode: 'auto' | 'manual';
   sessionContext?: AgentSessionContext;
+  pendingQuestion?: QuestionData;
 }
 
 export type SlashCommandType = 'builtin' | 'skill';
