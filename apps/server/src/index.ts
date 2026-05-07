@@ -7,6 +7,7 @@ import { projectsRoute } from './routes/projects.js';
 import { branchesRoute } from './routes/branches.js';
 import { graphRoute } from './routes/graph.js';
 import { agentsRoute } from './routes/agents.js';
+import { agentService } from './lib/agent-service.js';
 
 const app = new Hono();
 
@@ -21,6 +22,13 @@ app.route('/', agentsRoute);
 
 const PORT = Number(process.env.PORT ?? 3456);
 
-serve({ fetch: app.fetch, port: PORT }, () => {
-  console.log(`@harnesson/server running on http://localhost:${PORT}`);
+agentService.restoreAll().then(() => {
+  serve({ fetch: app.fetch, port: PORT }, () => {
+    console.log(`@harnesson/server running on http://localhost:${PORT}`);
+  });
+}).catch((err) => {
+  console.error('Failed to restore agent sessions:', err);
+  serve({ fetch: app.fetch, port: PORT }, () => {
+    console.log(`@harnesson/server running on http://localhost:${PORT} (session restore failed)`);
+  });
 });
