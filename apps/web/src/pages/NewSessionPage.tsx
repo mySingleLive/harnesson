@@ -1,13 +1,11 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Plus, Layers, GitBranch, ChevronDown, ArrowUp, Sparkles, Bug, Code, TestTube } from 'lucide-react';
+import { Sparkles, Bug, Code, TestTube } from 'lucide-react';
 import { useAgentStore } from '@/stores/agentStore';
 import { useProjectStore } from '@/stores/projectStore';
 import { useSlashCommandStore } from '@/stores/slashCommandStore';
-import { useSlashCompletion } from '@/hooks/useSlashCompletion';
-import { ModelDropdown } from '@/components/layout/ModelDropdown';
-import { SlashCommandPopup } from '@/components/chat/SlashCommandPopup';
-import { HighlightOverlay } from '@/components/chat/HighlightOverlay';
+import { RichTextInput } from '@/components/chat/RichTextInput';
+import type { ContentBlock, ImageAttachment } from '@harnesson/shared';
 
 const quickActions = [
   { label: '创建新功能', icon: Sparkles, prompt: 'Help me create a new feature: ' },
@@ -17,46 +15,21 @@ const quickActions = [
 ];
 
 export function NewSessionPage() {
-  const [input, setInput] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [selectedModel, setSelectedModel] = useState<string | undefined>(undefined);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
+  const [quickActionText, setQuickActionText] = useState<string | undefined>(undefined);
   const createAgent = useAgentStore((s) => s.createAgent);
   const { activeProjectId, activeBranch, projects } = useProjectStore();
   const commands = useSlashCommandStore((s) => s.commands);
   const navigate = useNavigate();
 
-  const {
-    isOpen: isPopupOpen,
-    filteredCommands,
-    selectedIndex,
-    handleInput: handleCompletionInput,
-    handleKeyDown: handleCompletionKeyDown,
-    selectCommand,
-    closePopup,
-    hoveredIndex,
-    setHoveredIndex,
-    setIsComposing,
-  } = useSlashCompletion(input, setInput, textareaRef);
-
   const project = projects.find((p) => p.id === activeProjectId);
   const projectPath = project?.path ?? '';
   const branch = activeBranch ?? 'main';
 
-  const adjustHeight = () => {
-    const el = textareaRef.current;
-    if (!el) return;
-    el.style.height = 'auto';
-    el.style.height = el.scrollHeight + 'px';
-    if (overlayRef.current) {
-      overlayRef.current.scrollTop = el.scrollTop;
-    }
-  };
-
-  const handleSend = async () => {
-    const text = input.trim();
-    if (!text || !projectPath || isCreating) return;
+  const handleSend = async (data: { text: string; contentBlocks: ContentBlock[]; images: ImageAttachment[] }) => {
+    const text = data.text.trim();
+    if ((!text && data.images.length === 0) || !projectPath || isCreating) return;
 
     setIsCreating(true);
     try {
@@ -68,12 +41,12 @@ export function NewSessionPage() {
       });
       const agentId = useAgentStore.getState().activeAgentId;
       if (agentId) {
-        await useAgentStore.getState().sendMessage(agentId, text, selectedModel);
+        await useAgentStore.getState().sendMessage(agentId, text, selectedModel, {
+          contentBlocks: data.contentBlocks,
+          images: data.images,
+        });
       }
       navigate('/projects');
-      setInput('');
-      closePopup();
-      if (textareaRef.current) textareaRef.current.style.height = 'auto';
     } catch (err) {
       console.error('Failed to create agent:', err);
     } finally {
@@ -82,29 +55,9 @@ export function NewSessionPage() {
   };
 
   const handleQuickAction = (prompt: string) => {
-    setInput(prompt);
+    setQuickActionText(prompt);
+    setTimeout(() => setQuickActionText(undefined), 100);
   };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (handleCompletionKeyDown(e)) return;
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
-  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const val = e.target.value;
-    setInput(val);
-    adjustHeight();
-    handleCompletionInput(val, e.target.selectionStart);
-  };
-
-  const handleScroll = useCallback(() => {
-    if (overlayRef.current && textareaRef.current) {
-      overlayRef.current.scrollTop = textareaRef.current.scrollTop;
-    }
-  }, []);
 
   return (
     <div className="flex h-full flex-col items-center justify-center bg-harness-content px-4">
@@ -113,63 +66,17 @@ export function NewSessionPage() {
       </h1>
 
       <div className="w-full max-w-[700px]">
-        <div className="slash-input-container rounded-2xl border border-white/10 transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)]" style={{ background: '#2a2a48' }}>
-          <HighlightOverlay ref={overlayRef} text={input} commands={commands} />
-          <textarea
-            ref={textareaRef}
-            value={input}
-            onChange={handleTextareaChange}
-            onScroll={handleScroll}
-            onKeyDown={handleKeyDown}
-            onCompositionStart={() => setIsComposing(true)}
-            onCompositionEnd={() => {
-              setIsComposing(false);
-              if (textareaRef.current) {
-                handleCompletionInput(textareaRef.current.value, textareaRef.current.selectionStart);
-              }
-            }}
-            placeholder={projectPath ? "Message Harnesson...  Type / for commands" : "请先选择或创建一个项目"}
-            className="slash-textarea-transparent h-auto max-h-[140px] min-h-[24px] w-full resize-none bg-transparent px-3.5 py-2.5 text-[13px] leading-relaxed outline-none placeholder:text-gray-600"
-            rows={1}
-            disabled={!projectPath || isCreating}
-          />
-          {isPopupOpen && (
-            <SlashCommandPopup
-              commands={filteredCommands}
-              selectedIndex={selectedIndex}
-              onSelect={selectCommand}
-              hoveredIndex={hoveredIndex}
-              onHover={setHoveredIndex}
-            />
-          )}
-          <div className="flex items-center justify-between px-2.5 pb-2">
-            <div className="flex items-center gap-1">
-              <button className="flex h-[30px] w-[30px] items-center justify-center rounded-lg text-gray-500 hover:bg-white/5 hover:text-gray-300">
-                <Plus className="h-[18px] w-[18px]" />
-              </button>
-              <button className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] text-gray-500 hover:bg-white/5 hover:text-gray-300">
-                <Layers className="h-3 w-3" />
-                <span className="font-medium text-gray-400">Claude Code</span>
-                <ChevronDown className="h-3 w-3 text-gray-600" />
-              </button>
-              <button className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] text-gray-500 hover:bg-white/5 hover:text-gray-300">
-                <GitBranch className="h-3 w-3" />
-                <span className="font-medium text-gray-400">{branch}</span>
-                <ChevronDown className="h-3 w-3 text-gray-600" />
-              </button>
-            </div>
-            <div className="flex items-center gap-2">
-              <ModelDropdown value={selectedModel} onChange={setSelectedModel} />
-              <button
-                onClick={handleSend}
-                disabled={!input.trim() || !projectPath || isCreating}
-                className="flex h-[30px] w-[30px] items-center justify-center rounded-lg bg-harness-accent text-white hover:brightness-110 disabled:opacity-40"
-              >
-                <ArrowUp className="h-[15px] w-[15px]" />
-              </button>
-            </div>
-          </div>
-        </div>
+        <RichTextInput
+          placeholder={projectPath ? "Message Harnesson...  Type / for commands" : "请先选择或创建一个项目"}
+          disabled={!projectPath || isCreating}
+          commands={commands}
+          modelValue={selectedModel}
+          onModelChange={setSelectedModel}
+          showBranchSelector
+          branchName={branch}
+          onSend={handleSend}
+          externalText={quickActionText}
+        />
 
         <div className="mt-2 flex justify-center gap-2">
           {quickActions.map(({ label, icon: Icon, prompt }) => (
@@ -182,10 +89,6 @@ export function NewSessionPage() {
               {label}
             </button>
           ))}
-        </div>
-
-        <div className="mt-2 text-center text-[10px] text-gray-600">
-          <kbd className="rounded border border-harness-border bg-harness-sidebar px-1.5 py-[1px] text-[10px]">Enter</kbd> 发送 · <kbd className="rounded border border-harness-border bg-harness-sidebar px-1.5 py-[1px] text-[10px]">Shift+Enter</kbd> 换行
         </div>
       </div>
     </div>
