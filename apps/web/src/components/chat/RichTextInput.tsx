@@ -19,6 +19,9 @@ function insertInlineImage(container: HTMLElement, image: PendingImage): void {
   span.style.verticalAlign = 'middle';
   span.style.position = 'relative';
   span.style.margin = '0 2px';
+  span.style.padding = '2px';
+  span.style.background = 'rgba(255,255,255,0.15)';
+  span.style.borderRadius = '6px';
   span.style.cursor = 'pointer';
 
   const img = document.createElement('img');
