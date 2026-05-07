@@ -40,21 +40,37 @@ agentsRoute.post('/api/agents', async (c) => {
 });
 
 // GET /api/agents — list all agents
-agentsRoute.get('/api/agents', (c) => {
-  return c.json(agentService.list());
+agentsRoute.get('/api/agents', async (c) => {
+  return c.json(await agentService.listFromDB());
 });
 
 // GET /api/agents/:id — get single agent
-agentsRoute.get('/api/agents/:id', (c) => {
-  const agent = agentService.get(c.req.param('id'));
+agentsRoute.get('/api/agents/:id', async (c) => {
+  const agent = await agentService.getFromDB(c.req.param('id'));
   if (!agent) return c.json({ error: 'Agent not found' }, 404);
   return c.json(agent);
+});
+
+// GET /api/agents/:id/messages — get message history
+agentsRoute.get('/api/agents/:id/messages', async (c) => {
+  const agentId = c.req.param('id');
+  const limit = Math.min(parseInt(c.req.query('limit') ?? '100'), 500);
+  const before = c.req.query('before');
+  const messages = await agentService.getMessages(agentId, limit, before);
+  return c.json(messages.reverse());
+});
+
+// GET /api/agents/:id/todos — get todos
+agentsRoute.get('/api/agents/:id/todos', async (c) => {
+  const agentId = c.req.param('id');
+  const todos = await agentService.getTodos(agentId);
+  return c.json(todos);
 });
 
 // POST /api/agents/:id/message — send message to agent
 agentsRoute.post('/api/agents/:id/message', async (c) => {
   const agentId = c.req.param('id');
-  const agent = agentService.get(agentId);
+  const agent = await agentService.getFromDB(agentId);
   if (!agent) return c.json({ error: 'Agent not found' }, 404);
 
   const body = await c.req.json() as SendMessageRequest;
@@ -73,7 +89,7 @@ agentsRoute.post('/api/agents/:id/message', async (c) => {
 // POST /api/agents/:id/tool-result — submit answer to pending question
 agentsRoute.post('/api/agents/:id/tool-result', async (c) => {
   const agentId = c.req.param('id');
-  const agent = agentService.get(agentId);
+  const agent = await agentService.getFromDB(agentId);
   if (!agent) return c.json({ error: 'Agent not found' }, 404);
 
   const body = await c.req.json() as { answer?: string | string[] };
@@ -88,7 +104,7 @@ agentsRoute.post('/api/agents/:id/tool-result', async (c) => {
 // GET /api/agents/:id/stream — SSE stream
 agentsRoute.get('/api/agents/:id/stream', async (c) => {
   const agentId = c.req.param('id');
-  const agent = agentService.get(agentId);
+  const agent = await agentService.getFromDB(agentId);
   if (!agent) return c.json({ error: 'Agent not found' }, 404);
 
   return streamSSE(c, async (stream) => {
@@ -120,9 +136,9 @@ agentsRoute.get('/api/agents/:id/stream', async (c) => {
 });
 
 // POST /api/agents/:id/abort — abort current processing
-agentsRoute.post('/api/agents/:id/abort', (c) => {
+agentsRoute.post('/api/agents/:id/abort', async (c) => {
   const agentId = c.req.param('id');
-  const agent = agentService.get(agentId);
+  const agent = await agentService.getFromDB(agentId);
   if (!agent) return c.json({ error: 'Agent not found' }, 404);
 
   agentService.abort(agentId);
@@ -142,7 +158,7 @@ agentsRoute.get('/api/slash-commands', async (c) => {
 // POST /api/agents/:id/command — execute a slash command
 agentsRoute.post('/api/agents/:id/command', async (c) => {
   const agentId = c.req.param('id');
-  const agent = agentService.get(agentId);
+  const agent = await agentService.getFromDB(agentId);
   if (!agent) return c.json({ error: 'Agent not found' }, 404);
 
   const body = await c.req.json() as { command: string; args?: string };
@@ -159,7 +175,7 @@ agentsRoute.post('/api/agents/:id/command', async (c) => {
 // DELETE /api/agents/:id — destroy agent
 agentsRoute.delete('/api/agents/:id', async (c) => {
   const agentId = c.req.param('id');
-  const agent = agentService.get(agentId);
+  const agent = await agentService.getFromDB(agentId);
   if (!agent) return c.json({ error: 'Agent not found' }, 404);
 
   await agentService.destroy(agentId);
