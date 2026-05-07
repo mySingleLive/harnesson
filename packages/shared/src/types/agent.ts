@@ -83,6 +83,8 @@ export interface CreateAgentResponse {
   model?: string;
   createdAt: string;
   permissionMode: 'auto' | 'manual';
+  projectId: string;
+  branch: string;
 }
 
 export interface SendMessageRequest {
@@ -144,5 +146,31 @@ export interface QuestionData {
 export interface PendingQuestion {
   toolUseId: string;
   question: QuestionData;
+}
+
+export interface PersistedAgentInfo extends AgentInfo {
+  worktreePath?: string;
+  cwd: string;
+  lastMessageAt?: string;
+}
+
+export interface PersistedMessage {
+  id: string;
+  agentId: string;
+  role: string;
+  content: string;
+  events?: AgentStreamEvent[];
+  createdAt: string;
+}
+
+export interface PersistedTodoItem {
+  id: string;
+  agentId: string;
+  subject: string;
+  description?: string;
+  status: string;
+  activeForm?: string;
+  createdAt: string;
+  completedAt?: string;
 }
 
