@@ -181,7 +181,18 @@ export function RichTextInput({
   } = useSlashCompletion(internalText, (val: string) => {
     setInternalText(val);
     if (editorRef.current) {
-      editorRef.current.textContent = val;
+      const editor = editorRef.current;
+      editor.focus();
+      const range = document.createRange();
+      range.selectNodeContents(editor);
+      range.deleteContents();
+      const textNode = document.createTextNode(val);
+      range.insertNode(textNode);
+      range.setStart(textNode, val.length);
+      range.collapse(true);
+      const sel = window.getSelection();
+      sel?.removeAllRanges();
+      sel?.addRange(range);
     }
   }, compatTextareaRef as React.RefObject<HTMLTextAreaElement>);
 
@@ -379,7 +390,7 @@ export function RichTextInput({
         onChange={handleFileSelect}
       />
       <div
-        className={`rounded-2xl border transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)] ${isDragOver ? 'border-harness-accent border-dashed' : 'border-white/10'}`}
+        className={`relative rounded-2xl border transition-colors focus-within:border-harness-accent focus-within:shadow-[0_0_0_1px_rgba(139,92,246,0.15)] ${isDragOver ? 'border-harness-accent border-dashed' : 'border-white/10'}`}
         style={{ background: '#2a2a48' }}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
