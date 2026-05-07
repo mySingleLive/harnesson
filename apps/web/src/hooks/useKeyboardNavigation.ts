@@ -5,6 +5,7 @@ export interface UseKeyboardNavigationOptions {
   onSelect: (index: number) => void;
   onToggle?: (index: number) => void;
   wrap?: boolean;
+  initialIndex?: number;
 }
 
 export function useKeyboardNavigation({
@@ -12,8 +13,9 @@ export function useKeyboardNavigation({
   onSelect,
   onToggle,
   wrap = true,
+  initialIndex = -1,
 }: UseKeyboardNavigationOptions) {
-  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [focusedIndex, setFocusedIndex] = useState(initialIndex);
   const hasFocusRef = useRef(false);
 
   const moveFocus = useCallback(

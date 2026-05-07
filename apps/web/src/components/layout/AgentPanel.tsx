@@ -19,18 +19,18 @@ import { useAutoScroll } from '@/hooks/useAutoScroll';
 interface AgentPanelProps {
   agent: Agent;
   messages: AgentMessage[];
-  isStreaming: boolean;
   isMaximized: boolean;
   onToggleMaximize: () => void;
   onClose: () => void;
 }
 
-export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggleMaximize, onClose }: AgentPanelProps) {
+export function AgentPanel({ agent, messages, isMaximized, onToggleMaximize, onClose }: AgentPanelProps) {
   const [input, setInput] = useState('');
   const [showPlusMenu, setShowPlusMenu] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const isStreaming = useAgentStore((s) => s.isStreaming[agent.id] ?? false);
   const { isAtBottom, scrollToBottom } = useAutoScroll(scrollRef, [messages, isStreaming]);
   const sendMessage = useAgentStore((s) => s.sendMessage);
   const abortAgent = useAgentStore((s) => s.abortAgent);
@@ -157,8 +157,14 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
             Waiting for response...
           </div>
         )}
+        {((isStreaming && !hasPendingQuestion) || (todos && todos.length > 0)) && (
+          <div className="sticky bottom-0 z-10 bg-harness-chat px-3 pt-1 pb-2">
+            {isStreaming && !hasPendingQuestion && <ThinkingBar />}
+            {todos && todos.length > 0 && <TodoBar todos={todos} />}
+          </div>
+        )}
         {!isAtBottom && (
-          <div className="sticky bottom-2 flex justify-end pr-3">
+          <div className="sticky bottom-2 z-20 flex justify-end pr-3">
             <button
               onClick={scrollToBottom}
               className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-[#252540] text-gray-400 shadow-lg transition-colors hover:text-gray-200"
@@ -168,13 +174,6 @@ export function AgentPanel({ agent, messages, isStreaming, isMaximized, onToggle
           </div>
         )}
       </div>
-
-      {((isStreaming && !hasPendingQuestion) || (todos && todos.length > 0)) && (
-        <div className="bg-harness-chat px-3 pt-1 pb-2">
-          {isStreaming && !hasPendingQuestion && <ThinkingBar />}
-          {todos && todos.length > 0 && <TodoBar todos={todos} />}
-        </div>
-      )}
 
       {hasPendingQuestion ? (
         <AskUserQuestionPanel

@@ -14,6 +14,7 @@ export function AskUserQuestionPanel({ question, onSubmit }: AskUserQuestionPane
   const [submitted, setSubmitted] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(-1);
   const customInputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const submitTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const optionCount = question.options.length;
@@ -49,7 +50,12 @@ export function AskUserQuestionPanel({ question, onSubmit }: AskUserQuestionPane
     itemCount: totalItems,
     onSelect: handleSelect,
     onToggle: question.multiSelect ? handleToggle : undefined,
+    initialIndex: 0,
   });
+
+  useEffect(() => {
+    containerRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     if (isFocused(optionCount) && customInputRef.current) {
@@ -109,6 +115,7 @@ export function AskUserQuestionPanel({ question, onSubmit }: AskUserQuestionPane
 
   return (
     <div
+      ref={containerRef}
       {...containerProps}
       className="ml-[68px] mr-3 mb-2 rounded-[10px] border border-[#2a2a4e] bg-[#16162e] p-4 shadow-[0_-4px_16px_rgba(0,0,0,0.3)] outline-none"
     >
