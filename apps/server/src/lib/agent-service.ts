@@ -75,7 +75,7 @@ export class AgentService {
         cwd: req.cwd,
         model: req.model ?? null,
         permissionMode: req.permissionMode,
-        config: JSON.stringify({}),
+        config: JSON.stringify({ allowedTools, systemPrompt: req.systemPrompt, maxTurns: req.maxTurns ?? 50 }),
       },
     });
 
@@ -271,6 +271,24 @@ export class AgentService {
 
       this.broadcast(agentId, event);
       onEvent(event);
+
+      // Persist TodoWrite tool events
+      if (event.type === 'agent.tool_use' && event.tool === 'TodoWrite' && event.input) {
+        const inputTodos = event.input.todos as Array<Record<string, unknown>> | undefined;
+        if (Array.isArray(inputTodos)) {
+          await prisma.todoItem.deleteMany({ where: { agentId } });
+          for (const t of inputTodos) {
+            await prisma.todoItem.create({
+              data: {
+                agentId,
+                subject: String(t.content ?? ''),
+                status: String(t.status ?? 'pending'),
+                activeForm: t.activeForm ? String(t.activeForm) : null,
+              },
+            });
+          }
+        }
+      }
     }
   }
 
@@ -440,7 +458,14 @@ export class AgentService {
     for (const session of sessions) {
       try {
         const adapter = new ClaudeCodeAdapter();
-        const config: SessionConfig = { cwd: session.cwd, model: session.model ?? undefined };
+        const storedConfig = session.config ? JSON.parse(session.config) as Record<string, unknown> : {};
+        const config: SessionConfig = {
+          cwd: session.cwd,
+          model: session.model ?? undefined,
+          systemPrompt: storedConfig.systemPrompt as string | undefined,
+          allowedTools: storedConfig.allowedTools as string[] | undefined,
+          maxTurns: storedConfig.maxTurns as number | undefined,
+        };
         if (session.sessionData) {
           await adapter.restoreSession(session.id, JSON.parse(session.sessionData) as AdapterSessionData, config);
         } else {

@@ -7,6 +7,7 @@ const completionTimers: Record<string, ReturnType<typeof setTimeout>> = {};
 interface AgentState {
   agents: Agent[];
   activeAgentId: string | null;
+  initialized: boolean;
   messages: Record<string, AgentMessage[]>;
   eventSources: Record<string, EventSource>;
   isStreaming: Record<string, boolean>;
@@ -45,6 +46,7 @@ interface AgentState {
 export const useAgentStore = create<AgentState>((set, get) => ({
   agents: [],
   activeAgentId: null,
+  initialized: false,
   messages: {},
   eventSources: {},
   isStreaming: {},
@@ -402,7 +404,9 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   },
 
   initialize: async () => {
+    if (get().initialized) return;
     await get().loadAgents();
+    set({ initialized: true });
   },
 
   activateAgent: async (id: string) => {
