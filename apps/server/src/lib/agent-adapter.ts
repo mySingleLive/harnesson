@@ -14,6 +14,11 @@ export interface ModelInfo {
   description: string;
 }
 
+export interface AdapterSessionData {
+  sdkSessionId?: string;
+  [key: string]: unknown;
+}
+
 export interface AgentAdapter {
   sendMessage(agentId: string, message: string): AsyncIterable<AgentStreamEvent>;
   createSession(agentId: string, config: SessionConfig): Promise<void>;
@@ -21,4 +26,9 @@ export interface AgentAdapter {
   abort(agentId: string): void;
   getSupportedModels(): Promise<ModelInfo[]>;
   updateSessionModel(agentId: string, model: string): void;
+
+  // Persistence methods
+  getSessionData(agentId: string): AdapterSessionData | null;
+  restoreSession(agentId: string, sessionData: AdapterSessionData, config: SessionConfig): Promise<void>;
+  getType(): string;
 }
