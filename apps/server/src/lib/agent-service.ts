@@ -297,10 +297,7 @@ export class AgentService {
     if (!runtime) return;
 
     runtime.sseClients.add(client);
-
-    for (const event of runtime.eventBuffer) {
-      client.write(event.type, event as unknown as Record<string, unknown>).catch(() => {});
-    }
+    // Buffer replay removed — messages are now loaded from DB on page refresh
   }
 
   removeSSEClient(agentId: string, client: SSEClient): void {
