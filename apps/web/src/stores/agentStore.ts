@@ -32,6 +32,8 @@ interface AgentState {
   abortAgent: (agentId: string) => Promise<void>;
   destroyAgent: (agentId: string) => Promise<void>;
   loadAgents: () => Promise<void>;
+  initialize: () => Promise<void>;
+  activateAgent: (id: string) => Promise<void>;
 
   addTodo: (agentId: string, item: TodoItem) => void;
   updateTodo: (agentId: string, id: string, updates: Partial<TodoItem>) => void;
@@ -76,6 +78,14 @@ export const useAgentStore = create<AgentState>((set, get) => ({
     const pending = get().pendingQuestion[agentId];
     if (!pending) return;
 
+    set((s) => ({
+      pendingQuestion: {
+        ...s.pendingQuestion,
+        [agentId]: null,
+      },
+      isStreaming: { ...s.isStreaming, [agentId]: true },
+    }));
+
     try {
       await fetch(`/api/agents/${encodeURIComponent(agentId)}/tool-result`, {
         method: 'POST',
@@ -83,15 +93,8 @@ export const useAgentStore = create<AgentState>((set, get) => ({
         body: JSON.stringify({ answer }),
       });
     } catch {
-      // Network error - still clear pending state
+      // Network error - already cleared pending state
     }
-
-    set((s) => ({
-      pendingQuestion: {
-        ...s.pendingQuestion,
-        [agentId]: null,
-      },
-    }));
   },
 
   setActiveAgent: (id) => set({ activeAgentId: id }),
@@ -122,8 +125,8 @@ export const useAgentStore = create<AgentState>((set, get) => ({
       name: response.name,
       type: response.type as Agent['type'],
       status: 'idle',
-      projectId: '',
-      branch: '',
+      projectId: response.projectId ?? '',
+      branch: response.branch ?? '',
       worktreePath: response.cwd,
       model: response.model,
       createdAt: response.createdAt,
@@ -252,6 +255,15 @@ export const useAgentStore = create<AgentState>((set, get) => ({
       const msgs = s.messages[agentId] ?? [];
       const lastMsg = msgs[msgs.length - 1];
 
+      if (event.type === 'agent.thinking') {
+        return {
+          isStreaming: { ...s.isStreaming, [agentId]: true },
+          agents: s.agents.map((a) =>
+            a.id === agentId ? { ...a, status: 'running' } : a,
+          ),
+        };
+      }
+
       if (event.type === 'agent.done' || event.type === 'agent.error') {
         return {
           isStreaming: { ...s.isStreaming, [agentId]: false },
@@ -370,7 +382,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
         name: info.name,
         type: info.type as Agent['type'],
         status: info.status as Agent['status'],
-        projectId: '',
+        projectId: (info as { projectId?: string }).projectId ?? '',
         branch: info.branch,
         worktreePath: info.cwd,
         model: info.model,
@@ -387,5 +399,31 @@ export const useAgentStore = create<AgentState>((set, get) => ({
         }
       }
     } catch {}
+  },
+
+  initialize: async () => {
+    await get().loadAgents();
+  },
+
+  activateAgent: async (id: string) => {
+    set({ activeAgentId: id });
+    const existingMessages = get().messages[id];
+    if (!existingMessages || existingMessages.length === 0) {
+      try {
+        const msgs = await api.getAgentMessages(id);
+        const agentMessages: AgentMessage[] = msgs.map((m) => ({
+          id: m.id,
+          role: m.role as 'user' | 'agent',
+          content: m.content,
+          timestamp: m.createdAt,
+          events: m.events as AgentStreamEvent[] | undefined,
+        }));
+        set((s) => ({
+          messages: { ...s.messages, [id]: agentMessages },
+        }));
+      } catch {}
+    }
+    get().connectSSE(id);
+    get().updatePanelState(id, { isOpen: true });
   },
 }));
