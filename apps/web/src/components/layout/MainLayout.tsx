@@ -9,7 +9,7 @@ import { useAgentStore } from '@/stores/agentStore';
 import { useProjectStore } from '@/stores/projectStore';
 
 export function MainLayout() {
-  const { agents, activeAgentId, setActiveAgent, updatePanelState, messages, isStreaming, loadAgents } = useAgentStore();
+  const { agents, activeAgentId, setActiveAgent, updatePanelState, messages, isStreaming, loadAgents, activateAgent } = useAgentStore();
   const switchProject = useProjectStore((s) => s.switchProject);
   const loadProjects = useProjectStore((s) => s.loadProjects);
   const activeAgent = agents.find((a) => a.id === activeAgentId);
@@ -17,9 +17,8 @@ export function MainLayout() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const { createProject, openFolder, isCreating } = useProjectActions();
 
-  const handleAgentClick = (agent: typeof agents[number]) => {
-    setActiveAgent(agent.id);
-    updatePanelState(agent.id, { isOpen: true });
+  const handleAgentClick = async (agent: typeof agents[number]) => {
+    await activateAgent(agent.id);
     switchProject(agent.projectId, agent.branch);
   };
 
@@ -69,7 +68,6 @@ export function MainLayout() {
           <AgentPanel
             agent={activeAgent}
             messages={messages[activeAgent.id] ?? []}
-            isStreaming={isStreaming[activeAgent.id] ?? false}
             isMaximized={activeAgent.panelState.isMaximized}
             onToggleMaximize={handleToggleMaximize}
             onClose={handleClose}
