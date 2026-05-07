@@ -168,6 +168,8 @@ export interface CreateAgentResponse {
   model?: string;
   createdAt: string;
   permissionMode: 'auto' | 'manual';
+  projectId: string;
+  branch: string;
 }
 
 export interface AgentInfoResponse {
@@ -182,6 +184,7 @@ export interface AgentInfoResponse {
   error?: string;
   permissionMode: 'auto' | 'manual';
   sessionContext?: { taskTitle?: string; tokenUsage?: number };
+  projectId?: string;
 }
 
 export async function createAgent(opts: {
@@ -239,6 +242,29 @@ export async function abortAgent(agentId: string): Promise<void> {
 export async function destroyAgent(agentId: string): Promise<void> {
   const res = await fetch(`/api/agents/${encodeURIComponent(agentId)}`, { method: 'DELETE' });
   if (!res.ok) throw new Error(`Failed to destroy agent: ${res.status}`);
+}
+
+export interface MessageResponse {
+  id: string;
+  agentId: string;
+  role: string;
+  content: string;
+  events?: unknown[];
+  createdAt: string;
+}
+
+export async function getAgentMessages(agentId: string, limit?: number): Promise<MessageResponse[]> {
+  const params = new URLSearchParams();
+  if (limit) params.set('limit', String(limit));
+  const res = await fetch(`/api/agents/${encodeURIComponent(agentId)}/messages?${params}`);
+  if (!res.ok) throw new Error(`Failed to fetch messages: ${res.status}`);
+  return res.json();
+}
+
+export async function getAgentTodos(agentId: string): Promise<unknown[]> {
+  const res = await fetch(`/api/agents/${encodeURIComponent(agentId)}/todos`);
+  if (!res.ok) return [];
+  return res.json();
 }
 
 // --- Slash Command API ---
