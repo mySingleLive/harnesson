@@ -223,11 +223,21 @@ export async function listAgents(): Promise<AgentInfoResponse[]> {
   return res.json();
 }
 
-export async function sendAgentMessage(agentId: string, message: string, model?: string): Promise<void> {
+export async function sendAgentMessage(
+  agentId: string,
+  message: string,
+  model?: string,
+  extra?: { contentBlocks?: import('@harnesson/shared').ContentBlock[]; images?: import('@harnesson/shared').ImageAttachment[] },
+): Promise<void> {
   const res = await fetch(`/api/agents/${encodeURIComponent(agentId)}/message`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, model }),
+    body: JSON.stringify({
+      message,
+      model,
+      contentBlocks: extra?.contentBlocks,
+      images: extra?.images,
+    }),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => null);
@@ -250,6 +260,8 @@ export interface MessageResponse {
   agentId: string;
   role: string;
   content: string;
+  images?: import('@harnesson/shared').ImageAttachment[] | null;
+  contentBlocks?: import('@harnesson/shared').ContentBlock[] | null;
   events?: unknown[];
   createdAt: string;
 }

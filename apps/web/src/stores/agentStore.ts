@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Agent, AgentPanelState, AgentStreamEvent, AgentMessage, TodoItem } from '@harnesson/shared';
+import type { Agent, AgentPanelState, AgentStreamEvent, AgentMessage, TodoItem, ImageAttachment, ContentBlock } from '@harnesson/shared';
 import * as api from '@/lib/serverApi';
 
 const completionTimers: Record<string, ReturnType<typeof setTimeout>> = {};
@@ -26,7 +26,7 @@ interface AgentState {
     taskTitle?: string;
   }) => Promise<Agent>;
 
-  sendMessage: (agentId: string, text: string, model?: string) => Promise<void>;
+  sendMessage: (agentId: string, text: string, model?: string, extra?: { contentBlocks?: ContentBlock[]; images?: ImageAttachment[] }) => Promise<void>;
   appendStreamEvent: (agentId: string, event: AgentStreamEvent) => void;
   connectSSE: (agentId: string) => void;
   disconnectSSE: (agentId: string) => void;
@@ -147,7 +147,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
     return agent;
   },
 
-  sendMessage: async (agentId, text, model) => {
+  sendMessage: async (agentId, text, model, extra) => {
     // Cancel pending completion timer
     if (completionTimers[agentId]) {
       clearTimeout(completionTimers[agentId]);
@@ -176,6 +176,8 @@ export const useAgentStore = create<AgentState>((set, get) => ({
       id: crypto.randomUUID(),
       role: 'user',
       content: text,
+      images: extra?.images,
+      contentBlocks: extra?.contentBlocks,
       timestamp: new Date().toISOString(),
     };
 
@@ -188,7 +190,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
     }));
 
     try {
-      await api.sendAgentMessage(agentId, text, model);
+      await api.sendAgentMessage(agentId, text, model, extra);
     } catch (err) {
       get().appendStreamEvent(agentId, {
         type: 'agent.error',
@@ -434,6 +436,8 @@ export const useAgentStore = create<AgentState>((set, get) => ({
           id: m.id,
           role: m.role as 'user' | 'agent',
           content: m.content,
+          images: m.images ?? undefined,
+          contentBlocks: m.contentBlocks ?? undefined,
           timestamp: m.createdAt,
           events: m.events as AgentStreamEvent[] | undefined,
         }));
