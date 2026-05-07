@@ -19,7 +19,7 @@ export function MainLayout() {
 
   const handleAgentClick = async (agent: typeof agents[number]) => {
     await activateAgent(agent.id);
-    switchProject(agent.projectId, agent.branch);
+    switchProject(agent.projectId, agent.branch, true);
   };
 
   const handleClose = () => {
