@@ -1,6 +1,6 @@
 import { query } from '@anthropic-ai/claude-agent-sdk';
 import type { AgentStreamEvent } from '@harnesson/shared';
-import type { AgentAdapter, ModelInfo, SessionConfig } from './agent-adapter.js';
+import type { AgentAdapter, ModelInfo, SessionConfig, AdapterSessionData } from './agent-adapter.js';
 
 function pairSubEvents(buffer: { texts: string[]; toolEvents: Array<{ tool: string; input: Record<string, unknown>; output?: string; isError?: boolean; duration?: number }> }): Array<{ tool: string; input: Record<string, unknown>; output?: string; isError?: boolean; duration?: number; subEvents?: unknown[]; subTexts?: string[] }> {
   return buffer.toolEvents.map((e) => ({
@@ -261,6 +261,26 @@ export class ClaudeCodeAdapter implements AgentAdapter {
     if (session) {
       session.config.model = model;
     }
+  }
+
+  getType(): string {
+    return 'claude-code';
+  }
+
+  getSessionData(agentId: string): AdapterSessionData | null {
+    const session = this.sessions.get(agentId);
+    if (!session) return null;
+    return {
+      sdkSessionId: session.sdkSessionId,
+    };
+  }
+
+  async restoreSession(agentId: string, sessionData: AdapterSessionData, config: SessionConfig): Promise<void> {
+    this.sessions.set(agentId, {
+      sdkSessionId: sessionData.sdkSessionId,
+      abortController: null,
+      config,
+    });
   }
 
   async getSupportedModels(): Promise<ModelInfo[]> {
