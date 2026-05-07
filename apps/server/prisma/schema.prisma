@@ -17,4 +17,60 @@ model Project {
   agentCount  Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  sessions    AgentSession[]
+}
+
+model AgentSession {
+  id             String    @id @default(uuid())
+  name           String
+  type           String
+  status         String    @default("idle")
+  projectId      String
+  branch         String    @default("main")
+  worktreePath   String?
+  cwd            String
+  model          String?
+  permissionMode String    @default("auto")
+  config         String    @default("{}")
+  sessionData    String?
+  error          String?
+  lastMessageAt  DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  project        Project   @relation(fields: [projectId], references: [id])
+  messages       Message[]
+  todos          TodoItem[]
+
+  @@index([projectId])
+  @@index([status])
+  @@index([updatedAt])
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  agentId   String
+  role      String
+  content   String   @default("")
+  events    String?
+  createdAt DateTime @default(now())
+
+  agent     AgentSession @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([agentId, createdAt])
+}
+
+model TodoItem {
+  id          String    @id @default(uuid())
+  agentId     String
+  subject     String
+  description String?
+  status      String    @default("pending")
+  activeForm  String?
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  agent       AgentSession @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
 }
