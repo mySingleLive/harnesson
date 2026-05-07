@@ -1,10 +1,12 @@
+import { useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import type { AgentMessage } from '@harnesson/shared';
+import type { AgentMessage, ImageAttachment, ContentBlock } from '@harnesson/shared';
 import { segmentEvents, SingleToolEventCard } from './tool-cards';
 import { QAResultCard } from './tool-cards/QAResultCard';
 import { TodoCard } from './tool-cards/TodoCard';
 import { ThinkingIndicator } from './ThinkingIndicator';
+import { ImagePreview } from './ImagePreview';
 
 interface MessageRendererProps {
   message: AgentMessage;
@@ -22,22 +24,77 @@ export function MessageRenderer({ message, agentName, isStreaming }: MessageRend
   }
 
   if (message.role === 'user') {
-    return <UserMessage content={message.content} />;
+    return <UserMessage content={message.content} images={message.images} contentBlocks={message.contentBlocks} />;
   }
 
   return <AgentMessageBubble events={message.events ?? []} agentName={agentName} isStreaming={isStreaming} />;
 }
 
-function UserMessage({ content }: { content: string }) {
+function UserMessage({ content, images, contentBlocks }: { content: string; images?: ImageAttachment[]; contentBlocks?: ContentBlock[] }) {
+  const [previewSrc, setPreviewSrc] = useState<string | null>(null);
+
+  const renderContent = () => {
+    // Priority 1: contentBlocks (rich inline content)
+    if (contentBlocks && contentBlocks.length > 0) {
+      return contentBlocks.map((block, i) => {
+        if (block.type === 'text') {
+          return <span key={i}>{block.text}</span>;
+        }
+        if (block.type === 'image' && block.image) {
+          const src = `data:${block.image.mediaType};base64,${block.image.base64}`;
+          return (
+            <img
+              key={i}
+              src={src}
+              alt={block.image.name ?? 'Image'}
+              className="inline max-h-[200px] max-w-[300px] rounded cursor-pointer align-middle"
+              onClick={() => setPreviewSrc(src)}
+            />
+          );
+        }
+        return null;
+      });
+    }
+
+    // Priority 2: images array (text + image grid)
+    if (images && images.length > 0) {
+      return (
+        <>
+          {content}
+          <div className="flex flex-wrap gap-2 mt-2">
+            {images.map((img) => {
+              const src = `data:${img.mediaType};base64,${img.base64}`;
+              return (
+                <img
+                  key={img.id}
+                  src={src}
+                  alt={img.name ?? 'Image'}
+                  className="max-h-[200px] max-w-[300px] rounded cursor-pointer"
+                  onClick={() => setPreviewSrc(src)}
+                />
+              );
+            })}
+          </div>
+        </>
+      );
+    }
+
+    // Priority 3: plain text (backward compatible)
+    return content;
+  };
+
   return (
-    <div className="px-5 py-4 flex justify-start">
-      <div
-        className="flex-1 rounded-xl px-3.5 py-2.5 text-[13px] leading-relaxed text-gray-300"
-        style={{ background: '#2a2a48', border: '1px solid rgba(255,255,255,0.1)' }}
-      >
-        {content}
+    <>
+      {previewSrc && <ImagePreview src={previewSrc} onClose={() => setPreviewSrc(null)} />}
+      <div className="px-5 py-4 flex justify-start">
+        <div
+          className="flex-1 rounded-xl px-3.5 py-2.5 text-[13px] leading-relaxed text-gray-300"
+          style={{ background: '#2a2a48', border: '1px solid rgba(255,255,255,0.1)' }}
+        >
+          {renderContent()}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
