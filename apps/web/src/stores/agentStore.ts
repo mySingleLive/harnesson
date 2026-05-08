@@ -4,6 +4,9 @@ import * as api from '@/lib/serverApi';
 
 const completionTimers: Record<string, ReturnType<typeof setTimeout>> = {};
 
+const PANEL_WIDTH_KEY = 'harnesson_agent_panel_width';
+const PANEL_COLLAPSED_KEY = 'harnesson_agent_panel_collapsed';
+
 interface AgentState {
   agents: Agent[];
   activeAgentId: string | null;
@@ -57,8 +60,8 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   isStreaming: {},
   todos: {},
   pendingQuestion: {},
-  panelWidth: parseInt(localStorage.getItem('agentPanelWidth') ?? '440', 10),
-  panelCollapsed: localStorage.getItem('agentPanelCollapsed') === 'true',
+  panelWidth: (() => { const v = parseInt(localStorage.getItem(PANEL_WIDTH_KEY) ?? '440', 10); return Number.isFinite(v) && v > 0 ? v : 440; })(),
+  panelCollapsed: localStorage.getItem(PANEL_COLLAPSED_KEY) === 'true',
 
   addTodo: (agentId, item) =>
     set((s) => ({
@@ -109,12 +112,12 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   setActiveAgent: (id) => set({ activeAgentId: id }),
 
   setPanelWidth: (width) => {
-    localStorage.setItem('agentPanelWidth', String(width));
+    try { localStorage.setItem(PANEL_WIDTH_KEY, String(width)); } catch {}
     set({ panelWidth: width });
   },
 
   setPanelCollapsed: (collapsed) => {
-    localStorage.setItem('agentPanelCollapsed', String(collapsed));
+    try { localStorage.setItem(PANEL_COLLAPSED_KEY, String(collapsed)); } catch {}
     set({ panelCollapsed: collapsed });
   },
 
