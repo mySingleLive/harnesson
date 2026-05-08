@@ -49,7 +49,7 @@ export function ResizableDivider({
 
     const handleMouseMove = (e: MouseEvent) => {
       if (!dragRef.current) return;
-      const delta = dragRef.current.startX - e.clientX;
+      const delta = e.clientX - dragRef.current.startX;
 
       if (isCollapsed) {
         if (delta > 10 && !dragRef.current.expanded) {
@@ -73,7 +73,7 @@ export function ResizableDivider({
 
     const handleMouseUp = (e: MouseEvent) => {
       if (dragRef.current && !isCollapsed) {
-        const finalWidth = dragRef.current.startWidth + (dragRef.current.startX - e.clientX);
+        const finalWidth = dragRef.current.startWidth + (e.clientX - dragRef.current.startX);
         if (finalWidth >= minWidth) {
           onResizeEnd(finalWidth);
         }

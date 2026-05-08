@@ -82,7 +82,7 @@ export function AgentPanel({ agent, messages, isMaximized, width, onToggleMaximi
   };
 
   return (
-    <div className={`relative flex h-full flex-col border-r border-harness-border bg-harness-chat ${widthStyle}`} {...widthProp}>
+    <div className={`relative flex h-full flex-col bg-harness-chat ${widthStyle}`} {...widthProp}>
       <AgentContextHeader
         agent={agent}
         onToggleMaximize={onToggleMaximize}

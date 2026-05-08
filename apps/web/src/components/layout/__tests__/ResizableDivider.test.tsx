@@ -39,7 +39,7 @@ describe('ResizableDivider', () => {
 
     fireEvent.mouseDown(divider, { clientX: 500 });
     fireEvent.mouseMove(document, { clientX: 460 });
-    expect(onResize).toHaveBeenCalledWith(480);
+    expect(onResize).toHaveBeenCalledWith(400);
   });
 
   it('calls onCollapse when dragged below minWidth', () => {
@@ -48,7 +48,7 @@ describe('ResizableDivider', () => {
     const divider = container.firstElementChild as HTMLElement;
 
     fireEvent.mouseDown(divider, { clientX: 500 });
-    fireEvent.mouseMove(document, { clientX: 700 });
+    fireEvent.mouseMove(document, { clientX: 100 });
     expect(onCollapse).toHaveBeenCalled();
   });
 
@@ -67,7 +67,7 @@ describe('ResizableDivider', () => {
     const divider = container.firstElementChild as HTMLElement;
 
     fireEvent.mouseDown(divider, { clientX: 500 });
-    fireEvent.mouseMove(document, { clientX: 485 });
+    fireEvent.mouseMove(document, { clientX: 515 });
     expect(onExpand).toHaveBeenCalled();
   });
 
@@ -79,7 +79,7 @@ describe('ResizableDivider', () => {
     const divider = container.firstElementChild as HTMLElement;
 
     fireEvent.mouseDown(divider, { clientX: 500 });
-    fireEvent.mouseMove(document, { clientX: 495 });
+    fireEvent.mouseMove(document, { clientX: 505 });
     expect(onExpand).not.toHaveBeenCalled();
   });
 });

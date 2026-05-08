@@ -65,6 +65,27 @@ export function MainLayout() {
           activeAgentId={activeAgentId ?? undefined}
           onAgentClick={handleAgentClick}
         />
+        {showPanel && !panelCollapsed && (
+          <>
+            <AgentPanel
+              agent={activeAgent}
+              messages={messages[activeAgent.id] ?? []}
+              isMaximized={activeAgent.panelState.isMaximized}
+              width={panelWidth}
+              onToggleMaximize={handleToggleMaximize}
+              onClose={handleClose}
+            />
+            <ResizableDivider
+              minWidth={320}
+              currentWidth={panelWidth}
+              isCollapsed={false}
+              onResize={setPanelWidth}
+              onResizeEnd={setPanelWidth}
+              onCollapse={() => setPanelCollapsed(true)}
+              onExpand={() => setPanelCollapsed(false)}
+            />
+          </>
+        )}
         {showPanel && panelCollapsed && (
           <ResizableDivider
             minWidth={320}
@@ -75,27 +96,6 @@ export function MainLayout() {
             onCollapse={() => {}}
             onExpand={() => setPanelCollapsed(false)}
           />
-        )}
-        {showPanel && !panelCollapsed && (
-          <>
-            <ResizableDivider
-              minWidth={320}
-              currentWidth={panelWidth}
-              isCollapsed={false}
-              onResize={setPanelWidth}
-              onResizeEnd={setPanelWidth}
-              onCollapse={() => setPanelCollapsed(true)}
-              onExpand={() => setPanelCollapsed(false)}
-            />
-            <AgentPanel
-              agent={activeAgent}
-              messages={messages[activeAgent.id] ?? []}
-              isMaximized={activeAgent.panelState.isMaximized}
-              width={panelWidth}
-              onToggleMaximize={handleToggleMaximize}
-              onClose={handleClose}
-            />
-          </>
         )}
         {!(showPanel && activeAgent?.panelState.isMaximized) && (
           <main className="flex-1 overflow-auto bg-harness-content" style={{ minWidth: 300 }}>
