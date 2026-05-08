@@ -96,24 +96,27 @@ export function ResizableDivider({
 
   return (
     <div
-      onMouseDown={handleMouseDown}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseDown={isCollapsed ? handleMouseDown : undefined}
+      onMouseEnter={isCollapsed ? () => setIsHovered(true) : undefined}
+      onMouseLeave={isCollapsed ? () => setIsHovered(false) : undefined}
       className={cn(
-        'relative flex-shrink-0 cursor-col-resize',
+        'relative flex-shrink-0 bg-harness-border',
         isCollapsed && 'cursor-ew-resize',
+        isCollapsed && isHovered && 'bg-harness-accent',
       )}
-      style={{ width: isCollapsed ? COLLAPSED_WIDTH : 8 }}
+      style={{ width: isCollapsed ? COLLAPSED_WIDTH : 1, zIndex: 10 }}
     >
-      <div
-        className={cn(
-          'absolute top-0 bottom-0 left-1/2 -translate-x-1/2 transition-colors duration-150',
-          isCollapsed && isHovered && 'bg-harness-accent',
-          !isCollapsed && (isActive
-            ? 'w-[3px] bg-harness-accent'
-            : 'w-px bg-harness-border'),
-        )}
-      />
+      {!isCollapsed && (
+        <div
+          onMouseDown={handleMouseDown}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className="absolute top-0 bottom-0 -left-[4px] w-[12px] cursor-col-resize"
+        />
+      )}
+      {!isCollapsed && isActive && (
+        <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[3px] bg-harness-accent" />
+      )}
     </div>
   );
 }
