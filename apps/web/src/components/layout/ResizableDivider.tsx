@@ -92,23 +92,28 @@ export function ResizableDivider({
     };
   }, [isDragging, isCollapsed, minWidth, onResize, onResizeEnd, onCollapse, onExpand]);
 
+  const isActive = isDragging || isHovered;
+
   return (
     <div
       onMouseDown={handleMouseDown}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={cn(
-        'flex-shrink-0 transition-colors duration-150',
-        isCollapsed
-          ? 'cursor-ew-resize'
-          : isDragging
-            ? 'w-[3px] cursor-col-resize bg-harness-accent'
-            : isHovered
-              ? 'w-[3px] cursor-col-resize bg-harness-accent'
-              : 'w-px cursor-default bg-harness-border',
-        isCollapsed && isHovered && 'bg-harness-accent',
+        'relative flex-shrink-0 cursor-col-resize',
+        isCollapsed && 'cursor-ew-resize',
       )}
-      style={isCollapsed ? { width: COLLAPSED_WIDTH } : undefined}
-    />
+      style={{ width: isCollapsed ? COLLAPSED_WIDTH : 8 }}
+    >
+      <div
+        className={cn(
+          'absolute top-0 bottom-0 left-1/2 -translate-x-1/2 transition-colors duration-150',
+          isCollapsed && isHovered && 'bg-harness-accent',
+          !isCollapsed && (isActive
+            ? 'w-[3px] bg-harness-accent'
+            : 'w-px bg-harness-border'),
+        )}
+      />
+    </div>
   );
 }

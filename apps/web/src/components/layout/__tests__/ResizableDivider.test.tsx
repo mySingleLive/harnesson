@@ -19,25 +19,29 @@ describe('ResizableDivider', () => {
 
   it('renders a thin divider by default', () => {
     const { container } = render(<ResizableDivider {...defaultProps} />);
-    const divider = container.firstElementChild as HTMLElement;
-    expect(divider).toBeTruthy();
-    expect(divider.className).toContain('w-px');
+    const outer = container.firstElementChild as HTMLElement;
+    const inner = outer.firstElementChild as HTMLElement;
+    expect(outer).toBeTruthy();
+    expect(outer.style.width).toBe('8px');
+    expect(inner.className).toContain('w-px');
+    expect(inner.className).toContain('bg-harness-border');
   });
 
   it('shows accent color and wider width on hover', () => {
     const { container } = render(<ResizableDivider {...defaultProps} />);
-    const divider = container.firstElementChild as HTMLElement;
-    fireEvent.mouseEnter(divider);
-    expect(divider.className).toContain('bg-harness-accent');
-    expect(divider.className).toContain('w-[3px]');
+    const outer = container.firstElementChild as HTMLElement;
+    const inner = outer.firstElementChild as HTMLElement;
+    fireEvent.mouseEnter(outer);
+    expect(inner.className).toContain('bg-harness-accent');
+    expect(inner.className).toContain('w-[3px]');
   });
 
   it('calls onResize during drag', () => {
     const onResize = vi.fn();
     const { container } = render(<ResizableDivider {...defaultProps} onResize={onResize} />);
-    const divider = container.firstElementChild as HTMLElement;
+    const outer = container.firstElementChild as HTMLElement;
 
-    fireEvent.mouseDown(divider, { clientX: 500 });
+    fireEvent.mouseDown(outer, { clientX: 500 });
     fireEvent.mouseMove(document, { clientX: 460 });
     expect(onResize).toHaveBeenCalledWith(400);
   });
@@ -45,18 +49,18 @@ describe('ResizableDivider', () => {
   it('calls onCollapse when dragged below minWidth', () => {
     const onCollapse = vi.fn();
     const { container } = render(<ResizableDivider {...defaultProps} onCollapse={onCollapse} />);
-    const divider = container.firstElementChild as HTMLElement;
+    const outer = container.firstElementChild as HTMLElement;
 
-    fireEvent.mouseDown(divider, { clientX: 500 });
+    fireEvent.mouseDown(outer, { clientX: 500 });
     fireEvent.mouseMove(document, { clientX: 100 });
     expect(onCollapse).toHaveBeenCalled();
   });
 
   it('renders collapsed state with wider width', () => {
     const { container } = render(<ResizableDivider {...defaultProps} isCollapsed={true} />);
-    const divider = container.firstElementChild as HTMLElement;
-    expect(divider.style.width).toBe('6px');
-    expect(divider.className).toContain('cursor-ew-resize');
+    const outer = container.firstElementChild as HTMLElement;
+    expect(outer.style.width).toBe('6px');
+    expect(outer.className).toContain('cursor-ew-resize');
   });
 
   it('calls onExpand when dragging out from collapsed state', () => {
@@ -64,9 +68,9 @@ describe('ResizableDivider', () => {
     const { container } = render(
       <ResizableDivider {...defaultProps} isCollapsed={true} onExpand={onExpand} />,
     );
-    const divider = container.firstElementChild as HTMLElement;
+    const outer = container.firstElementChild as HTMLElement;
 
-    fireEvent.mouseDown(divider, { clientX: 500 });
+    fireEvent.mouseDown(outer, { clientX: 500 });
     fireEvent.mouseMove(document, { clientX: 515 });
     expect(onExpand).toHaveBeenCalled();
   });
@@ -76,9 +80,9 @@ describe('ResizableDivider', () => {
     const { container } = render(
       <ResizableDivider {...defaultProps} isCollapsed={true} onExpand={onExpand} />,
     );
-    const divider = container.firstElementChild as HTMLElement;
+    const outer = container.firstElementChild as HTMLElement;
 
-    fireEvent.mouseDown(divider, { clientX: 500 });
+    fireEvent.mouseDown(outer, { clientX: 500 });
     fireEvent.mouseMove(document, { clientX: 505 });
     expect(onExpand).not.toHaveBeenCalled();
   });
