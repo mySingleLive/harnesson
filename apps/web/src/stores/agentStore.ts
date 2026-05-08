@@ -13,6 +13,11 @@ interface AgentState {
   isStreaming: Record<string, boolean>;
   todos: Record<string, TodoItem[]>;
   pendingQuestion: Record<string, import('@harnesson/shared').PendingQuestion | null>;
+  panelWidth: number;
+  panelCollapsed: boolean;
+
+  setPanelWidth: (width: number) => void;
+  setPanelCollapsed: (collapsed: boolean) => void;
 
   setActiveAgent: (id: string | null) => void;
   updatePanelState: (id: string, state: Partial<AgentPanelState>) => void;
@@ -52,6 +57,8 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   isStreaming: {},
   todos: {},
   pendingQuestion: {},
+  panelWidth: parseInt(localStorage.getItem('agentPanelWidth') ?? '440', 10),
+  panelCollapsed: localStorage.getItem('agentPanelCollapsed') === 'true',
 
   addTodo: (agentId, item) =>
     set((s) => ({
@@ -100,6 +107,16 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   },
 
   setActiveAgent: (id) => set({ activeAgentId: id }),
+
+  setPanelWidth: (width) => {
+    localStorage.setItem('agentPanelWidth', String(width));
+    set({ panelWidth: width });
+  },
+
+  setPanelCollapsed: (collapsed) => {
+    localStorage.setItem('agentPanelCollapsed', String(collapsed));
+    set({ panelCollapsed: collapsed });
+  },
 
   updatePanelState: (id, state) =>
     set((s) => ({
