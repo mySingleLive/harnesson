@@ -17,11 +17,12 @@ interface AgentPanelProps {
   agent: Agent;
   messages: AgentMessage[];
   isMaximized: boolean;
+  width?: number;
   onToggleMaximize: () => void;
   onClose: () => void;
 }
 
-export function AgentPanel({ agent, messages, isMaximized, onToggleMaximize, onClose }: AgentPanelProps) {
+export function AgentPanel({ agent, messages, isMaximized, width, onToggleMaximize, onClose }: AgentPanelProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const isStreaming = useAgentStore((s) => s.isStreaming[agent.id] ?? false);
   const { isAtBottom, scrollToBottom } = useAutoScroll(scrollRef, [messages, isStreaming]);
@@ -34,7 +35,8 @@ export function AgentPanel({ agent, messages, isMaximized, onToggleMaximize, onC
   const hasPendingQuestion = pendingQuestion !== null && pendingQuestion !== undefined;
   const commands = useSlashCommandStore((s) => s.commands);
 
-  const width = isMaximized ? 'flex-1' : 'w-[440px] flex-shrink-0';
+  const widthStyle = isMaximized ? 'flex-1' : 'flex-shrink-0';
+  const widthProp = isMaximized ? {} : { style: { width: `${width ?? 440}px` } };
 
   const handleSend = async (data: { text: string; contentBlocks: ContentBlock[]; images: ImageAttachment[] }) => {
     const text = data.text.trim();
@@ -80,7 +82,7 @@ export function AgentPanel({ agent, messages, isMaximized, onToggleMaximize, onC
   };
 
   return (
-    <div className={`relative flex h-full flex-col border-r border-harness-border bg-harness-chat ${width}`}>
+    <div className={`relative flex h-full flex-col border-r border-harness-border bg-harness-chat ${widthStyle}`} {...widthProp}>
       <AgentContextHeader
         agent={agent}
         onToggleMaximize={onToggleMaximize}
