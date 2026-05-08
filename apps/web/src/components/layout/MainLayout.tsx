@@ -3,13 +3,14 @@ import { Outlet, useLocation } from 'react-router';
 import { Topbar } from './Topbar';
 import { Sidebar } from './Sidebar';
 import { AgentPanel } from './AgentPanel';
+import { ResizableDivider } from './ResizableDivider';
 import { CreateProjectModal } from '@/components/projects/CreateProjectModal';
 import { useProjectActions } from '@/hooks/useProjectActions';
 import { useAgentStore } from '@/stores/agentStore';
 import { useProjectStore } from '@/stores/projectStore';
 
 export function MainLayout() {
-  const { agents, activeAgentId, setActiveAgent, updatePanelState, messages, isStreaming, loadAgents, activateAgent } = useAgentStore();
+  const { agents, activeAgentId, setActiveAgent, updatePanelState, messages, isStreaming, loadAgents, activateAgent, panelWidth, panelCollapsed, setPanelWidth, setPanelCollapsed } = useAgentStore();
   const switchProject = useProjectStore((s) => s.switchProject);
   const loadProjects = useProjectStore((s) => s.loadProjects);
   const activeAgent = agents.find((a) => a.id === activeAgentId);
@@ -64,17 +65,40 @@ export function MainLayout() {
           activeAgentId={activeAgentId ?? undefined}
           onAgentClick={handleAgentClick}
         />
-        {showPanel && (
-          <AgentPanel
-            agent={activeAgent}
-            messages={messages[activeAgent.id] ?? []}
-            isMaximized={activeAgent.panelState.isMaximized}
-            onToggleMaximize={handleToggleMaximize}
-            onClose={handleClose}
+        {showPanel && panelCollapsed && (
+          <ResizableDivider
+            minWidth={320}
+            currentWidth={panelWidth}
+            isCollapsed={true}
+            onResize={() => {}}
+            onResizeEnd={() => {}}
+            onCollapse={() => {}}
+            onExpand={() => setPanelCollapsed(false)}
           />
         )}
-        {!activeAgent?.panelState.isMaximized && (
-          <main className="flex-1 overflow-auto bg-harness-content">
+        {showPanel && !panelCollapsed && (
+          <>
+            <ResizableDivider
+              minWidth={320}
+              currentWidth={panelWidth}
+              isCollapsed={false}
+              onResize={setPanelWidth}
+              onResizeEnd={setPanelWidth}
+              onCollapse={() => setPanelCollapsed(true)}
+              onExpand={() => setPanelCollapsed(false)}
+            />
+            <AgentPanel
+              agent={activeAgent}
+              messages={messages[activeAgent.id] ?? []}
+              isMaximized={activeAgent.panelState.isMaximized}
+              width={panelWidth}
+              onToggleMaximize={handleToggleMaximize}
+              onClose={handleClose}
+            />
+          </>
+        )}
+        {!(showPanel && activeAgent?.panelState.isMaximized) && (
+          <main className="flex-1 overflow-auto bg-harness-content" style={{ minWidth: 300 }}>
             <Outlet />
           </main>
         )}
