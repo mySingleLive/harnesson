@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { AgentMessage, ImageAttachment, ContentBlock } from '@harnesson/shared';
-import { segmentEvents, SingleToolEventCard } from './tool-cards';
+import { buildEventTree, type TreeSegment } from './tool-cards/buildEventTree';
+import { SingleToolEventCard } from './tool-cards/ToolEventCard';
+import { StreamingAgentCard } from './tool-cards/StreamingAgentCard';
 import { QAResultCard } from './tool-cards/QAResultCard';
 import { TodoCard } from './tool-cards/TodoCard';
 import { ThinkingIndicator } from './ThinkingIndicator';
@@ -103,41 +105,50 @@ function AgentMessageBubble({ events, agentName, isStreaming }: {
   agentName: string;
   isStreaming: boolean;
 }) {
-  const segments = segmentEvents(events ?? []);
+  const tree = buildEventTree(events ?? []);
 
-  if (segments.length === 0 && !isStreaming) {
+  if (tree.length === 0 && !isStreaming) {
     return null;
   }
 
   return (
     <div className="py-3.5 pl-10 pr-5">
-      {segments.map((seg, i) => {
-        if (seg.type === 'text') {
-          return (
-            <div key={i} className="mb-5 text-[13px] leading-relaxed text-gray-300 prose prose-invert prose-sm max-w-none prose-headings:text-gray-200 prose-p:text-gray-300 prose-strong:text-gray-200 prose-code:text-harness-accent prose-code:before:content-none prose-code:after:content-none prose-pre:bg-harness-sidebar prose-a:text-harness-accent prose-li:text-gray-300">
-              <Markdown remarkPlugins={[remarkGfm]}>{seg.content}</Markdown>
-            </div>
-          );
-        }
-        if (seg.type === 'qa-result') {
-          return (
-            <div key={i} className="mb-3">
-              <QAResultCard question={seg.question} answer={seg.answer} />
-            </div>
-          );
-        }
-        return (
-          <div key={i} className="mb-3">
-            <SingleToolEventCard event={seg.event} />
-          </div>
-        );
-      })}
-
+      {tree.map((seg, i) => renderTreeSegment(seg, i))}
+      {isStreaming && tree.length === 0 && <ThinkingIndicator />}
       {events?.filter((e) => e.type === 'agent.error').map((event, i) => (
         <div key={`error-${i}`} className="mt-2 rounded-md bg-red-500/10 px-3 py-2 text-[12px] text-red-400">
           {event.message}
         </div>
       ))}
+    </div>
+  );
+}
+
+function renderTreeSegment(seg: TreeSegment, key: number): React.ReactNode {
+  if (seg.type === 'text') {
+    return (
+      <div key={key} className="mb-5 text-[13px] leading-relaxed text-gray-300 prose prose-invert prose-sm max-w-none prose-headings:text-gray-200 prose-p:text-gray-300 prose-strong:text-gray-200 prose-code:text-harness-accent prose-code:before:content-none prose-code:after:content-none prose-pre:bg-harness-sidebar prose-a:text-harness-accent prose-li:text-gray-300">
+        <Markdown remarkPlugins={[remarkGfm]}>{seg.content}</Markdown>
+      </div>
+    );
+  }
+  if (seg.type === 'qa-result') {
+    return (
+      <div key={key} className="mb-3">
+        <QAResultCard question={seg.question} answer={seg.answer} />
+      </div>
+    );
+  }
+  if (seg.event.tool === 'Agent') {
+    return (
+      <div key={key} className="mb-3">
+        <StreamingAgentCard event={seg.event} treeChildren={seg.children} />
+      </div>
+    );
+  }
+  return (
+    <div key={key} className="mb-3">
+      <SingleToolEventCard event={seg.event} />
     </div>
   );
 }
