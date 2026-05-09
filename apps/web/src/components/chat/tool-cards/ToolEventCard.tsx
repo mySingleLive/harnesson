@@ -9,8 +9,6 @@ import { EditCard } from './EditCard';
 import { BashCard } from './BashCard';
 import { LSPCard } from './LSPCard';
 import { GenericCard } from './GenericCard';
-import { AgentCard } from './AgentCard';
-
 const toolCardMap: Record<string, ComponentType<{ event: PairedToolEvent }>> = {
   Glob: GlobCard,
   Grep: GrepCard,
@@ -19,7 +17,6 @@ const toolCardMap: Record<string, ComponentType<{ event: PairedToolEvent }>> = {
   Edit: EditCard,
   Bash: BashCard,
   LSP: LSPCard,
-  Agent: AgentCard,
 };
 
 export function ToolEventCardList({ events }: { events: AgentStreamEvent[] }) {
