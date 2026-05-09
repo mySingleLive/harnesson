@@ -1,20 +1,16 @@
 import type { AgentStreamEvent } from '@harnesson/shared';
 import type { PairedToolEvent } from './pairEvents';
 
-export interface TreeSegment {
-  type: 'text' | 'tool' | 'qa-result';
-  content?: string;
-  event?: PairedToolEvent;
-  question?: string;
-  answer?: string;
-  children?: TreeSegment[];
-  toolUseId?: string;
-}
+export type TreeSegment =
+  | { type: 'text'; content: string }
+  | { type: 'tool'; event: PairedToolEvent; toolUseId?: string; children?: TreeSegment[] }
+  | { type: 'qa-result'; question: string; answer: string };
 
 interface SubEventShape {
   tool: string;
   input?: Record<string, unknown>;
   output?: string;
+  textOutput?: string;
   isError?: boolean;
   duration?: number;
   subEvents?: SubEventShape[];
@@ -188,7 +184,7 @@ export function buildEventTree(events: AgentStreamEvent[]): TreeSegment[] {
   // 为每个 Agent ToolSegment 填充 children
   function fillChildren(segments: TreeSegment[]): TreeSegment[] {
     return segments.map(seg => {
-      if (seg.type === 'tool' && seg.event?.tool === 'Agent' && seg.event.input) {
+      if (seg.type === 'tool' && seg.event.tool === 'Agent' && seg.event.input) {
         // 从配对的 tool_use 事件中获取 tool_use_id
         // 需要找到对应的原始 tool_use 事件来获取 tool_use_id
         const childGroup = findChildGroup(seg, groups);
