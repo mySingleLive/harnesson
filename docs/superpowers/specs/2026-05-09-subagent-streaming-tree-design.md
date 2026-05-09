@@ -24,8 +24,9 @@
 - 子代理内部的 `agent.text` 事件立即 yield，附加 `parentToolUseId` 和 `depth`
 - 子代理内部的 `agent.tool_use` 事件立即 yield，附加 `parentToolUseId` 和 `depth`
 - 子代理内部的 `agent.tool_result` 事件立即 yield，附加 `parentToolUseId` 和 `depth`
-- 子代理完成时 yield `agent.tool_result`，output 为最终文本摘要（非嵌套 JSON）
+- 子代理完成时 yield `agent.tool_result`，output 为 SDK 返回的 tool_result 原始内容（非嵌套 JSON）
 - `agentStack` 仅用于跟踪当前 depth 和 parentToolUseId，不再缓冲
+- 支持递归嵌套：subagent 内部再调用 subagent 时，depth 递增，parentToolUseId 指向最近的 Agent
 
 ### 2. 客户端事件处理
 
@@ -78,7 +79,7 @@ AgentMessageBubble
 **折叠行为：**
 - 运行中：自动展开，显示实时子事件
 - 完成后：自动折叠为单行摘要（CSS transition 动画）
-- 用户手动展开过的卡片不受影响
+- 用户手动展开过的卡片不受影响（StreamingAgentCard 内部用 `useState` 跟踪 `manuallyOpened`，手动展开时设为 true，自动折叠逻辑跳过 `manuallyOpened === true` 的卡片）
 
 ### 4. 流式状态与兼容性
 
