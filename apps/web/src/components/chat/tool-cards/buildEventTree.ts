@@ -8,6 +8,7 @@ export interface TreeSegment {
   question?: string;
   answer?: string;
   children?: TreeSegment[];
+  toolUseId?: string;
 }
 
 interface SubEventShape {
@@ -140,9 +141,10 @@ function segmentGroup(events: AgentStreamEvent[]): TreeSegment[] {
 
       const toolName = event.tool;
       if (pendingTools.length > 0) {
-        const { tool, input } = pendingTools.shift()!;
+        const { tool, input, tool_use_id } = pendingTools.shift()!;
         segments.push({
           type: 'tool',
+          toolUseId: tool_use_id,
           event: {
             tool: toolName && toolName !== 'unknown' ? toolName : tool,
             input,
@@ -189,7 +191,7 @@ export function buildEventTree(events: AgentStreamEvent[]): TreeSegment[] {
       if (seg.type === 'tool' && seg.event?.tool === 'Agent' && seg.event.input) {
         // 从配对的 tool_use 事件中获取 tool_use_id
         // 需要找到对应的原始 tool_use 事件来获取 tool_use_id
-        const childGroup = findChildGroup(seg, rootEvents, groups);
+        const childGroup = findChildGroup(seg, groups);
         if (childGroup && childGroup.length > 0) {
           return { ...seg, children: fillChildren(segmentGroup(childGroup)) };
         }
@@ -202,27 +204,11 @@ export function buildEventTree(events: AgentStreamEvent[]): TreeSegment[] {
 }
 
 function findChildGroup(
-  _seg: TreeSegment,
-  _rootEvents: AgentStreamEvent[],
+  seg: TreeSegment,
   groups: Map<string | null, AgentStreamEvent[]>
 ): AgentStreamEvent[] | undefined {
-  // 在 rootEvents 中找到对应的 Agent tool_use 事件的 tool_use_id
-  // 然后用该 id 查找子事件组
-  for (const [key, group] of groups) {
-    if (key === null) continue;
-    // 检查这个 group 的事件的 parentToolUseId 是否对应某个 Agent tool_use
-    if (group.length > 0) {
-      const parentId = group[0].parentToolUseId;
-      if (parentId) {
-        // 在 rootEvents 中查找对应的 Agent tool_use
-        const hasAgentToolUse = _rootEvents.some(
-          e => e.type === 'agent.tool_use' && e.tool === 'Agent' && e.tool_use_id === parentId
-        );
-        if (hasAgentToolUse) {
-          return group;
-        }
-      }
-    }
+  if (seg.toolUseId) {
+    return groups.get(seg.toolUseId);
   }
   return undefined;
 }

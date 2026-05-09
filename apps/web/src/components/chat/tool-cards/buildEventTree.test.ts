@@ -109,4 +109,25 @@ describe('buildEventTree', () => {
     expect(tree[0].question).toBe('Pick one?');
     expect(tree[0].answer).toBe('Option A');
   });
+
+  it('correctly assigns children to multiple Agent tools', () => {
+    const events: AgentStreamEvent[] = [
+      { type: 'agent.tool_use', tool: 'Agent', input: { description: 'agent A' }, tool_use_id: 'a1' },
+      { type: 'agent.text', text: 'text from A', parentToolUseId: 'a1', depth: 1 },
+      { type: 'agent.tool_result', tool: 'Agent', output: 'A done' },
+      { type: 'agent.tool_use', tool: 'Agent', input: { description: 'agent B' }, tool_use_id: 'b2' },
+      { type: 'agent.text', text: 'text from B', parentToolUseId: 'b2', depth: 1 },
+      { type: 'agent.tool_result', tool: 'Agent', output: 'B done' },
+    ];
+    const tree = buildEventTree(events);
+    expect(tree).toHaveLength(2);
+    // Agent A
+    expect(tree[0].event?.tool).toBe('Agent');
+    expect(tree[0].children).toHaveLength(1);
+    expect(tree[0].children![0].content).toBe('text from A');
+    // Agent B
+    expect(tree[1].event?.tool).toBe('Agent');
+    expect(tree[1].children).toHaveLength(1);
+    expect(tree[1].children![0].content).toBe('text from B');
+  });
 });
