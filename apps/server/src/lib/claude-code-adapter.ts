@@ -3,18 +3,6 @@ import type { SDKUserMessage } from '@anthropic-ai/claude-agent-sdk';
 import type { AgentStreamEvent, ContentBlock } from '@harnesson/shared';
 import type { AgentAdapter, ModelInfo, SessionConfig, AdapterSessionData } from './agent-adapter.js';
 
-function pairSubEvents(buffer: { texts: string[]; toolEvents: Array<{ tool: string; input: Record<string, unknown>; output?: string; isError?: boolean; duration?: number }> }): Array<{ tool: string; input: Record<string, unknown>; output?: string; isError?: boolean; duration?: number; subEvents?: unknown[]; subTexts?: string[] }> {
-  return buffer.toolEvents.map((e) => ({
-    tool: e.tool,
-    input: e.input,
-    output: e.output,
-    isError: e.isError,
-    duration: e.duration,
-    subEvents: (e as { subEvents?: unknown[] }).subEvents,
-    subTexts: (e as { subTexts?: string[] }).subTexts,
-  }));
-}
-
 function buildSDKMessages(message: string, contentBlocks?: ContentBlock[]): AsyncIterable<SDKUserMessage> {
   if (!contentBlocks || contentBlocks.length === 0) {
     return (async function* () {
@@ -141,7 +129,14 @@ export class ClaudeCodeAdapter implements AgentAdapter {
       let sessionId: string | undefined;
       const toolNameById = new Map<string, string>();
       const agentStack: string[] = [];
-      const subEventBuffers = new Map<string, { texts: string[]; toolEvents: Array<{ tool: string; input: Record<string, unknown>; output?: string; isError?: boolean; duration?: number; subEvents?: unknown[]; subTexts?: string[] }> }>();
+
+      function currentParent(): string | undefined {
+        return agentStack.length > 0 ? agentStack[agentStack.length - 1] : undefined;
+      }
+
+      function currentDepth(): number {
+        return agentStack.length;
+      }
 
       for await (const sdkMessage of messageStream) {
         if (abortController.signal.aborted) break;
@@ -158,9 +153,9 @@ export class ClaudeCodeAdapter implements AgentAdapter {
           if (content) {
             for (const block of content) {
               if (block.type === 'text' && typeof block.text === 'string') {
-                if (agentStack.length > 0) {
-                  const buffer = subEventBuffers.get(agentStack[agentStack.length - 1]);
-                  if (buffer) buffer.texts.push(block.text);
+                const parent = currentParent();
+                if (parent) {
+                  yield { type: 'agent.text', text: block.text, parentToolUseId: parent, depth: currentDepth() };
                 } else {
                   yield { type: 'agent.text', text: block.text };
                 }
@@ -173,18 +168,17 @@ export class ClaudeCodeAdapter implements AgentAdapter {
                   toolNameById.set(toolUseId, toolName);
                 }
 
+                const parent = currentParent();
+
                 if (toolName === 'Agent') {
                   agentStack.push(toolUseId);
-                  subEventBuffers.set(toolUseId, { texts: [], toolEvents: [] });
                 }
 
-                if (agentStack.length > 0) {
-                  const buffer = subEventBuffers.get(agentStack[agentStack.length - 1]);
-                  if (buffer) buffer.toolEvents.push({ tool: toolName, input: toolInput });
-                  // Yield TodoWrite immediately for real-time UI updates
-                  if (toolName === 'TodoWrite') {
-                    yield { type: 'agent.tool_use', tool: toolName, input: toolInput, tool_use_id: toolUseId };
-                  }
+                // TodoWrite: always yield at root level for real-time UI
+                if (toolName === 'TodoWrite') {
+                  yield { type: 'agent.tool_use', tool: toolName, input: toolInput, tool_use_id: toolUseId };
+                } else if (parent) {
+                  yield { type: 'agent.tool_use', tool: toolName, input: toolInput, tool_use_id: toolUseId, parentToolUseId: parent, depth: currentDepth() };
                 } else {
                   yield { type: 'agent.tool_use', tool: toolName, input: toolInput, tool_use_id: toolUseId };
                 }
@@ -203,68 +197,52 @@ export class ClaudeCodeAdapter implements AgentAdapter {
                 const output = typeof blockContent === 'string' ? blockContent : JSON.stringify(blockContent);
                 const isError = block.is_error === true;
 
-                if (toolName === 'Agent' && agentStack.length > 0) {
-                  const finishedId = agentStack.pop()!;
-                  const buffer = subEventBuffers.get(finishedId);
-                  subEventBuffers.delete(finishedId);
+                const parent = currentParent();
 
-                  if (agentStack.length > 0) {
-                    const parentBuffer = subEventBuffers.get(agentStack[agentStack.length - 1]);
-                    if (parentBuffer) {
-                      parentBuffer.toolEvents.push({
-                        tool: 'Agent',
-                        input: buffer ? { description: '', prompt: '' } : {},
-                        output,
-                        isError,
-                        subEvents: buffer ? pairSubEvents(buffer) : undefined,
-                        subTexts: buffer?.texts,
-                      });
-                    }
-                  } else {
-                    yield {
-                      type: 'agent.tool_use',
-                      tool: 'Agent',
-                      input: {},
-                    };
+                if (toolName === 'Agent') {
+                  // Pop finished agent from stack
+                  if (agentStack.length > 0 && agentStack[agentStack.length - 1] === toolId) {
+                    agentStack.pop();
+                  }
+
+                  const newParent = currentParent();
+                  if (newParent) {
                     yield {
                       type: 'agent.tool_result',
                       tool: 'Agent',
-                      output: JSON.stringify({
-                        textOutput: output,
-                        subTexts: buffer?.texts ?? [],
-                        subEvents: buffer ? pairSubEvents(buffer) : [],
-                      }),
+                      output,
+                      isError,
+                      parentToolUseId: newParent,
+                      depth: currentDepth(),
+                    };
+                  } else {
+                    yield {
+                      type: 'agent.tool_result',
+                      tool: 'Agent',
+                      output,
                       isError,
                     };
                   }
-                } else {
-                  if (agentStack.length > 0) {
-                    const buffer = subEventBuffers.get(agentStack[agentStack.length - 1]);
-                    let pendingIdx = -1;
-                    if (buffer) {
-                      for (let i = buffer.toolEvents.length - 1; i >= 0; i--) {
-                        if (buffer.toolEvents[i].tool === toolName && buffer.toolEvents[i].output === undefined) {
-                          pendingIdx = i;
-                          break;
-                        }
-                      }
-                    }
-                    if (pendingIdx >= 0 && buffer) {
-                      buffer.toolEvents[pendingIdx].output = output;
-                      buffer.toolEvents[pendingIdx].isError = isError;
-                    }
-                    // Yield TodoWrite results immediately
-                    if (toolName === 'TodoWrite') {
-                      yield { type: 'agent.tool_result', tool: toolName, output, isError };
-                    }
+                } else if (parent) {
+                  if (toolName === 'TodoWrite') {
+                    yield { type: 'agent.tool_result', tool: toolName, output, isError };
                   } else {
                     yield {
                       type: 'agent.tool_result',
                       tool: toolName,
                       output,
                       isError,
+                      parentToolUseId: parent,
+                      depth: currentDepth(),
                     };
                   }
+                } else {
+                  yield {
+                    type: 'agent.tool_result',
+                    tool: toolName,
+                    output,
+                    isError,
+                  };
                 }
               }
             }
