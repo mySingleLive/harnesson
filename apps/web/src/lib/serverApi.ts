@@ -14,17 +14,13 @@ export interface CreateProjectOptions {
   gitInit?: boolean;
 }
 
-let serverAvailable: boolean | null = null;
-
 export async function isServerRunning(): Promise<boolean> {
-  if (serverAvailable !== null) return serverAvailable;
   try {
     const res = await fetch('/api/health', { signal: AbortSignal.timeout(2000) });
-    serverAvailable = res.ok;
+    return res.ok;
   } catch {
-    serverAvailable = false;
+    return false;
   }
-  return serverAvailable;
 }
 
 export async function openFolderDialog(): Promise<OpenFolderResponse> {
@@ -36,7 +32,6 @@ export async function openFolderDialog(): Promise<OpenFolderResponse> {
     }
     return await res.json();
   } catch (err: any) {
-    serverAvailable = false;
     return { error: err.message ?? 'Failed to connect to backend server' };
   }
 }
