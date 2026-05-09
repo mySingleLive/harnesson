@@ -40,7 +40,7 @@ function UserMessage({ content, images, contentBlocks }: { content: string; imag
     if (contentBlocks && contentBlocks.length > 0) {
       return contentBlocks.map((block, i) => {
         if (block.type === 'text') {
-          return <span key={i}>{block.text}</span>;
+          return <span key={i} className="whitespace-pre-wrap">{block.text}</span>;
         }
         if (block.type === 'image' && block.image) {
           const src = `data:${block.image.mediaType};base64,${block.image.base64}`;
