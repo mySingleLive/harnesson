@@ -260,6 +260,12 @@ export function RichTextInput({
         }
       }
       imageInput.addImages(files);
+    } else {
+      const text = e.clipboardData?.getData('text/plain');
+      if (text) {
+        e.preventDefault();
+        document.execCommand('insertText', false, text);
+      }
     }
   }, [imageInput]);
 
@@ -299,8 +305,29 @@ export function RichTextInput({
     if (handleCompletionKeyDown(e)) return;
 
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendInternal();
+      // Check if character before cursor is '\' → insert newline instead of sending
+      const sel = window.getSelection();
+      const focusNode = sel?.focusNode;
+      const focusOffset = sel?.focusOffset ?? 0;
+      let shouldNewline = false;
+      if (focusNode?.nodeType === Node.TEXT_NODE && focusOffset > 0) {
+        shouldNewline = focusNode.textContent?.[focusOffset - 1] === '\\';
+      }
+
+      if (shouldNewline) {
+        e.preventDefault();
+        const range = document.createRange();
+        range.setStart(focusNode!, focusOffset - 1);
+        range.setEnd(focusNode!, focusOffset);
+        sel?.removeAllRanges();
+        sel?.addRange(range);
+        document.execCommand('delete');
+        document.execCommand('insertLineBreak');
+        syncText();
+      } else {
+        e.preventDefault();
+        handleSendInternal();
+      }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isComposing, handleCompletionKeyDown]);

@@ -165,8 +165,8 @@ function segmentGroup(events: AgentStreamEvent[]): TreeSegment[] {
   }
 
   flushText();
-  for (const { tool, input } of pendingTools) {
-    segments.push({ type: 'tool', event: { tool, input } });
+  for (const { tool, input, tool_use_id } of pendingTools) {
+    segments.push({ type: 'tool', toolUseId: tool_use_id, event: { tool, input } });
   }
 
   return segments;

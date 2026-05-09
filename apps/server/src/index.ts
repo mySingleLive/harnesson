@@ -8,6 +8,7 @@ import { branchesRoute } from './routes/branches.js';
 import { graphRoute } from './routes/graph.js';
 import { agentsRoute } from './routes/agents.js';
 import { agentService } from './lib/agent-service.js';
+import { findAvailablePort } from './lib/find-port.js';
 
 const app = new Hono();
 
@@ -20,15 +21,27 @@ app.route('/', branchesRoute);
 app.route('/', graphRoute);
 app.route('/', agentsRoute);
 
-const PORT = Number(process.env.PORT ?? 3456);
+const preferredPort = Number(process.env.PORT ?? 3456);
 
-agentService.restoreAll().then(() => {
-  serve({ fetch: app.fetch, port: PORT }, () => {
-    console.log(`@harnesson/server running on http://localhost:${PORT}`);
-  });
-}).catch((err) => {
-  console.error('Failed to restore agent sessions:', err);
-  serve({ fetch: app.fetch, port: PORT }, () => {
-    console.log(`@harnesson/server running on http://localhost:${PORT} (session restore failed)`);
-  });
-});
+async function startServer() {
+  const PORT = await findAvailablePort(preferredPort);
+
+  if (PORT !== preferredPort) {
+    console.log(`Port ${preferredPort} is in use, using ${PORT} instead`);
+  }
+
+  const start = () => {
+    serve({ fetch: app.fetch, port: PORT }, () => {
+      console.log(`@harnesson/server running on http://localhost:${PORT}`);
+    });
+  };
+
+  try {
+    await agentService.restoreAll();
+  } catch (err) {
+    console.error('Failed to restore agent sessions:', err);
+  }
+  start();
+}
+
+startServer();
