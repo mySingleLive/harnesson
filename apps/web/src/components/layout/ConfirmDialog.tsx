@@ -18,6 +18,7 @@ export function ConfirmDialog({ title, message, confirmLabel = '确认', onConfi
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.repeat) return;
       if (e.key === 'Escape') {
         e.preventDefault();
         onCancel();
@@ -32,12 +33,15 @@ export function ConfirmDialog({ title, message, confirmLabel = '确认', onConfi
 
   return createPortal(
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-dialog-title"
       data-testid="confirm-dialog-backdrop"
       className="flex items-center justify-center fixed inset-0 z-50"
       onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
     >
       <div className="relative bg-harness-sidebar border border-white/10 rounded-xl w-[380px] p-6 shadow-2xl">
-        <h3 className="text-[15px] text-gray-200 font-semibold mb-1.5">{title}</h3>
+        <h3 id="confirm-dialog-title" className="text-[15px] text-gray-200 font-semibold mb-1.5">{title}</h3>
         <p className="text-[13px] text-gray-400 mb-5 leading-relaxed">{message}</p>
         <div className="flex gap-2.5 justify-end">
           <button
