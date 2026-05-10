@@ -1,4 +1,6 @@
-import { CollapsibleCard } from './CollapsibleCard';
+import { useMemo } from 'react';
+import { Highlight, themes } from 'prism-react-renderer';
+import { CodeLine } from './CodeLine';
 import type { PairedToolEvent } from './pairEvents';
 
 function formatBytes(bytes: number): string {
@@ -14,51 +16,61 @@ export function WriteCard({ event }: { event: PairedToolEvent }) {
   const displayLines = contentLines.slice(0, 30);
   const remaining = contentLines.length - displayLines.length;
   const size = formatBytes(new Blob([content]).size);
-  const previewLines = contentLines.slice(0, 2);
+  const isRunning = !event.output;
+
+  const lang = useMemo(() => {
+    const ext = filePath.split('.').pop() ?? '';
+    const map: Record<string, string> = {
+      ts: 'tsx', tsx: 'tsx', js: 'jsx', jsx: 'jsx',
+      json: 'json', css: 'css', html: 'html', md: 'markdown',
+      py: 'python', rs: 'rust', go: 'go', yaml: 'yaml', yml: 'yaml',
+    };
+    return map[ext] ?? 'tsx';
+  }, [filePath]);
+
+  const displayText = displayLines.join('\n');
 
   return (
-    <CollapsibleCard
-      icon={<span>✏️</span>}
-      summary={
-        <>
-          <span className="font-medium text-gray-400">Write</span>
-          <span className="text-gray-600">·</span>
-          <span className="font-mono text-gray-500">{filePath}</span>
-          <span className="text-gray-600">·</span>
-          <span className="text-gray-500">{size}</span>
-        </>
-      }
-      preview={
-        previewLines.length > 0 && previewLines[0].trim().length > 0 ? (
-          <div className="space-y-0.5">
-            {previewLines.map((line, i) => (
-              <div key={i} className="flex gap-2 font-mono text-[11px]">
-                <span className="w-8 shrink-0 text-right text-gray-700 select-none">{i + 1}</span>
-                <span className="text-gray-600 truncate">{line}</span>
-              </div>
-            ))}
-            {contentLines.length > 2 && (
-              <div className="text-[11px] text-gray-500 italic">... +{contentLines.length - 2} lines (click to expand)</div>
-            )}
-          </div>
-        ) : undefined
-      }
-      badge={event.output ? <span className="text-green-500">✓</span> : undefined}
-      isRunning={!event.output}
-    >
-      {displayLines.length > 0 && (
-        <div className="space-y-0.5">
-          {displayLines.map((line, i) => (
-            <div key={i} className="flex gap-2 font-mono text-[11px]">
-              <span className="w-8 shrink-0 text-right text-gray-600 select-none">{i + 1}</span>
-              <span className="text-gray-500 whitespace-pre">{line}</span>
-            </div>
-          ))}
-          {remaining > 0 && (
-            <div className="text-[11px] text-gray-600">... {remaining} more lines</div>
+    <div className="overflow-hidden rounded-md border border-harness-border bg-harness-bg">
+      {/* Header */}
+      <div className="flex items-center gap-2 bg-[#15152a] px-2.5 py-1 text-[11px] border-b border-harness-border">
+        <span>✏️</span>
+        <span className="font-medium text-gray-400">Write</span>
+        <span className="text-gray-600">·</span>
+        <span className="font-mono text-[#7aa2f7] truncate">{filePath}</span>
+        <span className="text-gray-600">·</span>
+        <span className="text-gray-500">{size}</span>
+        <span className="ml-auto flex shrink-0 items-center gap-1">
+          {isRunning ? (
+            <>
+              <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-purple-400" />
+              <span className="text-purple-400">running...</span>
+            </>
+          ) : (
+            <span className="text-green-500">✓</span>
           )}
-        </div>
-      )}
-    </CollapsibleCard>
+        </span>
+      </div>
+
+      {/* Code body */}
+      <div className="max-h-[300px] overflow-y-auto bg-[#0d0d1a] py-1.5">
+        <Highlight theme={themes.vsDark} code={displayText} language={lang}>
+          {({ tokens, getTokenProps }) =>
+            tokens.map((line, i) => (
+              <CodeLine key={i} lineNumber={i + 1}>
+                {line.map((token, key) => (
+                  <span key={key} {...getTokenProps({ token })} />
+                ))}
+              </CodeLine>
+            ))
+          }
+        </Highlight>
+        {remaining > 0 && (
+          <div className="px-2.5 text-[11px] text-gray-600 mt-1">
+            ... {remaining} more lines
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
