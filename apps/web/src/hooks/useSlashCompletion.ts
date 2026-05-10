@@ -21,6 +21,7 @@ export function useSlashCompletion(
   input: string,
   setInput: (val: string) => void,
   textareaRef: React.RefObject<HTMLTextAreaElement | null>,
+  cwd?: string,
 ): UseSlashCompletionReturn {
   const commands = useSlashCommandStore((s) => s.commands);
   const fetchCommands = useSlashCommandStore((s) => s.fetchCommands);
@@ -33,8 +34,8 @@ export function useSlashCompletion(
   const pendingCursorPos = useRef<number | null>(null);
 
   useEffect(() => {
-    fetchCommands();
-  }, [fetchCommands]);
+    fetchCommands(cwd);
+  }, [fetchCommands, cwd]);
 
   useLayoutEffect(() => {
     if (pendingCursorPos.current !== null) {

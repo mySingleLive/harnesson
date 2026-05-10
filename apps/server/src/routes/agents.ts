@@ -151,7 +151,8 @@ agentsRoute.post('/api/agents/:id/abort', async (c) => {
 // GET /api/slash-commands — list available slash commands
 agentsRoute.get('/api/slash-commands', async (c) => {
   try {
-    const commands = await getAvailableCommands();
+    const cwd = c.req.query('cwd');
+    const commands = await getAvailableCommands(cwd || undefined);
     return c.json({ commands });
   } catch (err) {
     return c.json({ error: err instanceof Error ? err.message : 'Failed to fetch commands' }, 500);

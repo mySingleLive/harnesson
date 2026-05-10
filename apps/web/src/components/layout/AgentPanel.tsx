@@ -133,6 +133,7 @@ export function AgentPanel({ agent, messages, isMaximized, width, onToggleMaximi
         <RichTextInput
           placeholder="Send a message..."
           commands={commands}
+          cwd={agent.worktreePath}
           modelValue={agent.model}
           onModelChange={(modelId) => updateAgent(agent.id, { model: modelId })}
           isStreaming={isStreaming}

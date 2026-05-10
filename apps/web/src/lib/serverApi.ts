@@ -277,9 +277,10 @@ export async function getAgentTodos(agentId: string): Promise<unknown[]> {
 
 // --- Slash Command API ---
 
-export async function getSlashCommands(): Promise<import('@harnesson/shared').SlashCommand[]> {
+export async function getSlashCommands(cwd?: string): Promise<import('@harnesson/shared').SlashCommand[]> {
   try {
-    const res = await fetch('/api/slash-commands');
+    const url = cwd ? `/api/slash-commands?cwd=${encodeURIComponent(cwd)}` : '/api/slash-commands';
+    const res = await fetch(url);
     if (!res.ok) return [];
     const data = await res.json() as { commands: import('@harnesson/shared').SlashCommand[] };
     return data.commands;

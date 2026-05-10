@@ -118,6 +118,7 @@ interface RichTextInputProps {
   disabled?: boolean;
   isStreaming?: boolean;
   commands: SlashCommand[];
+  cwd?: string;
   modelValue?: string;
   onModelChange?: (model: string) => void;
   showModelSelector?: boolean;
@@ -139,6 +140,7 @@ export function RichTextInput({
   disabled,
   isStreaming,
   commands,
+  cwd,
   modelValue,
   onModelChange,
   showModelSelector = true,
@@ -194,7 +196,7 @@ export function RichTextInput({
       sel?.removeAllRanges();
       sel?.addRange(range);
     }
-  }, compatTextareaRef as React.RefObject<HTMLTextAreaElement>);
+  }, compatTextareaRef as React.RefObject<HTMLTextAreaElement>, cwd);
 
   // Sync editor text to internalText state
   const syncText = useCallback(() => {
@@ -433,7 +435,7 @@ export function RichTextInput({
           onCompositionEnd={handleCompositionEnd}
           onClick={handleEditorClick}
           data-placeholder={placeholder ?? 'Send a message...'}
-          className="min-h-[24px] max-h-[140px] w-full resize-none overflow-y-auto bg-transparent px-3.5 py-2.5 text-[13px] leading-relaxed outline-none text-gray-300 empty:before:content-[attr(data-placeholder)] empty:before:text-gray-600"
+          className="min-h-[24px] max-h-[140px] w-full resize-none overflow-y-auto no-scrollbar bg-transparent px-3.5 py-2.5 text-[13px] leading-relaxed outline-none text-gray-300 empty:before:content-[attr(data-placeholder)] empty:before:text-gray-600"
           style={{ wordBreak: 'break-word' }}
         />
         {isPopupOpen && (

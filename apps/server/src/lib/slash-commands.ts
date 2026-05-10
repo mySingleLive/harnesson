@@ -1,5 +1,5 @@
 import { readdir, stat, readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, isAbsolute, normalize } from 'node:path';
 import { homedir } from 'node:os';
 import type { SlashCommand } from '@harnesson/shared';
 
@@ -10,8 +10,19 @@ const BUILTIN_COMMANDS: SlashCommand[] = [
   { name: 'help', type: 'builtin', description: '显示帮助信息' },
 ];
 
-export async function getAvailableCommands(): Promise<SlashCommand[]> {
-  const skills = await scanSkills();
+export async function getAvailableCommands(cwd?: string): Promise<SlashCommand[]> {
+  const [pluginSkills, projectSkills] = await Promise.all([
+    scanPluginSkills(),
+    cwd ? scanProjectSkills(cwd) : Promise.resolve([]),
+  ]);
+  const seen = new Set<string>();
+  const skills: SlashCommand[] = [];
+  for (const s of [...pluginSkills, ...projectSkills]) {
+    if (!seen.has(s.name)) {
+      seen.add(s.name);
+      skills.push(s);
+    }
+  }
   return [...BUILTIN_COMMANDS, ...skills];
 }
 
@@ -31,7 +42,7 @@ async function readSkillDescription(skillDir: string): Promise<string | null> {
   return null;
 }
 
-async function scanSkills(): Promise<SlashCommand[]> {
+async function scanPluginSkills(): Promise<SlashCommand[]> {
   const skillsDir = join(homedir(), '.claude', 'plugins', 'cache');
   const commands: SlashCommand[] = [];
 
@@ -111,5 +122,26 @@ async function scanSkills(): Promise<SlashCommand[]> {
     // Plugin cache directory doesn't exist — no skills available
   }
 
+  return commands;
+}
+
+async function scanProjectSkills(cwd: string): Promise<SlashCommand[]> {
+  if (!isAbsolute(cwd) || normalize(cwd).includes('..')) return [];
+  const skillsDir = join(cwd, '.claude', 'skills');
+  const commands: SlashCommand[] = [];
+  try {
+    const entries = await readdir(skillsDir);
+    for (const entry of entries) {
+      const entryPath = join(skillsDir, entry);
+      try {
+        const s = await stat(entryPath);
+        if (s.isDirectory()) {
+          const description =
+            (await readSkillDescription(entryPath)) ?? `Skill: ${entry}`;
+          commands.push({ name: entry, type: 'skill', description });
+        }
+      } catch {}
+    }
+  } catch {}
   return commands;
 }

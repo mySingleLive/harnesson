@@ -8,8 +8,9 @@ interface SlashCommandState {
   commands: SlashCommand[];
   isLoading: boolean;
   lastFetched: number | null;
+  lastCwd: string | undefined;
 
-  fetchCommands: () => Promise<void>;
+  fetchCommands: (cwd?: string) => Promise<void>;
   invalidateCache: () => void;
 }
 
@@ -17,16 +18,17 @@ export const useSlashCommandStore = create<SlashCommandState>((set, get) => ({
   commands: [],
   isLoading: false,
   lastFetched: null,
+  lastCwd: undefined,
 
-  fetchCommands: async () => {
-    const { lastFetched, isLoading } = get();
+  fetchCommands: async (cwd?: string) => {
+    const { lastFetched, isLoading, lastCwd } = get();
     if (isLoading) return;
-    if (lastFetched && Date.now() - lastFetched < CACHE_DURATION) return;
+    if (lastFetched && cwd === lastCwd && Date.now() - lastFetched < CACHE_DURATION) return;
 
     set({ isLoading: true });
     try {
-      const commands = await api.getSlashCommands();
-      set({ commands, lastFetched: Date.now() });
+      const commands = await api.getSlashCommands(cwd);
+      set({ commands, lastFetched: Date.now(), lastCwd: cwd });
     } catch {
       // Keep existing commands on error
     } finally {
@@ -35,6 +37,6 @@ export const useSlashCommandStore = create<SlashCommandState>((set, get) => ({
   },
 
   invalidateCache: () => {
-    set({ lastFetched: null });
+    set({ lastFetched: null, lastCwd: undefined });
   },
 }));

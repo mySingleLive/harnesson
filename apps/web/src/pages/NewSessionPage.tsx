@@ -70,6 +70,7 @@ export function NewSessionPage() {
           placeholder={projectPath ? "Message Harnesson...  Type / for commands" : "请先选择或创建一个项目"}
           disabled={!projectPath || isCreating}
           commands={commands}
+          cwd={projectPath || undefined}
           modelValue={selectedModel}
           onModelChange={setSelectedModel}
           showBranchSelector
