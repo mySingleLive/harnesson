@@ -3,6 +3,7 @@ import { Plus, Layers, GitBranch, ChevronDown, ArrowUp, StopCircle, ImageIcon, F
 import type { ImageAttachment, ContentBlock, SlashCommand } from '@harnesson/shared';
 import { useImageInput, type PendingImage } from '@/hooks/useImageInput';
 import { useSlashCompletion } from '@/hooks/useSlashCompletion';
+import { useEmacsKeybindings } from '@/hooks/useEmacsKeybindings';
 import { ModelDropdown } from '@/components/layout/ModelDropdown';
 import { SlashCommandPopup } from '@/components/chat/SlashCommandPopup';
 import { ImagePreview } from '@/components/chat/ImagePreview';
@@ -206,6 +207,13 @@ export function RichTextInput({
     return text;
   }, []);
 
+  // Emacs-style inline editing keybindings
+  const { handleEmacsKeyDown } = useEmacsKeybindings({
+    editorRef,
+    isComposing,
+    onTextChange: syncText,
+  });
+
   // External text injection (for quick actions)
   useEffect(() => {
     if (externalText !== undefined && editorRef.current) {
@@ -295,6 +303,9 @@ export function RichTextInput({
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (isComposing) return;
 
+    // Emacs-style inline editing shortcuts (Ctrl+A/E/B/F/P/N/D/H/W/K/U/Y)
+    if (handleEmacsKeyDown(e)) return;
+
     const text = editorRef.current?.textContent ?? '';
     const sel = window.getSelection();
     const cursorPos = sel?.focusOffset ?? 0;
@@ -332,7 +343,7 @@ export function RichTextInput({
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isComposing, handleCompletionKeyDown]);
+  }, [isComposing, handleEmacsKeyDown, handleCompletionKeyDown]);
 
   // Composition
   const handleCompositionStart = useCallback(() => {
@@ -526,7 +537,7 @@ export function RichTextInput({
         </div>
       </div>
       <div className="mt-1.5 text-center text-[10px] text-gray-600">
-        <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">Enter</kbd> 发送 · <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">Shift+Enter</kbd> 换行 · <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">⌘V</kbd> 粘贴图片
+        <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">Enter</kbd> 发送 · <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">Shift+Enter</kbd> 换行 · <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">⌘V</kbd> 粘贴图片 · <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">Ctrl+A/E</kbd> 行首/行尾 · <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">Ctrl+W</kbd> 删词 · <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">Ctrl+K/U</kbd> 删至行尾/行首 · <kbd className="rounded border border-harness-border bg-[#252540] px-1.5 py-[1px] text-[10px]">Ctrl+Y</kbd> 粘贴
       </div>
     </>
   );

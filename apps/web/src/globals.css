@@ -35,15 +35,24 @@ body {
   background: rgba(139, 92, 246, 0.5);
 }
 
-/* Agent 状态呼吸灯动画 */
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Agent 状态呼吸灯动画 — 明暗变化，无缩放 */
 @keyframes pulse-scale {
   0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 0 2px rgba(249, 115, 22, 0.4);
+    opacity: 0.4;
+    box-shadow: 0 0 2px rgba(139, 92, 246, 0.3);
   }
   50% {
-    transform: scale(1.6);
-    box-shadow: 0 0 8px rgba(249, 115, 22, 0.6), 0 0 16px rgba(249, 115, 22, 0.2);
+    opacity: 1;
+    box-shadow: 0 0 6px rgba(139, 92, 246, 0.5), 0 0 12px rgba(139, 92, 246, 0.15);
   }
 }
 

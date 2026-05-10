@@ -17,7 +17,7 @@ export function AgentStatusDot({ status, className }: AgentStatusDotProps) {
   }
 
   const colorMap: Record<Exclude<AgentStatus, 'error'>, string> = {
-    running: 'bg-orange-500 animate-[pulse-scale_1.8s_ease-in-out_infinite]',
+    running: 'bg-harness-accent animate-[pulse-scale_1.8s_ease-in-out_infinite]',
     completed: 'bg-green-500 shadow-[0_0_4px_rgba(34,197,94,0.3)]',
     waiting: 'bg-amber-500 opacity-70',
     idle: 'bg-gray-500',

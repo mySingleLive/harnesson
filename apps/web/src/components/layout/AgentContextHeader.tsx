@@ -9,7 +9,7 @@ interface AgentContextHeaderProps {
 }
 
 const statusConfig: Record<string, { label: string; className: string }> = {
-  running: { label: 'Running', className: 'bg-orange-500/15 text-orange-500' },
+  running: { label: 'Running', className: 'bg-harness-accent/15 text-harness-accent' },
   waiting: { label: 'Waiting', className: 'bg-amber-500/15 text-amber-500' },
   completed: { label: 'Completed', className: 'bg-green-500/15 text-green-500' },
   error: { label: 'Error', className: 'bg-red-500/15 text-red-500' },

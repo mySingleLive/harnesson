@@ -8,7 +8,8 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(mvn test-compile:*)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "mcp__plugin_superpowers-chrome_chrome__use_browser"
     ],
     "defaultMode": "bypassPermissions"
   }
