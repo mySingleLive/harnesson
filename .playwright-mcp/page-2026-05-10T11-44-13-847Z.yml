@@ -1,0 +1,75 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: Harnesson
+      - generic [ref=e7]: "|"
+      - button "No Project" [ref=e9]:
+        - img [ref=e10]
+        - generic [ref=e12]: No Project
+        - img [ref=e13]
+    - generic [ref=e15]:
+      - generic [ref=e16]: 0 Agents Running
+      - button "Settings" [ref=e17]:
+        - img [ref=e18]
+        - text: Settings
+  - generic [ref=e21]:
+    - complementary [ref=e22]:
+      - navigation [ref=e23]:
+        - link "New Session" [ref=e24] [cursor=pointer]:
+          - /url: /
+          - img [ref=e25]
+          - text: New Session
+        - link "Projects" [ref=e27] [cursor=pointer]:
+          - /url: /projects
+          - img [ref=e28]
+          - text: Projects
+        - link "Graph" [ref=e30] [cursor=pointer]:
+          - /url: /graph
+          - img [ref=e31]
+          - text: Graph
+        - link "Tasks" [ref=e36] [cursor=pointer]:
+          - /url: /tasks
+          - img [ref=e37]
+          - text: Tasks
+        - link "Files" [ref=e40] [cursor=pointer]:
+          - /url: /files
+          - img [ref=e41]
+          - text: Files
+        - link "Git" [ref=e43] [cursor=pointer]:
+          - /url: /git
+          - img [ref=e44]
+          - text: Git
+    - main [ref=e50]:
+      - generic [ref=e51]:
+        - heading "HARNESSON" [level=1] [ref=e52]
+        - generic [ref=e53]:
+          - generic [ref=e54]:
+            - generic [ref=e55]: 请先选择或创建一个项目
+            - generic [ref=e56]:
+              - generic [ref=e57]:
+                - button [ref=e59]:
+                  - img [ref=e60]
+                - button "Claude Code" [ref=e61]:
+                  - img [ref=e62]
+                  - generic [ref=e66]: Claude Code
+                  - img [ref=e67]
+                - button "main" [ref=e69]:
+                  - img [ref=e70]
+                  - generic [ref=e74]: main
+                  - img [ref=e75]
+              - button [disabled] [ref=e78]:
+                - img [ref=e79]
+          - generic [ref=e81]: Enter 发送 · Shift+Enter 换行 · ⌘V 粘贴图片 · Ctrl+A/E 行首/行尾 · Ctrl+W 删词 · Ctrl+K/U 删至行尾/行首 · Ctrl+Y 粘贴
+          - generic [ref=e82]:
+            - button "创建新功能" [ref=e83]:
+              - img [ref=e84]
+              - text: 创建新功能
+            - button "修复 Bug" [ref=e86]:
+              - img [ref=e87]
+              - text: 修复 Bug
+            - button "代码审查" [ref=e96]:
+              - img [ref=e97]
+              - text: 代码审查
+            - button "编写测试" [ref=e100]:
+              - img [ref=e101]
+              - text: 编写测试

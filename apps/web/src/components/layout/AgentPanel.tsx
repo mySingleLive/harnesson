@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { ArrowDown } from 'lucide-react';
 import type { Agent, AgentMessage, ContentBlock, ImageAttachment } from '@harnesson/shared';
 import { useAgentStore } from '@/stores/agentStore';
@@ -24,8 +24,10 @@ interface AgentPanelProps {
 
 export function AgentPanel({ agent, messages, isMaximized, width, onToggleMaximize, onClose }: AgentPanelProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputWrapperRef = useRef<HTMLDivElement>(null);
+  const [inputHeight, setInputHeight] = useState(0);
   const isStreaming = useAgentStore((s) => s.isStreaming[agent.id] ?? false);
-  const { isAtBottom, scrollToBottom } = useAutoScroll(scrollRef, [messages, isStreaming]);
+  const { isAtBottom, scrollToBottom } = useAutoScroll(scrollRef, [messages, isStreaming, inputHeight]);
   const sendMessage = useAgentStore((s) => s.sendMessage);
   const abortAgent = useAgentStore((s) => s.abortAgent);
   const updateAgent = useAgentStore((s) => s.updateAgent);
@@ -34,6 +36,18 @@ export function AgentPanel({ agent, messages, isMaximized, width, onToggleMaximi
   const pendingQuestion = useAgentStore((s) => s.pendingQuestion[agent.id]);
   const hasPendingQuestion = pendingQuestion !== null && pendingQuestion !== undefined;
   const commands = useSlashCommandStore((s) => s.commands);
+
+  useEffect(() => {
+    const el = inputWrapperRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setInputHeight(entry.borderBoxSize[0]?.blockSize ?? entry.contentRect.height);
+      }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasPendingQuestion]);
 
   const widthStyle = isMaximized ? 'flex-1' : 'flex-shrink-0';
   const widthProp = isMaximized ? {} : { style: { width: `${width ?? 440}px` } };
@@ -89,7 +103,7 @@ export function AgentPanel({ agent, messages, isMaximized, width, onToggleMaximi
         onClose={onClose}
       />
 
-      <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto relative">
+      <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto relative" style={{ paddingBottom: inputHeight }}>
         {messages.map((msg) => (
           <MessageRenderer
             key={msg.id}
@@ -104,13 +118,13 @@ export function AgentPanel({ agent, messages, isMaximized, width, onToggleMaximi
           </div>
         )}
         {((isStreaming && !hasPendingQuestion) || (todos && todos.length > 0)) && (
-          <div className="sticky bottom-0 z-10 bg-harness-chat px-3 pt-1 pb-2">
+          <div className="sticky z-10 bg-harness-chat px-3 pt-1 pb-2" style={{ bottom: inputHeight }}>
             {isStreaming && !hasPendingQuestion && <ThinkingBar />}
             {todos && todos.length > 0 && <TodoBar todos={todos} />}
           </div>
         )}
         {!isAtBottom && (
-          <div className="sticky bottom-2 z-20 flex justify-end pr-3">
+          <div className="sticky z-20 flex justify-end pr-3" style={{ bottom: inputHeight + 8 }}>
             <button
               onClick={scrollToBottom}
               className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-[#252540] text-gray-400 shadow-lg transition-colors hover:text-gray-200"
@@ -122,7 +136,7 @@ export function AgentPanel({ agent, messages, isMaximized, width, onToggleMaximi
       </div>
 
       {hasPendingQuestion ? (
-        <div className="shrink-0">
+        <div ref={inputWrapperRef} className="absolute bottom-0 left-0 right-0 z-10 bg-harness-chat">
           <AskUserQuestionPanel
             question={pendingQuestion.question}
             onSubmit={(answer) =>
@@ -131,17 +145,19 @@ export function AgentPanel({ agent, messages, isMaximized, width, onToggleMaximi
           />
         </div>
       ) : (
-      <div className={`shrink-0 px-3 pb-3 ${isMaximized ? 'mx-auto w-full max-w-[800px]' : ''}`}>
-        <RichTextInput
-          placeholder="Send a message..."
-          commands={commands}
-          cwd={agent.worktreePath}
-          modelValue={agent.model}
-          onModelChange={(modelId) => updateAgent(agent.id, { model: modelId })}
-          isStreaming={isStreaming}
-          onAbort={handleAbort}
-          onSend={handleSend}
-        />
+      <div ref={inputWrapperRef} className="absolute bottom-0 left-0 right-0 z-10 bg-harness-chat">
+        <div className={`px-3 pt-3 pb-3 ${isMaximized ? 'mx-auto w-full max-w-[800px]' : ''}`}>
+          <RichTextInput
+            placeholder="Send a message..."
+            commands={commands}
+            cwd={agent.worktreePath}
+            modelValue={agent.model}
+            onModelChange={(modelId) => updateAgent(agent.id, { model: modelId })}
+            isStreaming={isStreaming}
+            onAbort={handleAbort}
+            onSend={handleSend}
+          />
+        </div>
       </div>
       )}
     </div>

@@ -1,18 +1,23 @@
 ---
 name: e2e-testing
-description: 使用浏览器直接进行端到端测试。先理解测试意图、生成测试计划文档，然后按计划执行浏览器测试，发现问题自动修复，直到所有测试目标通过。
+description: 使用浏览器直接进行端到端测试（Chrome DevTools / Browser Agent / Playwright MCP）。先理解测试意图、生成测试计划文档，然后按计划执行浏览器测试，发现问题自动修复，直到所有测试目标通过。严禁编写脚本。
 ---
 
 # E2E 端到端测试
 
-使用浏览器直接进行端到端测试。不写任何脚本，直接通过 Chrome 浏览器工具操作 Web 应用，验证功能是否正常。
+使用浏览器直接进行端到端测试。不写任何脚本，必须通过 Chrome DevTools / Browser Agent / Playwright MCP 等浏览器工具操作 Web 应用，验证功能是否正常。
 
 ## 铁律
 
-1. **NO SCRIPTS** — 直接用 Chrome 浏览器工具操作，不写任何自动化测试脚本
-2. **NO UNSUPERVISED FIXES** — 同一问题修复超过 3 次仍未解决，必须停下来向用户报告
-3. **FOLLOW THE PLAN** — 测试执行阶段必须以生成的测试计划文档为准，不得偏离
-4. **RESPECT UI RULES** — 严格遵守操作规则，特别是输入提交方式（回车/点击按钮，禁止 `\n`）
+1. **NO SCRIPTS** — 必须使用浏览器直接测试，严禁编写 Python 脚本、Node.js 脚本或任何自动化测试脚本来执行测试
+2. **BROWSER-ONLY** — 只允许以下方式操作浏览器：
+   - Chrome DevTools 工具（superpowers 内置 chrome 工具）
+   - Google Chrome DevTools Protocol 工具
+   - Browser Agent 工具
+   - Playwright MCP（仅限 MCP 方式，不得编写 Playwright 脚本）
+3. **NO UNSUPERVISED FIXES** — 同一问题修复超过 3 次仍未解决，必须停下来向用户报告
+4. **FOLLOW THE PLAN** — 测试执行阶段必须以生成的测试计划文档为准，不得偏离
+5. **RESPECT UI RULES** — 严格遵守操作规则，特别是输入提交方式（回车/点击按钮，禁止 `\n`）
 
 ## 触发条件
 
@@ -289,6 +294,17 @@ find . -maxdepth 1 -type f \( -name '*.png' -o ! -name '*.*' \) -newer .e2e-star
 ---
 
 ## 浏览器操作规范
+
+### 工具选择优先级
+
+按以下优先级选择浏览器操作工具（只能用 MCP/内置工具，不得编写脚本）：
+
+| 优先级 | 工具 | 说明 |
+|--------|------|------|
+| 1（推荐） | Chrome DevTools 工具 | superpowers 内置 chrome 工具，直接操控浏览器 |
+| 2 | Google Chrome DevTools Protocol | 通过 CDP 协议操控 Chrome |
+| 3 | Browser Agent 工具 | 智能浏览器代理工具 |
+| 4（备选） | Playwright MCP | 仅限 MCP 方式调用，严禁编写 Playwright 脚本 |
 
 ### DO（正确做法）
 

@@ -47,3 +47,15 @@
   - 普通态：`border-[#2a2a4e] bg-[#1a1a2e]`
   - 聚焦态：`border-harness-accent bg-[#1e1e3a] shadow-[0_0_0_2px_rgba(139,92,246,0.25)]`
   - 悬停态：`border-[#3a3a5c] bg-[#1c1c32]`
+
+## 布局模式类
+
+### 底部悬浮输入框 + 滚动内容区
+- **策略**：输入框 absolute 定位 + 滚动容器动态 padding-bottom
+- **关键步骤**：
+  1. 外层容器 `relative flex flex-col h-full`
+  2. 滚动容器 `flex-1 min-h-0 overflow-y-auto`，`style={{ paddingBottom: inputHeight }}`
+  3. 输入框容器 `absolute bottom-0 left-0 right-0 z-10 bg-<panel-bg>`
+  4. 使用 `ResizeObserver` + `entry.borderBoxSize[0].blockSize` 测量输入框高度
+  5. Sticky 元素（如 scroll-to-bottom 按钮）的 bottom 需动态偏移 `inputHeight`
+- **注意**：`contentRect.height` 不含 padding，需用 `borderBoxSize` 获取完整高度；`hasPendingQuestion` 变化时需重新 observe
