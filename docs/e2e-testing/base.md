@@ -14,6 +14,13 @@
   - 关键步骤：click folder 按钮 → await_element 下拉菜单 → click 项目名
   - 注意：直接 click 不稳定，有时下拉菜单不会打开
 
+## 布局调试类
+
+### Flex 子元素宽度溢出
+- **策略**：检查 `min-width: auto` (flex 默认值) 是否阻止收缩
+- **关键步骤**：添加 `min-w-0` 到 flex 子元素 → 验证宽度恢复预期
+- **注意**：`flex: 1 1 0%` 不足以控制宽度，`min-width: auto` 会让元素扩展到内容最小宽度
+
 ## Agent 交互类
 
 ### 触发 AskUserQuestion

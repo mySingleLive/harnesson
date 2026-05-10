@@ -12,6 +12,10 @@
   --color-harness-muted: #888;
 }
 
+html, body, #root {
+  height: 100%;
+}
+
 body {
   margin: 0;
   background-color: var(--color-harness-bg);

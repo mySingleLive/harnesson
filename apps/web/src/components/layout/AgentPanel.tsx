@@ -82,7 +82,7 @@ export function AgentPanel({ agent, messages, isMaximized, width, onToggleMaximi
   };
 
   return (
-    <div className={`relative flex h-full flex-col bg-harness-chat ${widthStyle}`} {...widthProp}>
+    <div className={`relative flex h-full flex-col bg-harness-chat min-w-0 ${widthStyle}`} {...widthProp}>
       <AgentContextHeader
         agent={agent}
         onToggleMaximize={onToggleMaximize}
@@ -122,14 +122,16 @@ export function AgentPanel({ agent, messages, isMaximized, width, onToggleMaximi
       </div>
 
       {hasPendingQuestion ? (
-        <AskUserQuestionPanel
-          question={pendingQuestion.question}
-          onSubmit={(answer) =>
-            useAgentStore.getState().submitQuestionAnswer(agent.id, answer)
-          }
-        />
+        <div className="shrink-0">
+          <AskUserQuestionPanel
+            question={pendingQuestion.question}
+            onSubmit={(answer) =>
+              useAgentStore.getState().submitQuestionAnswer(agent.id, answer)
+            }
+          />
+        </div>
       ) : (
-      <div className={`px-3 pb-3 ${isMaximized ? 'mx-auto w-full max-w-[800px]' : ''}`}>
+      <div className={`shrink-0 px-3 pb-3 ${isMaximized ? 'mx-auto w-full max-w-[800px]' : ''}`}>
         <RichTextInput
           placeholder="Send a message..."
           commands={commands}
