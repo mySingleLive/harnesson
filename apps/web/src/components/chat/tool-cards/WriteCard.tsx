@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Highlight, themes } from 'prism-react-renderer';
 import { CodeLine } from './CodeLine';
+import { detectLanguage } from './langUtils';
 import type { PairedToolEvent } from './pairEvents';
 
 function formatBytes(bytes: number): string {
@@ -15,18 +16,9 @@ export function WriteCard({ event }: { event: PairedToolEvent }) {
   const contentLines = content.split('\n');
   const displayLines = contentLines.slice(0, 30);
   const remaining = contentLines.length - displayLines.length;
-  const size = formatBytes(new Blob([content]).size);
+  const size = useMemo(() => formatBytes(new Blob([content]).size), [content]);
   const isRunning = !event.output;
-
-  const lang = useMemo(() => {
-    const ext = filePath.split('.').pop() ?? '';
-    const map: Record<string, string> = {
-      ts: 'tsx', tsx: 'tsx', js: 'jsx', jsx: 'jsx',
-      json: 'json', css: 'css', html: 'html', md: 'markdown',
-      py: 'python', rs: 'rust', go: 'go', yaml: 'yaml', yml: 'yaml',
-    };
-    return map[ext] ?? 'tsx';
-  }, [filePath]);
+  const lang = useMemo(() => detectLanguage(filePath), [filePath]);
 
   const displayText = displayLines.join('\n');
 
@@ -46,6 +38,8 @@ export function WriteCard({ event }: { event: PairedToolEvent }) {
               <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-purple-400" />
               <span className="text-purple-400">running...</span>
             </>
+          ) : event.isError ? (
+            <span className="text-red-400">✗</span>
           ) : (
             <span className="text-green-500">✓</span>
           )}
@@ -53,7 +47,7 @@ export function WriteCard({ event }: { event: PairedToolEvent }) {
       </div>
 
       {/* Code body */}
-      <div className="max-h-[300px] overflow-y-auto bg-[#0d0d1a] py-1.5">
+      <div className="max-h-[300px] overflow-auto bg-[#0d0d1a] py-1.5">
         <Highlight theme={themes.vsDark} code={displayText} language={lang}>
           {({ tokens, getTokenProps }) =>
             tokens.map((line, i) => (

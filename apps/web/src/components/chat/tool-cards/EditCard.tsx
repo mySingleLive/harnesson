@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { diffLines } from 'diff';
 import { Highlight, themes } from 'prism-react-renderer';
 import { CodeLine } from './CodeLine';
+import { detectLanguage } from './langUtils';
 import type { PairedToolEvent } from './pairEvents';
 
 interface DiffLine {
@@ -38,18 +39,17 @@ export function EditCard({ event }: { event: PairedToolEvent }) {
 
   const unifiedText = diffLinesData.map((l) => l.text).join('\n');
 
-  const changedCount = diffLinesData.filter((l) => l.type === 'added').length;
-  const removedCount = diffLinesData.filter((l) => l.type === 'deleted').length;
+  const { changedCount, removedCount } = useMemo(() => {
+    let added = 0;
+    let removed = 0;
+    for (const l of diffLinesData) {
+      if (l.type === 'added') added++;
+      else if (l.type === 'deleted') removed++;
+    }
+    return { changedCount: added, removedCount: removed };
+  }, [diffLinesData]);
 
-  const lang = useMemo(() => {
-    const ext = filePath.split('.').pop() ?? '';
-    const map: Record<string, string> = {
-      ts: 'tsx', tsx: 'tsx', js: 'jsx', jsx: 'jsx',
-      json: 'json', css: 'css', html: 'html', md: 'markdown',
-      py: 'python', rs: 'rust', go: 'go', yaml: 'yaml', yml: 'yaml',
-    };
-    return map[ext] ?? 'tsx';
-  }, [filePath]);
+  const lang = useMemo(() => detectLanguage(filePath), [filePath]);
 
   const isRunning = !event.output;
 
@@ -81,7 +81,7 @@ export function EditCard({ event }: { event: PairedToolEvent }) {
       </div>
 
       {/* Diff body */}
-      <div className="max-h-[300px] overflow-y-auto bg-[#0d0d1a] py-1.5">
+      <div className="max-h-[300px] overflow-auto bg-[#0d0d1a] py-1.5">
         <Highlight theme={themes.vsDark} code={unifiedText} language={lang}>
           {({ tokens, getTokenProps }) =>
             tokens.map((line, i) => {
