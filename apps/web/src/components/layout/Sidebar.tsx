@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { NavLink } from 'react-router';
 import {
   MessageSquarePlus,
@@ -8,6 +9,7 @@ import {
   GitBranch,
 } from 'lucide-react';
 import { AgentStatusDot } from './AgentStatusDot';
+import { AgentContextMenu } from './AgentContextMenu';
 import type { Agent } from '@harnesson/shared';
 import { cn } from '@/lib/utils';
 
@@ -27,6 +29,17 @@ const navItems = [
 ];
 
 export function Sidebar({ agents, activeAgentId, onAgentClick }: SidebarProps) {
+  const [contextMenu, setContextMenu] = useState<{
+    agent: Agent;
+    x: number;
+    y: number;
+  } | null>(null);
+
+  const handleContextMenu = (e: React.MouseEvent, agent: Agent) => {
+    e.preventDefault();
+    setContextMenu({ agent, x: e.clientX, y: e.clientY });
+  };
+
   return (
     <aside className="flex h-full w-[220px] flex-shrink-0 flex-col border-r border-harness-border bg-harness-sidebar">
       <nav className="py-3">
@@ -57,6 +70,7 @@ export function Sidebar({ agents, activeAgentId, onAgentClick }: SidebarProps) {
           <button
             key={agent.id}
             onClick={() => onAgentClick(agent)}
+            onContextMenu={(e) => handleContextMenu(e, agent)}
             className={cn(
               'w-full px-4 py-2 text-left transition-colors',
               activeAgentId === agent.id
@@ -77,6 +91,15 @@ export function Sidebar({ agents, activeAgentId, onAgentClick }: SidebarProps) {
           </button>
         ))}
       </div>
+
+      {contextMenu && (
+        <AgentContextMenu
+          agent={contextMenu.agent}
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={() => setContextMenu(null)}
+        />
+      )}
     </aside>
   );
 }
