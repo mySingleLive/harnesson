@@ -169,27 +169,58 @@ describe('AgentContextMenu', () => {
     expect(menu.style.top).toBe('200px');
   });
 
-  it('calls onClose and shows confirm dialog on delete click', () => {
+  it('shows confirm dialog on delete click without closing menu yet', () => {
     setStoreState([]);
     const onClose = vi.fn();
     const { getByText } = render(
       <AgentContextMenu agent={baseAgent} x={100} y={100} onClose={onClose} />,
     );
     fireEvent.click(getByText('删除'));
-    expect(onClose).toHaveBeenCalledOnce();
+    // onClose should NOT be called yet — ConfirmDialog replaces the menu
+    expect(onClose).not.toHaveBeenCalled();
     // ConfirmDialog should appear in the DOM
     expect(document.body.textContent).toContain('确定要删除');
+    // Context menu should still be in the DOM
+    expect(getByText('复制用户消息')).toBeTruthy();
   });
 
-  it('calls destroyAgent after confirming delete', async () => {
+  it('calls destroyAgent and onClose after confirming delete', () => {
     setStoreState([]);
+    const onClose = vi.fn();
     const { getByText } = render(
-      <AgentContextMenu agent={baseAgent} x={100} y={100} onClose={vi.fn()} />,
+      <AgentContextMenu agent={baseAgent} x={100} y={100} onClose={onClose} />,
     );
     fireEvent.click(getByText('删除'));
     // ConfirmDialog is now in the DOM - find confirm button and click it
     const confirmBtn = document.querySelector('.bg-red-600') as HTMLButtonElement;
     fireEvent.click(confirmBtn);
     expect(mockDestroyAgent).toHaveBeenCalledWith('agent-1');
+    expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it('calls onClose when canceling delete', () => {
+    setStoreState([]);
+    const onClose = vi.fn();
+    render(
+      <AgentContextMenu agent={baseAgent} x={100} y={100} onClose={onClose} />,
+    );
+    // Click delete, then cancel the confirm dialog
+    const deleteBtn = document.querySelector('.text-red-400') as HTMLButtonElement;
+    fireEvent.click(deleteBtn);
+    const cancelBtns = document.querySelectorAll('button');
+    const cancelBtn = Array.from(cancelBtns).find((b) => b.textContent === '取消') as HTMLButtonElement;
+    fireEvent.click(cancelBtn);
+    expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it('calls updatePanelState when clicking toggle button', () => {
+    setStoreState([]);
+    const onClose = vi.fn();
+    const { getByText } = render(
+      <AgentContextMenu agent={baseAgent} x={100} y={100} onClose={onClose} />,
+    );
+    fireEvent.click(getByText('关闭'));
+    expect(mockUpdatePanelState).toHaveBeenCalledWith('agent-1', { isOpen: false });
+    expect(onClose).toHaveBeenCalled();
   });
 });

@@ -22,8 +22,8 @@ export function AgentContextMenu({ agent, x, y, onClose }: AgentContextMenuProps
   const [position, setPosition] = useState({ x, y });
   const [showConfirm, setShowConfirm] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const subMenuRef = useRef<HTMLDivElement>(null);
   const leaveTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const listenerTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const userMessages = messages.filter((m) => m.role === 'user');
 
@@ -50,12 +50,13 @@ export function AgentContextMenu({ agent, x, y, onClose }: AgentContextMenuProps
     };
     const handleBlur = () => onClose();
     // Delay to avoid capturing the same right-click
-    setTimeout(() => {
+    listenerTimerRef.current = setTimeout(() => {
       document.addEventListener('mousedown', handleMouseDown);
       document.addEventListener('keydown', handleKeyDown);
       window.addEventListener('blur', handleBlur);
     }, 0);
     return () => {
+      if (listenerTimerRef.current) clearTimeout(listenerTimerRef.current);
       document.removeEventListener('mousedown', handleMouseDown);
       document.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('blur', handleBlur);
@@ -87,14 +88,19 @@ export function AgentContextMenu({ agent, x, y, onClose }: AgentContextMenuProps
   );
 
   const handleDeleteClick = useCallback(() => {
-    onClose();
     setShowConfirm(true);
-  }, [onClose]);
+  }, []);
 
   const handleDeleteConfirm = useCallback(() => {
     destroyAgent(agent.id);
     setShowConfirm(false);
-  }, [agent.id, destroyAgent]);
+    onClose();
+  }, [agent.id, destroyAgent, onClose]);
+
+  const handleDeleteCancel = useCallback(() => {
+    setShowConfirm(false);
+    onClose();
+  }, [onClose]);
 
   const handleSubMenuEnter = useCallback(() => {
     if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
@@ -144,7 +150,6 @@ export function AgentContextMenu({ agent, x, y, onClose }: AgentContextMenuProps
 
           {subMenuOpen && userMessages.length > 0 && (
             <div
-              ref={subMenuRef}
               className="absolute left-full top-0 ml-1 bg-[#252540] border border-white/10 rounded-[10px] py-1 w-[280px] shadow-[0_8px_24px_rgba(0,0,0,0.5)]"
             >
               <div className="px-2.5 py-1 text-[10px] text-gray-500 uppercase tracking-wider">
@@ -189,7 +194,7 @@ export function AgentContextMenu({ agent, x, y, onClose }: AgentContextMenuProps
           message={`确定要删除 ${agent.name} 吗？此操作不可撤销，所有对话历史将被清除。`}
           confirmLabel="删除"
           onConfirm={handleDeleteConfirm}
-          onCancel={() => setShowConfirm(false)}
+          onCancel={handleDeleteCancel}
         />
       )}
     </>,
