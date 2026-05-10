@@ -12,8 +12,10 @@ interface AgentContextMenuProps {
   onClose: () => void;
 }
 
+const EMPTY_MSGS: AgentMessage[] = [];
+
 export function AgentContextMenu({ agent, x, y, onClose }: AgentContextMenuProps) {
-  const messages = useAgentStore((s) => s.messages[agent.id] ?? []);
+  const messages = useAgentStore((s) => s.messages[agent.id]) ?? EMPTY_MSGS;
   const updatePanelState = useAgentStore((s) => s.updatePanelState);
   const setActiveAgent = useAgentStore((s) => s.setActiveAgent);
   const destroyAgent = useAgentStore((s) => s.destroyAgent);
