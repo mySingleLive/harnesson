@@ -27,6 +27,13 @@ export function AgentContextMenu({ agent, x, y, onClose }: AgentContextMenuProps
 
   const userMessages = messages.filter((m) => m.role === 'user');
 
+  // Clean up sub-menu hover timer on unmount
+  useEffect(() => {
+    return () => {
+      if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
+    };
+  }, []);
+
   // Adjust position to stay within viewport
   useEffect(() => {
     const menu = menuRef.current;
@@ -41,7 +48,9 @@ export function AgentContextMenu({ agent, x, y, onClose }: AgentContextMenuProps
   // Close on outside click, Escape, or window blur
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
+      const target = e.target as Element;
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        if (target.closest?.('[role="dialog"]')) return;
         onClose();
       }
     };

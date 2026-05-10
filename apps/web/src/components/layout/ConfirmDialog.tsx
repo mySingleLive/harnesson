@@ -37,7 +37,7 @@ export function ConfirmDialog({ title, message, confirmLabel = '确认', onConfi
       aria-modal="true"
       aria-labelledby="confirm-dialog-title"
       data-testid="confirm-dialog-backdrop"
-      className="flex items-center justify-center fixed inset-0 z-50"
+      className="flex items-center justify-center fixed inset-0 z-[110]"
       onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
     >
       <div className="relative bg-harness-sidebar border border-white/10 rounded-xl w-[380px] p-6 shadow-2xl">
