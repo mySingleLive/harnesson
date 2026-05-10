@@ -69,11 +69,16 @@ export function useSlashCompletion(
       if (fragment) {
         const filtered = filterCommands(commands, fragment.prefix);
         setFilteredCommands(filtered);
-        if (!isOpen) {
-          setIsOpen(true);
+
+        if (filtered.length === 0) {
+          setIsOpen(false);
+        } else {
+          if (!isOpen) {
+            setIsOpen(true);
+          }
+          setSelectedIndex(0);
+          setHoveredIndex(null);
         }
-        setSelectedIndex(0);
-        setHoveredIndex(null);
 
         if (fragment.prefix.length > 1 && value[cursorPosition - 1] === ' ') {
           setIsOpen(false);
