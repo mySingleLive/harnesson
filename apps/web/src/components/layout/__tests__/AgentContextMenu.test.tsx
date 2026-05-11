@@ -184,7 +184,7 @@ describe('AgentContextMenu', () => {
     expect(getByText('复制用户消息')).toBeTruthy();
   });
 
-  it('calls destroyAgent and onClose after confirming delete', () => {
+  it('calls destroyAgent and onClose after confirming delete', async () => {
     setStoreState([]);
     const onClose = vi.fn();
     const { getByText } = render(
@@ -195,7 +195,9 @@ describe('AgentContextMenu', () => {
     const confirmBtn = document.querySelector('.bg-red-600') as HTMLButtonElement;
     fireEvent.click(confirmBtn);
     expect(mockDestroyAgent).toHaveBeenCalledWith('agent-1');
-    expect(onClose).toHaveBeenCalledOnce();
+    await vi.waitFor(() => {
+      expect(onClose).toHaveBeenCalledOnce();
+    });
   });
 
   it('calls onClose when canceling delete', () => {

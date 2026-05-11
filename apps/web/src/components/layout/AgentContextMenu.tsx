@@ -102,8 +102,13 @@ export function AgentContextMenu({ agent, x, y, onClose }: AgentContextMenuProps
     setShowConfirm(true);
   }, []);
 
-  const handleDeleteConfirm = useCallback(() => {
-    destroyAgent(agent.id);
+  const handleDeleteConfirm = useCallback(async () => {
+    try {
+      await destroyAgent(agent.id);
+    } catch (err) {
+      console.error('Delete agent failed:', err);
+      return;
+    }
     setShowConfirm(false);
     onClose();
   }, [agent.id, destroyAgent, onClose]);

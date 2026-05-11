@@ -1,5 +1,17 @@
 # E2E 测试经验库
 
+## Agent Session 管理类
+
+### DELETE 请求 pending 排查
+- **策略**：检查浏览器 HTTP/1.1 连接池是否被 SSE/EventSource 耗尽（max 6 per origin）
+- **关键步骤**：DevTools Network 面板查看 DELETE 请求状态 → 若 [pending] 检查是否有大量长连接 → curl 直接测试服务端排除后端问题 → 检查 SSE EventSource 连接数 → 修复连接泄漏
+- **注意**：浏览器 HTTP/1.1 限制 6 个并发连接/origin，EventSource 占用一个连接。多个 agent 同时持有 SSE 连接会耗尽连接池，导致新请求排队。
+
+### 右键菜单删除 Agent Session
+- **策略 A（推荐）**：eval 触发 contextmenu 事件 → click "删除" → click 确认按钮
+  - 关键步骤：eval `dispatchEvent(new MouseEvent('contextmenu', ...))` 在目标按钮上 → await_element 确认菜单出现 → click "删除" → await_element 确认对话框出现 → click 确认"删除"按钮 → await_element 验证 agent 卡片消失
+  - 注意：Sidebar 中 agent 按钮 textContent 可能含 `\n` 换行符（如 "hello\nworld"），搜索时需注意；`fireEvent.click` 只触发 click 事件不触发 mousedown，真实浏览器中 mousedown 先于 click 触发
+
 ## 导航类
 
 ### 进入首页

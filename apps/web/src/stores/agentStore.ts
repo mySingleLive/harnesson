@@ -329,6 +329,18 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   },
 
   connectSSE: (agentId) => {
+    // Close all other SSE connections to avoid browser HTTP/1.1 connection pool exhaustion (max 6 per origin).
+    // Only one agent's SSE stream should be active at a time.
+    for (const [id, source] of Object.entries(get().eventSources)) {
+      if (id !== agentId) {
+        source.close();
+      }
+    }
+    set((s) => {
+      const { [agentId]: _, ...rest } = s.eventSources;
+      return { eventSources: rest };
+    });
+
     const existing = get().eventSources[agentId];
     if (existing) {
       existing.close();
@@ -382,8 +394,12 @@ export const useAgentStore = create<AgentState>((set, get) => ({
       clearTimeout(completionTimers[agentId]);
       delete completionTimers[agentId];
     }
+    try {
+      await api.destroyAgent(agentId);
+    } catch (err) {
+      throw new Error(`Failed to destroy agent: ${err instanceof Error ? err.message : String(err)}`);
+    }
     get().disconnectSSE(agentId);
-    await api.destroyAgent(agentId);
     set((s) => {
       const { [agentId]: _msg, ...restMsgs } = s.messages;
       const { [agentId]: _stream, ...restStreams } = s.isStreaming;
