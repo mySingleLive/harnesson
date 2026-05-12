@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Highlight, themes } from 'prism-react-renderer';
+import { ChevronDown } from 'lucide-react';
 import { CodeLine } from './CodeLine';
 import { detectLanguage } from './langUtils';
 import type { PairedToolEvent } from './pairEvents';
@@ -13,19 +14,19 @@ function formatBytes(bytes: number): string {
 export function WriteCard({ event }: { event: PairedToolEvent }) {
   const filePath = (event.input.file_path as string) ?? '';
   const content = (event.input.content as string) ?? '';
-  const contentLines = content.split('\n');
-  const displayLines = contentLines.slice(0, 30);
-  const remaining = contentLines.length - displayLines.length;
   const size = useMemo(() => formatBytes(new Blob([content]).size), [content]);
   const isRunning = !event.output;
   const lang = useMemo(() => detectLanguage(filePath), [filePath]);
-
-  const displayText = displayLines.join('\n');
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <div className="overflow-hidden rounded-md border border-harness-border bg-harness-bg">
       {/* Header */}
-      <div className="flex items-center gap-2 bg-[#15152a] px-2.5 py-1 text-[11px] border-b border-harness-border">
+      <div
+        className={`flex items-center gap-2 bg-[#15152a] px-2.5 py-1 text-[11px] cursor-pointer ${isExpanded ? 'border-b border-harness-border' : ''}`}
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <ChevronDown className={`h-3 w-3 text-gray-500 transition-transform shrink-0 ${isExpanded ? 'rotate-0' : '-rotate-90'}`} />
         <span>✏️</span>
         <span className="font-medium text-gray-400">Write</span>
         <span className="text-gray-600">·</span>
@@ -47,24 +48,21 @@ export function WriteCard({ event }: { event: PairedToolEvent }) {
       </div>
 
       {/* Code body */}
-      <div className="max-h-[300px] overflow-auto bg-[#0d0d1a] py-1.5">
-        <Highlight theme={themes.vsDark} code={displayText} language={lang}>
-          {({ tokens, getTokenProps }) =>
-            tokens.map((line, i) => (
-              <CodeLine key={i} lineNumber={i + 1}>
-                {line.map((token, key) => (
-                  <span key={key} {...getTokenProps({ token })} />
-                ))}
-              </CodeLine>
-            ))
-          }
-        </Highlight>
-        {remaining > 0 && (
-          <div className="px-2.5 text-[11px] text-gray-600 mt-1">
-            ... {remaining} more lines
-          </div>
-        )}
-      </div>
+      {isExpanded && (
+        <div className="bg-[#0d0d1a] py-1.5">
+          <Highlight theme={themes.vsDark} code={content} language={lang}>
+            {({ tokens, getTokenProps }) =>
+              tokens.map((line, i) => (
+                <CodeLine key={i} lineNumber={i + 1}>
+                  {line.map((token, key) => (
+                    <span key={key} {...getTokenProps({ token })} />
+                  ))}
+                </CodeLine>
+              ))
+            }
+          </Highlight>
+        </div>
+      )}
     </div>
   );
 }

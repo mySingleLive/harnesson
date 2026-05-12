@@ -7,10 +7,14 @@ interface CodeLineProps {
 }
 
 const TYPE_STYLES: Record<string, string> = {
-  deleted:
-    'bg-red-500/[0.15] [box-shadow:inset_3px_0_0_#ef4444]',
-  added:
-    'bg-green-500/[0.12] [box-shadow:inset_3px_0_0_#22c55e]',
+  deleted: 'bg-red-500/[0.15]',
+  added: 'bg-green-500/[0.12]',
+};
+
+const LINE_NUMBER_COLOR: Record<string, string> = {
+  deleted: 'text-red-400',
+  added: 'text-green-400',
+  context: 'text-[#555]',
 };
 
 const PREFIX: Record<string, { char: string; className: string }> = {
@@ -23,14 +27,14 @@ export function CodeLine({ lineNumber, type = 'context', children }: CodeLinePro
   const prefix = PREFIX[type];
 
   return (
-    <div className={`flex px-2.5 ${style ?? ''}`}>
-      <span className="w-8 shrink-0 mr-3 text-right text-[#555] select-none text-[12px] leading-[1.65]">
+    <div className={`flex items-start px-2.5 ${style ?? ''}`}>
+      <span className={`w-8 shrink-0 mr-3 text-right select-none text-[12px] leading-[1.65] ${LINE_NUMBER_COLOR[type]}`}>
         {lineNumber}
       </span>
       <span className={`w-[10px] shrink-0 text-[12px] leading-[1.65] ${prefix?.className ?? ''}`}>
         {prefix?.char ?? ''}
       </span>
-      <span className={`flex-1 text-[12px] leading-[1.65] whitespace-pre ${type === 'deleted' ? 'text-red-300/80' : ''}`}>
+      <span className={`flex-1 text-[12px] leading-[1.65] whitespace-pre-wrap break-all ${type === 'deleted' ? 'text-red-300/80' : ''}`}>
         {children}
       </span>
     </div>

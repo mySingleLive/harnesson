@@ -15,9 +15,13 @@ export function EditCard({ event }: { event: PairedToolEvent }) {
   const oldStr = (event.input.old_string as string) ?? '';
   const newStr = (event.input.new_string as string) ?? '';
 
-  const diffLinesData = useMemo(() => {
+  const { diffLinesData, diffLineNumbers } = useMemo(() => {
     const parts = diffLines(oldStr, newStr, { ignoreNewlineAtEof: true });
     const lines: DiffLine[] = [];
+    const lineNumbers: number[] = [];
+
+    let oldLine = 1;
+    let newLine = 1;
 
     for (const part of parts) {
       const partLines = part.value.split('\n');
@@ -26,15 +30,20 @@ export function EditCard({ event }: { event: PairedToolEvent }) {
       for (const line of partLines) {
         if (part.added) {
           lines.push({ text: line, type: 'added' });
+          lineNumbers.push(newLine++);
         } else if (part.removed) {
           lines.push({ text: line, type: 'deleted' });
+          lineNumbers.push(oldLine++);
         } else {
           lines.push({ text: line, type: 'context' });
+          lineNumbers.push(newLine);
+          oldLine++;
+          newLine++;
         }
       }
     }
 
-    return lines;
+    return { diffLinesData: lines, diffLineNumbers: lineNumbers };
   }, [oldStr, newStr]);
 
   const unifiedText = diffLinesData.map((l) => l.text).join('\n');
@@ -81,7 +90,7 @@ export function EditCard({ event }: { event: PairedToolEvent }) {
       </div>
 
       {/* Diff body */}
-      <div className="max-h-[300px] overflow-auto bg-[#0d0d1a] py-1.5">
+      <div className="bg-[#0d0d1a] py-1.5">
         <Highlight theme={themes.vsDark} code={unifiedText} language={lang}>
           {({ tokens, getTokenProps }) =>
             tokens.map((line, i) => {
@@ -91,7 +100,7 @@ export function EditCard({ event }: { event: PairedToolEvent }) {
               return (
                 <CodeLine
                   key={i}
-                  lineNumber={i + 1}
+                  lineNumber={diffLineNumbers[i]}
                   type={lineType}
                 >
                   {line.map((token, key) => {

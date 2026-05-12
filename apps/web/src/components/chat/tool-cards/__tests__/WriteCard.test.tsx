@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { WriteCard } from '../WriteCard';
 import type { PairedToolEvent } from '../pairEvents';
 
@@ -23,15 +23,31 @@ describe('WriteCard', () => {
     expect(document.body.textContent).toContain('running...');
   });
 
-  it('renders code lines with line numbers', () => {
+  it('defaults to collapsed state (code not visible)', () => {
     render(<WriteCard event={{ ...baseEvent, output: 'ok' }} />);
+    expect(document.body.textContent).not.toContain('export function hello()');
+    expect(document.body.textContent).not.toContain('return "world"');
+  });
+
+  it('expands to show code lines on click', () => {
+    render(<WriteCard event={{ ...baseEvent, output: 'ok' }} />);
+    const header = document.querySelector('.cursor-pointer');
+    fireEvent.click(header!);
     expect(document.body.textContent).toContain('1');
     expect(document.body.textContent).toContain('export function hello()');
     expect(document.body.textContent).toContain('2');
     expect(document.body.textContent).toContain('return "world"');
   });
 
-  it('shows remaining count for large files', () => {
+  it('collapses back on second click', () => {
+    render(<WriteCard event={{ ...baseEvent, output: 'ok' }} />);
+    const header = document.querySelector('.cursor-pointer');
+    fireEvent.click(header!);
+    fireEvent.click(header!);
+    expect(document.body.textContent).not.toContain('export function hello()');
+  });
+
+  it('shows all lines for large files when expanded', () => {
     const lines = Array.from({ length: 35 }, (_, i) => `line ${i}`);
     const event: PairedToolEvent = {
       tool: 'Write',
@@ -39,6 +55,9 @@ describe('WriteCard', () => {
       output: 'ok',
     };
     render(<WriteCard event={event} />);
-    expect(document.body.textContent).toContain('... 5 more lines');
+    const header = document.querySelector('.cursor-pointer');
+    fireEvent.click(header!);
+    expect(document.body.textContent).toContain('line 0');
+    expect(document.body.textContent).toContain('line 34');
   });
 });
