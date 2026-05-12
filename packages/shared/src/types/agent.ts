@@ -116,6 +116,7 @@ export interface AgentInfo {
   status: AgentStatus;
   cwd: string;
   branch: string;
+  projectId: string;
   model?: string;
   createdAt: string;
   error?: string;

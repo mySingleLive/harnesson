@@ -422,7 +422,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
         name: info.name,
         type: info.type as Agent['type'],
         status: info.status as Agent['status'],
-        projectId: (info as { projectId?: string }).projectId ?? '',
+        projectId: info.projectId,
         branch: info.branch,
         worktreePath: info.cwd,
         model: info.model,

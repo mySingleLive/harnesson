@@ -13,6 +13,7 @@ export function MainLayout() {
   const { agents, activeAgentId, setActiveAgent, updatePanelState, messages, isStreaming, loadAgents, activateAgent, panelWidth, panelCollapsed, setPanelWidth, setPanelCollapsed } = useAgentStore();
   const switchProject = useProjectStore((s) => s.switchProject);
   const loadProjects = useProjectStore((s) => s.loadProjects);
+  const projects = useProjectStore((s) => s.projects);
   const activeAgent = agents.find((a) => a.id === activeAgentId);
   const runningCount = agents.filter((a) => a.status === 'running').length;
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -64,6 +65,7 @@ export function MainLayout() {
           agents={agents}
           activeAgentId={activeAgentId ?? undefined}
           onAgentClick={handleAgentClick}
+          projects={projects}
         />
         {showPanel && !panelCollapsed && (
           <>
