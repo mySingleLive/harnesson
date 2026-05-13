@@ -1,0 +1,50 @@
+{
+  "id": "app-shell",
+  "name": "App Shell",
+  "level": 2,
+  "parent": "project",
+  "children": [
+    "main-layout",
+    "sidebar-navigation",
+    "agent-panel"
+  ],
+  "isLeaf": false,
+  "summary": "Application layout, routing, and navigation shell. Provides the main layout structure with resizable sidebar and agent panel, navigation sidebar with agent management, and the agent chat panel.",
+  "goals": [
+    "Provide the root application layout with responsive panel structure",
+    "Manage application routing across pages",
+    "Display navigation sidebar with agent list and project controls",
+    "Support resizable panels for sidebar and agent chat area"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "The application loads",
+      "when": "user navigates between pages",
+      "then": "the layout persists and the correct page content is displayed"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "Application is running",
+        "when": "user navigates between routes",
+        "then": "layout persists and each route renders its correct page"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T06:33:09.228Z",
+    "baseCommit": "4e7a3cc",
+    "baseCommitMessage": "feat(sync-specs): add auto-detection status rules in Step 5 user review",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": [
+      "apps/web/src/App.tsx",
+      "apps/web/src/components/layout/",
+      "apps/web/src/pages/"
+    ]
+  }
+}

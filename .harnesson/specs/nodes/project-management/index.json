@@ -1,0 +1,56 @@
+{
+  "id": "project-management",
+  "name": "Project Management",
+  "level": 2,
+  "parent": "project",
+  "children": [
+    "project-crud",
+    "branch-management"
+  ],
+  "isLeaf": false,
+  "summary": "Project and branch management system. Handles project CRUD with git initialization, native folder selection, and git branch listing and switching.",
+  "goals": [
+    "Manage project entities with create, list, and delete operations",
+    "Initialize git repositories for new projects",
+    "List and switch between git branches",
+    "Provide native OS folder picker for project path selection"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "No projects exist",
+      "when": "user creates a new project with a folder path",
+      "then": "the project is saved and appears in the project list"
+    },
+    {
+      "given": "A project with multiple branches exists",
+      "when": "user switches to a different branch",
+      "then": "git checkout is executed and the branch state updates"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "Server is running",
+        "when": "user creates a project and switches branches",
+        "then": "operations complete successfully and UI reflects the changes"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T06:33:09.228Z",
+    "baseCommit": "4e7a3cc",
+    "baseCommitMessage": "feat(sync-specs): add auto-detection status rules in Step 5 user review",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": [
+      "apps/server/src/routes/projects.ts",
+      "apps/server/src/routes/branches.ts",
+      "apps/web/src/components/projects/",
+      "apps/web/src/stores/projectStore.ts",
+      "apps/web/src/hooks/useProjectActions.ts"
+    ]
+  }
+}

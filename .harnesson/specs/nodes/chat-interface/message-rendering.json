@@ -1,0 +1,69 @@
+{
+  "id": "message-rendering",
+  "name": "Message Rendering",
+  "level": 3,
+  "parent": "chat-interface",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Renders chat messages with rich content support including Markdown (via react-markdown + GFM), inline image previews, syntax-highlighted code blocks, and hierarchical tool event visualization using a tree structure.",
+  "goals": [
+    "Render markdown content with GitHub Flavored Markdown support",
+    "Display inline images from agent messages with click-to-preview",
+    "Transform flat tool event arrays into hierarchical tree for nested display",
+    "Support syntax highlighting for code blocks using Prism"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "A message contains markdown with headers, lists, and code blocks",
+      "when": "the message is rendered",
+      "then": "all markdown elements display correctly with proper styling"
+    },
+    {
+      "given": "A message contains image content blocks",
+      "when": "the message is rendered",
+      "then": "images are displayed inline with click-to-zoom preview"
+    },
+    {
+      "given": "Agent events include nested tool use (tool within tool)",
+      "when": "buildEventTree processes the events",
+      "then": "events are organized into a parent-child tree structure"
+    }
+  ],
+  "testCases": {
+    "unit-test": [
+      {
+        "level": "p1",
+        "given": "A flat array of tool events with parent-child pairs",
+        "when": "buildEventTree processes the events",
+        "then": "events are correctly grouped into nested tool use/result pairs"
+      },
+      {
+        "level": "p2",
+        "given": "A message contains very long code blocks (1000+ lines)",
+        "when": "rendered",
+        "then": "the code block renders without performance degradation"
+      }
+    ],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "Agent sends a message with markdown and images",
+        "when": "the message renders in the chat",
+        "then": "all content types display correctly"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T06:33:09.228Z",
+    "baseCommit": "4e7a3cc",
+    "baseCommitMessage": "feat(sync-specs): add auto-detection status rules in Step 5 user review",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": [
+      "apps/web/src/components/chat/MessageRenderer.tsx",
+      "apps/web/src/components/chat/tool-cards/buildEventTree.ts",
+      "apps/web/src/components/chat/ImagePreview.tsx"
+    ]
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "id": "graph-specs",
+  "name": "Graph & Specs",
+  "level": 2,
+  "parent": "project",
+  "children": [
+    "sync-engine",
+    "graph-storage",
+    "graph-visualization",
+    "specs-views"
+  ],
+  "isLeaf": false,
+  "summary": "Specification synchronization engine and visualization system. Coordinates CLI-based sync processes, persists spec data to the file system, renders interactive graphs with ReactFlow, and provides alternative list/document/architect views.",
+  "goals": [
+    "Synchronize project code into structured spec trees via external CLI processes",
+    "Persist spec data (manifest, specs, architect) to the file system with history archiving",
+    "Visualize specs as interactive node graphs with automatic Dagre layout",
+    "Provide multiple views: graph, list, document, and architect"
+  ],
+  "design": {
+    "overview": "SyncEngine spawns CLI processes and streams progress via SSE. GraphStorage handles file I/O for manifest, specs, architect, and history archives. Frontend graphStore consumes sync SSE events and provides data to ReactFlow-based visualization components.",
+    "flow": "User triggers sync → SyncEngine spawns CLI → Progress streamed via SSE → GraphStorage writes results → graphStore loads data → FlowGraph renders nodes/edges"
+  },
+  "acceptanceCriteria": [
+    {
+      "given": "A project is selected",
+      "when": "user triggers a full sync",
+      "then": "the sync process runs and produces a structured spec tree"
+    },
+    {
+      "given": "Spec data is loaded",
+      "when": "user navigates to the graph page",
+      "then": "an interactive graph visualization is rendered"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "A project with source code exists",
+        "when": "user runs a full sync",
+        "then": "spec data is generated and visualizable in the graph view"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T06:33:09.228Z",
+    "baseCommit": "4e7a3cc",
+    "baseCommitMessage": "feat(sync-specs): add auto-detection status rules in Step 5 user review",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": [
+      "apps/server/src/lib/sync-engine.ts",
+      "apps/server/src/lib/graph-storage.ts",
+      "apps/server/src/routes/graph.ts",
+      "apps/web/src/components/graph/",
+      "apps/web/src/stores/graphStore.ts"
+    ]
+  }
+}

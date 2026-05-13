@@ -1,0 +1,54 @@
+{
+  "id": "specs-views",
+  "name": "Specs Views",
+  "level": 3,
+  "parent": "graph-specs",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Alternative visualization views for spec data: list view, document view, technical document view, detail panel, and sync progress display. Provides tab navigation between views.",
+  "goals": [
+    "Display specs as a hierarchical list with expandable items",
+    "Render specs as formatted documents (specs document and technical document)",
+    "Show a detail panel for selected graph nodes",
+    "Display real-time sync progress with status indicators"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "Spec data is loaded",
+      "when": "user switches to the list view",
+      "then": "specs are displayed as a hierarchical, expandable list"
+    },
+    {
+      "given": "A sync is in progress",
+      "when": "the sync progress view is displayed",
+      "then": "current progress status and any errors are shown"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "Spec data is loaded",
+        "when": "user navigates through the view tabs",
+        "then": "each view renders the spec data in its respective format"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T06:33:09.228Z",
+    "baseCommit": "4e7a3cc",
+    "baseCommitMessage": "feat(sync-specs): add auto-detection status rules in Step 5 user review",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": [
+      "apps/web/src/components/graph/SpecsList.tsx",
+      "apps/web/src/components/graph/SpecsDocument.tsx",
+      "apps/web/src/components/graph/TechnicalDocument.tsx",
+      "apps/web/src/components/graph/DetailPanel.tsx",
+      "apps/web/src/components/graph/SyncView.tsx",
+      "apps/web/src/components/graph/SyncProgress.tsx"
+    ]
+  }
+}

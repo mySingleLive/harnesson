@@ -1,0 +1,53 @@
+{
+  "id": "agent-adapter",
+  "name": "Agent Adapter",
+  "level": 3,
+  "parent": "agent-system",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Adapter pattern for pluggable AI agent backends. Defines the AgentAdapter interface with session creation, message sending, and streaming. ClaudeCodeAdapter implements this using the Anthropic Claude Agent SDK.",
+  "goals": [
+    "Define a generic AgentAdapter interface for any AI agent backend",
+    "Implement ClaudeCodeAdapter using the @anthropic-ai/claude-agent-sdk",
+    "Support session creation, restoration, and message streaming",
+    "Handle nested agent calls (agent dispatch) with call stack tracking"
+  ],
+  "design": {
+    "overview": "AgentAdapter abstract interface with methods for create, sendMessage, restore, and destroy. ClaudeCodeAdapter wraps the Claude Agent SDK, managing session lifecycle and streaming events. Supports model discovery and nested agent dispatch."
+  },
+  "acceptanceCriteria": [
+    {
+      "given": "A valid session configuration is provided",
+      "when": "ClaudeCodeAdapter creates a session",
+      "then": "a new SDK session is initialized and ready for messages"
+    },
+    {
+      "given": "An existing session ID is provided",
+      "when": "ClaudeCodeAdapter restores the session",
+      "then": "the session resumes with its previous context"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "ClaudeCodeAdapter is configured",
+        "when": "a message is sent to a created session",
+        "then": "events are streamed back including text and tool use"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T06:33:09.228Z",
+    "baseCommit": "4e7a3cc",
+    "baseCommitMessage": "feat(sync-specs): add auto-detection status rules in Step 5 user review",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": [
+      "apps/server/src/lib/agent-adapter.ts",
+      "apps/server/src/lib/claude-code-adapter.ts"
+    ]
+  }
+}

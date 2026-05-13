@@ -1,0 +1,66 @@
+{
+  "id": "sidebar-navigation",
+  "name": "Sidebar Navigation",
+  "level": 3,
+  "parent": "app-shell",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Navigation sidebar with page links, active agent list with status indicators, project/model dropdowns, and agent context menus for operations like rename and delete.",
+  "goals": [
+    "Display navigation links to application pages",
+    "Show active agents with real-time status indicators",
+    "Provide project and model selection dropdowns",
+    "Offer context menu for agent operations"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "The sidebar is visible",
+      "when": "user clicks a navigation item",
+      "then": "the application navigates to the corresponding page"
+    },
+    {
+      "given": "Agents are running",
+      "when": "sidebar renders the agent list",
+      "then": "each agent shows its name and current status with a colored indicator"
+    },
+    {
+      "given": "User right-clicks an agent in the sidebar",
+      "when": "the context menu appears",
+      "then": "options include rename, delete, and other agent operations"
+    }
+  ],
+  "testCases": {
+    "unit-test": [
+      {
+        "level": "p1",
+        "given": "Agent context menu is open",
+        "when": "user selects delete",
+        "then": "a confirmation dialog appears before deletion"
+      }
+    ],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "Application is running with active agents",
+        "when": "user interacts with the sidebar",
+        "then": "navigation, agent selection, and context menus all work correctly"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T06:33:09.228Z",
+    "baseCommit": "4e7a3cc",
+    "baseCommitMessage": "feat(sync-specs): add auto-detection status rules in Step 5 user review",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": [
+      "apps/web/src/components/layout/Sidebar.tsx",
+      "apps/web/src/components/layout/Topbar.tsx",
+      "apps/web/src/components/layout/AgentStatusDot.tsx",
+      "apps/web/src/components/layout/AgentContextMenu.tsx",
+      "apps/web/src/components/layout/ProjectDropdown.tsx",
+      "apps/web/src/components/layout/ModelDropdown.tsx"
+    ]
+  }
+}

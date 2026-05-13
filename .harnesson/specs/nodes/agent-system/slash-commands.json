@@ -1,0 +1,59 @@
+{
+  "id": "slash-commands",
+  "name": "Slash Commands",
+  "level": 3,
+  "parent": "agent-system",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Discovers and manages slash commands from built-in skills, installed plugins, and project-specific skills. Provides autocompletion popup with keyboard navigation in the chat input.",
+  "goals": [
+    "Discover slash commands from built-in, plugin, and project sources",
+    "Parse command metadata (name, type, description) from frontmatter",
+    "Provide autocompletion popup with filtering and keyboard navigation",
+    "Cache commands with 5-minute TTL to reduce server load"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "The chat input is focused",
+      "when": "user types '/' followed by characters",
+      "then": "a filtered list of matching slash commands appears"
+    },
+    {
+      "given": "The slash command popup is visible",
+      "when": "user presses Arrow Up/Down and Enter",
+      "then": "the selected command is inserted into the input"
+    }
+  ],
+  "testCases": {
+    "unit-test": [
+      {
+        "level": "p1",
+        "given": "Slash command cache has expired",
+        "when": "commands are requested",
+        "then": "a fresh fetch from the server is triggered"
+      }
+    ],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "Agent panel is open with slash commands available",
+        "when": "user types '/' and selects a command",
+        "then": "the command is sent to the agent and executed"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T06:33:09.228Z",
+    "baseCommit": "4e7a3cc",
+    "baseCommitMessage": "feat(sync-specs): add auto-detection status rules in Step 5 user review",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": [
+      "apps/server/src/lib/slash-commands.ts",
+      "apps/web/src/stores/slashCommandStore.ts",
+      "apps/web/src/hooks/useSlashCompletion.ts",
+      "apps/web/src/components/chat/SlashCommandPopup.tsx"
+    ]
+  }
+}

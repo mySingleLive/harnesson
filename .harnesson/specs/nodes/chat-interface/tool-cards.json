@@ -1,0 +1,78 @@
+{
+  "id": "tool-cards",
+  "name": "Tool Cards",
+  "level": 3,
+  "parent": "chat-interface",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Visual card components for rendering agent tool use events. Includes specific cards for Bash, Read, Write, Edit, Glob, Grep, LSP operations, plus generic fallback and streaming agent cards. Each card shows tool input/output with collapsible details and syntax highlighting.",
+  "goals": [
+    "Display agent tool executions as styled, collapsible card components",
+    "Provide specialized rendering for each tool type (Bash, Read, Write, Edit, Glob, Grep, LSP)",
+    "Support syntax-highlighted code display in relevant cards (Read, Write, Edit)",
+    "Handle streaming agent events with real-time content updates"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "An agent executes a Bash command",
+      "when": "the tool event is rendered",
+      "then": "a card shows the command and its output with proper formatting"
+    },
+    {
+      "given": "An agent reads a file",
+      "when": "the ReadCard renders",
+      "then": "file path and content are displayed with syntax highlighting"
+    },
+    {
+      "given": "An unknown tool is used",
+      "when": "the event is rendered",
+      "then": "a GenericCard displays the tool name and raw input/output"
+    }
+  ],
+  "testCases": {
+    "unit-test": [
+      {
+        "level": "p1",
+        "given": "An Edit tool event with old/new content",
+        "when": "EditCard renders the diff",
+        "then": "removed and added lines are visually distinguished"
+      },
+      {
+        "level": "p1",
+        "given": "A code block with language detected",
+        "when": "CodeLine renders",
+        "then": "syntax highlighting is applied correctly"
+      }
+    ],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "Agent performs multiple tool operations",
+        "when": "tool events stream in",
+        "then": "each tool type renders with its specific card component"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T06:33:09.228Z",
+    "baseCommit": "4e7a3cc",
+    "baseCommitMessage": "feat(sync-specs): add auto-detection status rules in Step 5 user review",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": [
+      "apps/web/src/components/chat/tool-cards/BashCard.tsx",
+      "apps/web/src/components/chat/tool-cards/ReadCard.tsx",
+      "apps/web/src/components/chat/tool-cards/WriteCard.tsx",
+      "apps/web/src/components/chat/tool-cards/EditCard.tsx",
+      "apps/web/src/components/chat/tool-cards/GlobCard.tsx",
+      "apps/web/src/components/chat/tool-cards/GrepCard.tsx",
+      "apps/web/src/components/chat/tool-cards/LSPCard.tsx",
+      "apps/web/src/components/chat/tool-cards/GenericCard.tsx",
+      "apps/web/src/components/chat/tool-cards/StreamingAgentCard.tsx",
+      "apps/web/src/components/chat/tool-cards/ToolEventCard.tsx",
+      "apps/web/src/components/chat/tool-cards/CollapsibleCard.tsx",
+      "apps/web/src/components/chat/tool-cards/CodeLine.tsx"
+    ]
+  }
+}

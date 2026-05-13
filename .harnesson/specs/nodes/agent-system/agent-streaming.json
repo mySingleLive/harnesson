@@ -1,0 +1,68 @@
+{
+  "id": "agent-streaming",
+  "name": "Agent Streaming",
+  "level": 3,
+  "parent": "agent-system",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Real-time message streaming between server and client using Server-Sent Events (SSE). Handles text content, tool use events, thinking state, and question interception for interactive agent sessions.",
+  "goals": [
+    "Stream agent responses in real time via SSE to connected clients",
+    "Handle multiple event types: text, tool use, tool result, thinking, errors",
+    "Intercept AskUserQuestion tool calls and present them to users for interactive responses",
+    "Manage SSE client connections with proper cleanup on disconnect"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "An agent is processing a message",
+      "when": "the agent produces text output",
+      "then": "text events are streamed to the client via SSE in real time"
+    },
+    {
+      "given": "An agent invokes the AskUserQuestion tool",
+      "when": "the tool call is detected during streaming",
+      "then": "streaming pauses and the question is presented to the user"
+    },
+    {
+      "given": "A user submits an answer to an agent question",
+      "when": "the answer is received by the server",
+      "then": "the agent continues processing with the user's response"
+    }
+  ],
+  "testCases": {
+    "unit-test": [
+      {
+        "level": "p1",
+        "given": "SSE client is connected",
+        "when": "client disconnects mid-stream",
+        "then": "the connection is cleaned up without server errors"
+      }
+    ],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "An agent is running and user is watching the chat",
+        "when": "the agent generates a multi-paragraph response",
+        "then": "text appears progressively in the chat UI"
+      },
+      {
+        "level": "p0",
+        "given": "An agent asks a question with options",
+        "when": "user selects an option",
+        "then": "the agent continues with the selected answer"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T06:33:09.228Z",
+    "baseCommit": "4e7a3cc",
+    "baseCommitMessage": "feat(sync-specs): add auto-detection status rules in Step 5 user review",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": [
+      "apps/server/src/routes/agents.ts",
+      "apps/web/src/stores/agentStore.ts"
+    ]
+  }
+}

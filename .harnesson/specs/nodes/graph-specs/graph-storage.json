@@ -1,0 +1,49 @@
+{
+  "id": "graph-storage",
+  "name": "Graph Storage",
+  "level": 3,
+  "parent": "graph-specs",
+  "children": [],
+  "isLeaf": true,
+  "summary": "File system operations for reading and writing spec data. Manages manifest files, specs data (graph, list, document), architect data, and history archives. Supports project-level and user-level storage locations.",
+  "goals": [
+    "Read and write manifest, specs, and architect data as JSON files",
+    "Support project-level (.harnesson/) and user-level storage locations",
+    "Archive previous sync data with timestamped history entries",
+    "Resolve storage locations based on project configuration"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "A project with a valid storage path",
+      "when": "specs data is written",
+      "then": "the data is persisted as JSON files in the correct directory"
+    },
+    {
+      "given": "Previous sync data exists",
+      "when": "a new sync is triggered",
+      "then": "previous data is archived with a timestamp"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "A project directory exists",
+        "when": "graph data is read after a sync",
+        "then": "the data matches what was written by the sync process"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T06:33:09.228Z",
+    "baseCommit": "4e7a3cc",
+    "baseCommitMessage": "feat(sync-specs): add auto-detection status rules in Step 5 user review",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": [
+      "apps/server/src/lib/graph-storage.ts"
+    ]
+  }
+}
