@@ -1,0 +1,41 @@
+{
+  "id": "node-detail-view",
+  "name": "节点详情查看",
+  "level": 3,
+  "parent": "spec-graph",
+  "children": [],
+  "isLeaf": true,
+  "summary": "点击图谱或列表中的节点后，在侧边详情面板中展示节点的类型、层级、子节点和内容描述。",
+  "goals": [
+    "展示选中节点的元数据（类型、ID、层级）",
+    "展示节点的内容描述",
+    "列出子节点"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "图谱或列表中有节点",
+      "when": "点击某个节点",
+      "then": "侧边详情面板显示该节点的类型、层级和内容"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "图谱视图已渲染",
+        "when": "点击某个域节点",
+        "then": "详情面板显示域节点信息及其子功能列表"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/web/src/components/graph/DetailPanel.tsx"]
+  }
+}

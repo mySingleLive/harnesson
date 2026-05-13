@@ -1,0 +1,33 @@
+{
+  "id": "agent-control",
+  "name": "Agent 控制",
+  "level": 3,
+  "parent": "ai-chat",
+  "children": ["abort-execution", "model-switch"],
+  "isLeaf": false,
+  "summary": "在 Agent 运行时控制其行为，包括中止当前执行和切换 AI 模型。",
+  "goals": [
+    "支持中止 Agent 当前正在执行的操作",
+    "支持在对话中切换 AI 模型"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 正在执行任务",
+      "when": "用户执行控制操作（中止/切换模型）",
+      "then": "操作立即生效"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/web/src/components/layout/AgentPanel.tsx", "apps/web/src/components/layout/AgentContextHeader.tsx", "apps/web/src/components/layout/ModelDropdown.tsx", "apps/web/src/stores/agentStore.ts"]
+  }
+}

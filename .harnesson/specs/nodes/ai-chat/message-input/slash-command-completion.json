@@ -1,0 +1,59 @@
+{
+  "id": "slash-command-completion",
+  "name": "斜杠命令补全",
+  "level": 4,
+  "parent": "message-input",
+  "children": [],
+  "isLeaf": true,
+  "summary": "在输入框中输入 / 时自动弹出命令列表，支持键盘导航选择和过滤搜索，涵盖内置命令和插件技能。",
+  "goals": [
+    "输入 / 时自动弹出可用命令列表",
+    "支持键盘上下箭头导航和 Enter/Tab 选择",
+    "支持按前缀过滤命令",
+    "展示内置命令和插件技能"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "聊天面板输入框聚焦",
+      "when": "输入 / 字符",
+      "then": "弹出命令列表，显示所有可用命令"
+    },
+    {
+      "given": "命令列表已弹出",
+      "when": "按向下箭头然后按 Enter",
+      "then": "选中命令插入到输入框"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "聊天面板已打开",
+        "when": "输入 /",
+        "then": "弹出命令列表包含内置命令"
+      },
+      {
+        "level": "p1",
+        "given": "命令列表已弹出",
+        "when": "输入 /mod 过滤",
+        "then": "列表只显示匹配的命令"
+      },
+      {
+        "level": "p1",
+        "given": "命令列表已弹出",
+        "when": "按 Escape",
+        "then": "命令列表关闭"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/web/src/components/chat/SlashCommandPopup.tsx", "apps/web/src/hooks/useSlashCompletion.ts", "apps/web/src/lib/slashCommandUtils.ts", "apps/web/src/stores/slashCommandStore.ts", "apps/server/src/lib/slash-commands.ts"]
+  }
+}

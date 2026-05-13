@@ -1,0 +1,40 @@
+{
+  "id": "cancel-sync",
+  "name": "取消同步",
+  "level": 4,
+  "parent": "graph-sync",
+  "children": [],
+  "isLeaf": true,
+  "summary": "取消正在进行的同步操作，点击取消按钮后同步进程终止。",
+  "goals": [
+    "一键取消正在进行的同步",
+    "取消后清理资源"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "同步正在进行",
+      "when": "用户点击取消按钮",
+      "then": "同步进程终止，进度面板关闭"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "同步正在进行",
+        "when": "点击取消",
+        "then": "同步停止，进度面板关闭"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/web/src/components/graph/SyncProgress.tsx", "apps/web/src/stores/graphStore.ts", "apps/server/src/routes/graph.ts"]
+  }
+}

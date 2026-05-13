@@ -1,0 +1,46 @@
+{
+  "id": "clone-repo",
+  "name": "克隆仓库",
+  "level": 4,
+  "parent": "project-creation",
+  "children": [],
+  "isLeaf": true,
+  "summary": "通过输入 Git 仓库 URL 和本地路径，克隆远程仓库作为项目导入。",
+  "goals": [
+    "输入 Git 仓库 URL 和本地目标路径",
+    "执行 git clone 并导入为项目"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户打开克隆仓库对话框",
+      "when": "填写仓库 URL 和目标路径后提交",
+      "then": "仓库克隆成功并作为项目导入"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "克隆仓库对话框已打开",
+        "when": "输入有效的 Git URL 和路径后提交",
+        "then": "仓库克隆成功，项目出现在列表中"
+      },
+      {
+        "level": "p1",
+        "given": "输入了无效的 Git URL",
+        "when": "提交克隆请求",
+        "then": "显示错误提示，不创建项目"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/web/src/components/projects/CloneRepoModal.tsx", "apps/web/src/hooks/useProjectActions.ts"]
+  }
+}

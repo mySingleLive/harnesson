@@ -1,0 +1,47 @@
+{
+  "id": "quick-project-switch",
+  "name": "项目快速切换",
+  "level": 4,
+  "parent": "top-controls",
+  "children": [],
+  "isLeaf": true,
+  "summary": "通过顶部下拉菜单快速切换当前活跃项目，支持搜索过滤。",
+  "goals": [
+    "下拉菜单列出所有项目",
+    "支持搜索过滤项目",
+    "一键切换当前项目"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "存在多个项目",
+      "when": "在顶部下拉菜单选择不同项目",
+      "then": "当前项目切换，相关功能更新"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "存在多个项目",
+        "when": "点击顶部项目下拉并选择另一个项目",
+        "then": "当前项目切换成功"
+      },
+      {
+        "level": "p1",
+        "given": "项目下拉已打开",
+        "when": "输入搜索关键词",
+        "then": "列表过滤显示匹配项目"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/web/src/components/layout/ProjectDropdown.tsx", "apps/web/src/stores/projectStore.ts"]
+  }
+}

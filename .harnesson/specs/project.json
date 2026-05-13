@@ -3,51 +3,24 @@
   "name": "Harnesson",
   "level": 1,
   "parent": null,
-  "treeDepth": 3,
+  "treeDepth": 5,
   "treeScenario": "multi-domain",
   "children": [
-    "agent-system",
-    "chat-interface",
-    "graph-specs",
+    "ai-chat",
     "project-management",
-    "app-shell"
+    "spec-graph",
+    "app-shell",
+    "file-browsing",
+    "git-management",
+    "task-management"
   ],
   "isLeaf": false,
-  "summary": "A Visual AI Coding Management Platform centered on harness engineering. Provides AI agent lifecycle management, real-time chat interface, spec synchronization with graph visualization, and project/branch management in a monorepo architecture (Hono server + React web + shared types).",
-  "goals": [
-    "Enable visual management of AI coding agents across multiple projects",
-    "Provide real-time chat interface with rich content rendering and interactive tools",
-    "Synchronize project specifications as structured, visualizable spec trees",
-    "Manage projects and git branches through a unified web interface"
-  ],
-  "design": {
-    "overview": "pnpm monorepo with three packages: @harnesson/server (Hono API + SQLite/Prisma), @harnesson/web (React + Zustand + ReactFlow), @harnesson/shared (TypeScript types). Server exposes REST + SSE endpoints; frontend consumes via fetch and EventSource.",
-    "flow": "User action → React component → Zustand store → serverApi → Hono route → Service/Adapter → Database/File system → SSE push → Store update → UI re-render"
-  },
-  "acceptanceCriteria": [
-    {
-      "given": "The Harnesson platform is running",
-      "when": "a user opens the web UI",
-      "then": "they see the project list or new session page with navigation sidebar"
-    }
-  ],
-  "testCases": {
-    "unit-test": [],
-    "end-to-end": [
-      {
-        "level": "p0",
-        "given": "Server and web app are running",
-        "when": "user navigates to the application URL",
-        "then": "the main page loads with navigation and project management"
-      }
-    ],
-    "script-test": []
-  },
+  "summary": "基于 AI Agent 的可视化编码管理平台，提供智能对话、项目管理、规格可视化等功能。",
   "status": "in-progress",
   "syncMeta": {
-    "lastSyncAt": "2026-05-13T06:33:09.228Z",
-    "baseCommit": "4e7a3cc",
-    "baseCommitMessage": "feat(sync-specs): add auto-detection status rules in Step 5 user review",
+    "lastSyncAt": "2026-05-13T12:14:47.807Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
     "branch": "feature/agent-chat-panel",
     "sourceFiles": [
       "package.json",

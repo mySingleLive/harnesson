@@ -1,0 +1,41 @@
+{
+  "id": "view-branch-list",
+  "name": "查看分支列表",
+  "level": 4,
+  "parent": "branch-management",
+  "children": [],
+  "isLeaf": true,
+  "summary": "查看项目所有本地和远程 Git 分支，当前分支高亮显示。",
+  "goals": [
+    "列出所有本地分支",
+    "列出所有远程分支（origin/）",
+    "标识当前所在分支"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "项目是 Git 仓库",
+      "when": "打开分支列表",
+      "then": "显示所有本地和远程分支，当前分支有标识"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "项目有多个分支",
+        "when": "打开分支下拉列表",
+        "then": "显示所有分支，当前分支有标记"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/server/src/routes/branches.ts", "apps/web/src/stores/projectStore.ts"]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "id": "nested-agent-card",
+  "name": "嵌套 Agent 卡片",
+  "level": 5,
+  "parent": "tool-execution-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "展示嵌套 Agent 执行过程，以层级结构显示子 Agent 调用的工具链和执行状态。",
+  "goals": [
+    "展示子 Agent 的执行层级关系",
+    "支持折叠/展开查看子操作详情",
+    "实时显示执行状态（运行中/完成/失败）"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 启动了子 Agent",
+      "when": "StreamingAgentCard 渲染",
+      "then": "以层级结构展示子 Agent 及其工具调用"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "Agent 启动子 Agent 执行任务",
+        "when": "嵌套 Agent 卡片渲染",
+        "then": "显示子 Agent 及其工具调用的层级结构"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/web/src/components/chat/tool-cards/StreamingAgentCard.tsx"]
+  }
+}
