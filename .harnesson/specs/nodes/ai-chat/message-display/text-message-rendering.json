@@ -1,0 +1,41 @@
+{
+  "id": "text-message-rendering",
+  "name": "文本消息渲染",
+  "level": 4,
+  "parent": "message-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "渲染用户和 Agent 的文本消息，支持 Markdown 格式和内联图片展示。",
+  "goals": [
+    "正确渲染 Markdown 格式的文本消息",
+    "支持内联图片展示",
+    "区分用户消息和 Agent 消息的样式"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 回复包含 Markdown 文本",
+      "when": "消息渲染",
+      "then": "Markdown 正确解析为格式化文本"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "Agent 回复包含代码块和列表",
+        "when": "消息渲染",
+        "then": "代码块语法高亮，列表正确缩进"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/web/src/components/chat/MessageRenderer.tsx"]
+  }
+}

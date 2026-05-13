@@ -1,0 +1,51 @@
+{
+  "id": "delete-project",
+  "name": "删除项目",
+  "level": 3,
+  "parent": "project-management",
+  "children": [],
+  "isLeaf": true,
+  "summary": "通过项目详情弹窗中的删除按钮删除项目，删除前弹出确认对话框。",
+  "goals": [
+    "确认后删除项目",
+    "防止误删"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "项目详情弹窗已打开",
+      "when": "点击删除按钮并确认",
+      "then": "项目从列表中移除"
+    },
+    {
+      "given": "删除确认对话框弹出",
+      "when": "点击取消",
+      "then": "项目不被删除"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "项目详情弹窗已打开",
+        "when": "点击删除 → 确认",
+        "then": "项目从列表消失"
+      },
+      {
+        "level": "p1",
+        "given": "删除确认弹出",
+        "when": "点击取消",
+        "then": "项目保留，弹窗关闭"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/web/src/components/projects/ProjectDetailModal.tsx", "apps/web/src/hooks/useProjectActions.ts", "apps/server/src/routes/projects.ts"]
+  }
+}

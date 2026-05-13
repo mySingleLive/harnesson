@@ -1,0 +1,59 @@
+{
+  "id": "create-session",
+  "name": "创建会话",
+  "level": 4,
+  "parent": "session-management",
+  "children": [],
+  "isLeaf": true,
+  "summary": "通过快捷操作（创建新功能、修复 Bug、代码审查、编写测试）或自由输入创建新的 Agent 对话会话。",
+
+  "goals": [
+    "通过快捷按钮一键创建特定类型的 Agent 会话",
+    "通过自由文本输入创建自定义会话",
+    "创建会话时选择 AI 模型和关联项目"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户在新建会话页面",
+      "when": "点击快捷操作按钮（如「创建新功能」）",
+      "then": "创建新的 Agent 会话，自动填充对应提示词，打开聊天面板"
+    },
+    {
+      "given": "用户在新建会话页面",
+      "when": "在输入框中输入文本并发送",
+      "then": "创建新的 Agent 会话，以输入文本作为第一条消息"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "新建会话页面已加载",
+        "when": "点击「修复 Bug」快捷按钮",
+        "then": "新 Agent 会话创建成功，聊天面板打开并显示对应提示词"
+      },
+      {
+        "level": "p0",
+        "given": "新建会话页面已加载",
+        "when": "输入「帮我重构这个函数」并按 Enter",
+        "then": "新 Agent 会话创建成功，消息发送到 Agent"
+      },
+      {
+        "level": "p1",
+        "given": "后端服务不可用",
+        "when": "尝试创建新会话",
+        "then": "显示错误提示，不创建会话"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/web/src/pages/NewSessionPage.tsx", "apps/web/src/stores/agentStore.ts", "apps/server/src/routes/agents.ts"]
+  }
+}

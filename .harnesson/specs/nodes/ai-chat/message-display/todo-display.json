@@ -1,0 +1,40 @@
+{
+  "id": "todo-display",
+  "name": "待办事项展示",
+  "level": 4,
+  "parent": "message-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "在聊天面板中实时展示 Agent 管理的待办事项列表，包括待处理、进行中和已完成状态。",
+  "goals": [
+    "实时展示 Agent 创建和更新的待办事项",
+    "用不同图标区分待处理、进行中和已完成状态"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 创建了待办事项",
+      "when": "TodoBar 渲染",
+      "then": "显示待办事项列表及各事项状态"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "Agent 添加了待办事项",
+        "when": "TodoBar 渲染",
+        "then": "显示待办事项及状态图标"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/web/src/components/chat/TodoBar.tsx", "apps/web/src/stores/agentStore.ts"]
+  }
+}

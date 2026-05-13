@@ -1,0 +1,40 @@
+{
+  "id": "tech-doc-view",
+  "name": "技术文档视图",
+  "level": 4,
+  "parent": "spec-visualization",
+  "children": [],
+  "isLeaf": true,
+  "summary": "展示项目的技术实现文档，提供详细的技术规格信息。",
+  "goals": [
+    "展示技术实现文档",
+    "支持 Markdown 格式渲染"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "技术文档视图已激活",
+      "when": "文档渲染完成",
+      "then": "以格式化形式展示技术文档"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "规格数据已同步",
+        "when": "切换到技术文档视图",
+        "then": "技术文档正确渲染"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/web/src/components/graph/TechnicalDocument.tsx", "apps/web/src/components/graph/MarkdownViewer.tsx"]
+  }
+}

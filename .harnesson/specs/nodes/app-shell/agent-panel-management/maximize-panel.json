@@ -1,0 +1,51 @@
+{
+  "id": "maximize-panel",
+  "name": "最大化面板",
+  "level": 4,
+  "parent": "agent-panel-management",
+  "children": [],
+  "isLeaf": true,
+  "summary": "点击最大化按钮将 Agent 聊天面板展开到最大宽度，再次点击恢复原始大小。",
+  "goals": [
+    "一键最大化面板",
+    "再次点击恢复原始大小"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 面板已打开",
+      "when": "点击最大化按钮",
+      "then": "面板展开到最大宽度"
+    },
+    {
+      "given": "面板已最大化",
+      "when": "再次点击按钮",
+      "then": "面板恢复原始宽度"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "Agent 面板已打开",
+        "when": "点击最大化按钮",
+        "then": "面板展开到最大宽度"
+      },
+      {
+        "level": "p1",
+        "given": "面板已最大化",
+        "when": "再次点击按钮",
+        "then": "面板恢复到之前的宽度"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/web/src/hooks/useChatPanel.ts", "apps/web/src/components/layout/MainLayout.tsx"]
+  }
+}

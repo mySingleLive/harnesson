@@ -1,0 +1,47 @@
+{
+  "id": "quick-branch-switch",
+  "name": "分支快速切换",
+  "level": 4,
+  "parent": "top-controls",
+  "children": [],
+  "isLeaf": true,
+  "summary": "通过顶部下拉菜单快速查看和切换当前项目的 Git 分支。",
+  "goals": [
+    "下拉菜单列出本地和远程分支",
+    "标识当前分支",
+    "一键切换分支"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "当前项目是 Git 仓库",
+      "when": "在顶部下拉菜单选择不同分支",
+      "then": "分支切换成功"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "当前项目有多个分支",
+        "when": "点击顶部分支下拉并选择另一个分支",
+        "then": "分支切换成功，下拉菜单更新"
+      },
+      {
+        "level": "p1",
+        "given": "当前项目不是 Git 仓库",
+        "when": "查看分支下拉",
+        "then": "显示无分支信息或禁用状态"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/web/src/components/layout/BranchDropdown.tsx", "apps/web/src/stores/projectStore.ts"]
+  }
+}

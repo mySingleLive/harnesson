@@ -1,0 +1,58 @@
+{
+  "id": "project-browsing",
+  "name": "项目浏览",
+  "level": 3,
+  "parent": "project-management",
+  "children": [],
+  "isLeaf": true,
+  "summary": "浏览所有项目，支持搜索过滤和卡片/列表视图切换。首次使用时显示引导空状态。",
+  "goals": [
+    "以卡片或列表形式展示所有项目",
+    "支持按名称或路径搜索过滤项目",
+    "首次使用时提供引导操作"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户在项目页面",
+      "when": "浏览项目列表",
+      "then": "项目以卡片或列表形式正确展示"
+    },
+    {
+      "given": "项目列表不为空",
+      "when": "在搜索框中输入关键词",
+      "then": "项目列表实时过滤"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "存在多个项目",
+        "when": "打开项目页面",
+        "then": "所有项目以卡片形式展示"
+      },
+      {
+        "level": "p1",
+        "given": "项目列表不为空",
+        "when": "切换到列表视图",
+        "then": "项目以紧凑列表形式展示"
+      },
+      {
+        "level": "p1",
+        "given": "项目列表不为空",
+        "when": "搜索特定项目名",
+        "then": "列表过滤只显示匹配项目"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/web/src/pages/ProjectsPage.tsx", "apps/web/src/components/projects/ProjectList.tsx", "apps/web/src/components/projects/ProjectCard.tsx", "apps/web/src/components/projects/ProjectRow.tsx", "apps/web/src/components/projects/EmptyState.tsx", "apps/web/src/stores/projectStore.ts"]
+  }
+}

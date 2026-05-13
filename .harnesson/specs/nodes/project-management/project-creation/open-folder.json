@@ -1,0 +1,46 @@
+{
+  "id": "open-folder",
+  "name": "打开文件夹",
+  "level": 4,
+  "parent": "project-creation",
+  "children": [],
+  "isLeaf": true,
+  "summary": "通过系统原生文件夹选择对话框选择已有文件夹作为项目导入。",
+  "goals": [
+    "弹出操作系统原生文件夹选择器",
+    "将选择的文件夹注册为项目"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户点击打开文件夹",
+      "when": "在系统对话框中选择文件夹并确认",
+      "then": "文件夹作为项目导入并出现在列表中"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "用户在项目管理页面",
+        "when": "点击打开文件夹并选择目录",
+        "then": "目录作为项目导入成功"
+      },
+      {
+        "level": "p1",
+        "given": "系统对话框弹出",
+        "when": "用户取消选择",
+        "then": "不创建项目，对话框关闭"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/server/src/routes/open-folder.ts", "apps/server/src/lib/native-dialog.ts", "apps/web/src/hooks/useProjectActions.ts"]
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "id": "page-navigation",
+  "name": "页面导航",
+  "level": 3,
+  "parent": "app-shell",
+  "children": [],
+  "isLeaf": true,
+  "summary": "通过侧边栏导航菜单在不同功能页面之间切换，包括新建会话、项目、图谱、任务、文件和 Git 页面。",
+  "goals": [
+    "提供清晰的功能页面导航入口",
+    "标识当前所在页面"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "侧边栏导航可见",
+      "when": "点击任一导航项",
+      "then": "页面切换到对应功能页面"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "应用已加载",
+        "when": "点击侧边栏的「项目」导航项",
+        "then": "页面切换到项目管理页"
+      },
+      {
+        "level": "p1",
+        "given": "在项目页面",
+        "when": "查看侧边栏",
+        "then": "当前页面导航项有高亮标识"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/web/src/components/layout/Sidebar.tsx", "apps/web/src/App.tsx"]
+  }
+}

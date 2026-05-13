@@ -1,0 +1,34 @@
+{
+  "id": "message-input",
+  "name": "消息输入",
+  "level": 3,
+  "parent": "ai-chat",
+  "children": ["text-input-send", "image-upload", "slash-command-completion"],
+  "isLeaf": false,
+  "summary": "向 Agent 发送消息的输入区域，支持文本输入、图片附件和斜杠命令自动补全。",
+  "goals": [
+    "支持多行文本输入并通过快捷键发送",
+    "支持粘贴或拖拽图片作为消息附件",
+    "支持斜杠命令的自动补全和执行"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "聊天面板已打开",
+      "when": "用户使用任一输入方式（文本、图片、命令）发送消息",
+      "then": "消息正确发送到 Agent"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/web/src/components/chat/RichTextInput.tsx", "apps/web/src/hooks/useImageInput.ts", "apps/web/src/hooks/useSlashCompletion.ts"]
+  }
+}

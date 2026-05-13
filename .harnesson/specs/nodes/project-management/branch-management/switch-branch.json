@@ -1,0 +1,46 @@
+{
+  "id": "switch-branch",
+  "name": "切换分支",
+  "level": 4,
+  "parent": "branch-management",
+  "children": [],
+  "isLeaf": true,
+  "summary": "切换到指定 Git 分支，切换前弹出确认对话框。",
+  "goals": [
+    "选择目标分支并执行 checkout",
+    "切换成功后刷新项目状态"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "分支列表已加载",
+      "when": "选择一个分支并确认切换",
+      "then": "Git checkout 成功，项目状态更新"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "项目在 main 分支",
+        "when": "选择 develop 分支并确认切换",
+        "then": "成功切换到 develop 分支"
+      },
+      {
+        "level": "p1",
+        "given": "存在未提交的更改",
+        "when": "尝试切换分支",
+        "then": "显示 checkout 错误信息"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/server/src/routes/branches.ts", "apps/web/src/stores/projectStore.ts"]
+  }
+}

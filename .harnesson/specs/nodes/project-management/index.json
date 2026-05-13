@@ -1,0 +1,42 @@
+{
+  "id": "project-management",
+  "name": "项目管理",
+  "level": 2,
+  "parent": "project",
+  "children": ["project-creation", "project-browsing", "view-project-details", "delete-project", "branch-management"],
+  "isLeaf": false,
+  "summary": "管理项目全生命周期，包括创建（新建、打开文件夹、克隆仓库）、浏览、查看详情、删除和 Git 分支管理。",
+  "goals": [
+    "支持多种方式创建和导入项目",
+    "提供项目浏览和搜索功能",
+    "支持查看项目详情和删除项目",
+    "支持查看和切换 Git 分支"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户在项目管理页面",
+      "when": "执行项目的增删查操作",
+      "then": "项目列表和详情正确更新"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "项目管理页面已加载",
+        "when": "创建、浏览、删除项目",
+        "then": "所有操作正确执行，UI 同步更新"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-13T10:00:00.000Z",
+    "baseCommit": "13a8c66",
+    "baseCommitMessage": "feat(sync-specs): add operation-level split examples for non-leaf nodes",
+    "branch": "feature/agent-chat-panel",
+    "sourceFiles": ["apps/server/src/routes/projects.ts", "apps/server/src/routes/branches.ts", "apps/web/src/stores/projectStore.ts", "apps/web/src/pages/ProjectsPage.tsx"]
+  }
+}
