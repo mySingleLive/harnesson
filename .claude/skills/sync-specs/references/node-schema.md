@@ -27,7 +27,7 @@
 | goals | string[] | 功能目标列表。每个目标一句话。 |
 | design | object \| null | 设计方案。包含 `overview`（string，方案概述）和可选的 `flow`（string，流程设计）。仅在有明确设计模式时生成。 |
 | acceptanceCriteria | array[object] | 验收标准列表。每个对象包含 `given`、`when`、`then` 三个 string 字段。每个功能至少 1 条。 |
-| testCases | array[object] | 测试用例列表。每个对象结构见下方。 |
+| testCases | object | 测试用例分组对象。结构见下方。 |
 
 ### syncMeta 结构
 
@@ -39,15 +39,28 @@
 | branch | string | 同步时的 git 分支名。 |
 | sourceFiles | string[] | 该节点关联的源文件/目录路径列表。 |
 
-### testCase 结构
+### testCases 结构
+
+testCases 为一个对象，包含三个固定分组键，每个分组值为用例数组：
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| unit-test | array[object] | 单元测试用例。可为空数组。 |
+| end-to-end | array[object] | 端到端测试用例。可为空数组。 |
+| script-test | array[object] | 脚本测试用例。可为空数组。 |
+
+每个分组键必须始终存在，即使为空数组。
+
+用例对象结构（在各分组内）：
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
 | level | string | 优先级：`p0`（验收标准级）、`p1`（分支覆盖）、`p2`（边界条件）、`p3`（兼容性/环境）。 |
-| type | string | 测试类型：`unit`、`integration`、`e2e`。 |
 | given | string | Given/When/Then 格式的前置条件。 |
 | when | string | Given/When/Then 格式的操作/触发条件。 |
 | then | string | Given/When/Then 格式的预期结果。 |
+
+用例不再包含 `type` 字段（由分组键隐含）。
 
 ## 根节点（project.json）额外字段
 
@@ -95,15 +108,18 @@
       "then": "显示包含重命名、删除等操作的上下文菜单"
     }
   ],
-  "testCases": [
-    {
-      "level": "p0",
-      "type": "e2e",
-      "given": "侧边栏已加载 Agent 列表",
-      "when": "右键点击 Agent 卡片",
-      "then": "出现上下文菜单，包含所有预期操作项"
-    }
-  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "侧边栏已加载 Agent 列表",
+        "when": "右键点击 Agent 卡片",
+        "then": "出现上下文菜单，包含所有预期操作项"
+      }
+    ],
+    "script-test": []
+  },
   "status": "published",
   "syncMeta": {
     "lastSyncAt": "2026-05-13T10:00:00Z",
@@ -145,29 +161,31 @@
       "then": "插入换行符，不发送消息"
     }
   ],
-  "testCases": [
-    {
-      "level": "p0",
-      "type": "e2e",
-      "given": "聊天面板已打开",
-      "when": "输入 'hello' 并按 Enter",
-      "then": "消息发送成功，输入框清空"
-    },
-    {
-      "level": "p1",
-      "type": "unit",
-      "given": "输入框组件已挂载",
-      "when": "输入为空时按 Enter",
-      "then": "不触发发送操作"
-    },
-    {
-      "level": "p2",
-      "type": "unit",
-      "given": "输入框有大量文本（10000+ 字符）",
-      "when": "按 Enter 发送",
-      "then": "正常发送，不截断"
-    }
-  ],
+  "testCases": {
+    "unit-test": [
+      {
+        "level": "p1",
+        "given": "输入框组件已挂载",
+        "when": "输入为空时按 Enter",
+        "then": "不触发发送操作"
+      },
+      {
+        "level": "p2",
+        "given": "输入框有大量文本（10000+ 字符）",
+        "when": "按 Enter 发送",
+        "then": "正常发送，不截断"
+      }
+    ],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "聊天面板已打开",
+        "when": "输入 'hello' 并按 Enter",
+        "then": "消息发送成功，输入框清空"
+      }
+    ],
+    "script-test": []
+  },
   "status": "published",
   "syncMeta": {
     "lastSyncAt": "2026-05-13T10:00:00Z",
