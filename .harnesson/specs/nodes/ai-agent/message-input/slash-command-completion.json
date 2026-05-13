@@ -1,0 +1,84 @@
+{
+  "id": "slash-command-completion",
+  "name": "斜杠命令补全",
+  "level": 4,
+  "parent": "message-input",
+  "children": [],
+  "isLeaf": true,
+  "summary": "在输入框中输入 / 时触发的命令自动补全功能。显示可用命令列表（内置命令和项目/插件技能），支持实时过滤和键盘导航。选择命令后执行对应操作或插入命令文本。",
+  "goals": [
+    "输入 / 时自动弹出可用命令列表",
+    "支持根据输入实时过滤命令",
+    "提供键盘导航（上下箭头）和鼠标悬停选择",
+    "命令列表包含内置命令和项目/插件自定义技能"
+  ],
+  "design": "design/ai-agent/message-input/slash-command-completion.md",
+  "acceptanceCriteria": [
+    {
+      "given": "输入框为空且用户输入 /",
+      "when": "斜杠触发自动补全",
+      "then": "弹窗显示所有可用命令，按类型分组"
+    },
+    {
+      "given": "斜杠命令弹窗已显示",
+      "when": "用户继续输入字符",
+      "then": "命令列表实时过滤，只显示匹配的命令"
+    },
+    {
+      "given": "命令列表中有一个高亮的命令",
+      "when": "用户按 Enter 或点击该命令",
+      "then": "命令被执行或插入到输入框"
+    }
+  ],
+  "testCases": {
+    "unit-test": [
+      {
+        "level": "p1",
+        "given": "命令列表已加载",
+        "when": "用户输入 /mod",
+        "then": "只显示名称包含 'mod' 的命令（如 /model）"
+      }
+    ],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "输入框已聚焦",
+        "when": "用户输入 / 并选择一个命令",
+        "then": "命令文本插入输入框或触发对应操作"
+      }
+    ],
+    "script-test": []
+  },
+  "specDetail": {
+    "description": "斜杠命令系统由前端 useSlashCompletion hook 和后端 slash-commands 模块协作实现。\n\n**命令来源**（三种）：\n1. **内置命令**：/clear（清空上下文）、/compact（压缩上下文）、/model（切换模型）、/help（帮助）\n2. **插件技能**：扫描 ~/.claude/plugins/cache/ 下包含 SKILL.md 的目录\n3. **项目技能**：扫描项目 .claude/skills/ 目录\n\n**交互流程**：\n1. 用户输入 /，检测斜杠命令模式\n2. 前端使用缓存的命令列表（5 分钟 TTL，按工作目录缓存）实时过滤\n3. 键盘导航：上下箭头移动焦点，Enter 选中，Escape 关闭\n4. 选中内置命令直接执行（如 /model 切换模型），技能命令插入命令文本\n5. 非斜杠上下文时弹窗自动关闭",
+    "parameters": [
+      "弹窗最大显示命令数：无硬性限制（由滚动处理）",
+      "命令缓存 TTL：5 分钟，按 working directory 缓存",
+      "命令列表包含 type（builtin/skill）、name、description、plugin 字段",
+      "键盘导航：ArrowUp/ArrowDown 移动，Enter 选中，Escape 关闭",
+      "过滤匹配算法：大小写不敏感的 includes 匹配"
+    ]
+  },
+  "constraints": [
+    "命令列表需要后端服务可用（fetch /api/slash-commands）",
+    "后端不可用时不显示错误，返回空命令列表",
+    "技能命令的 SKILL.md 解析依赖 frontmatter 格式（--- 分隔的 YAML）",
+    "命令弹窗在失焦时自动关闭"
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "6d11cf5",
+    "baseCommitMessage": "perf(sync-specs): streamline skill from 500→201 lines, 8→5 steps, 3→1 validation loop",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/SlashCommandPopup.tsx",
+      "apps/web/src/components/chat/HighlightOverlay.tsx",
+      "apps/web/src/stores/slashCommandStore.ts",
+      "apps/web/src/hooks/useSlashCompletion.ts",
+      "apps/web/src/lib/slashCommandUtils.ts",
+      "apps/server/src/lib/slash-commands.ts",
+      "apps/server/src/routes/agents.ts"
+    ]
+  }
+}

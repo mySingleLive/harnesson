@@ -1,0 +1,56 @@
+{
+  "id": "message-display",
+  "name": "消息展示",
+  "level": 3,
+  "parent": "ai-agent",
+  "children": ["text-message-rendering", "thinking-indicator", "todo-display", "tool-execution-display", "user-qa-interaction"],
+  "isLeaf": false,
+  "summary": "Agent 执行过程中的所有信息展示。包括 Agent 的文本回复、思考状态指示器、实时待办事项列表、工具调用结果卡片（读文件、写文件、编辑、Bash 等）、以及交互式问答面板。",
+  "goals": [
+    "以清晰的方式展示 Agent 的文本回复和思考过程",
+    "可视化展示 Agent 使用的各类工具及其输入输出",
+    "实时展示 Agent 的任务进度（待办事项列表）",
+    "在 Agent 需要用户输入时提供交互式问答界面"
+  ],
+  "design": "design/ai-agent/message-display.md",
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 正在运行并输出文本",
+      "when": "新文本到达",
+      "then": "文本以流式方式渲染到消息面板中"
+    },
+    {
+      "given": "Agent 使用工具（如读文件）",
+      "when": "工具调用事件到达",
+      "then": "显示对应的工具卡片（文件路径、内容预览等）"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "Agent 正在执行任务",
+        "when": "Agent 调用 Read 工具读取文件",
+        "then": "读文件卡片显示正确的文件路径和内容"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "6d11cf5",
+    "baseCommitMessage": "perf(sync-specs): streamline skill from 500→201 lines, 8→5 steps, 3→1 validation loop",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/MessageRenderer.tsx",
+      "apps/web/src/components/chat/ThinkingIndicator.tsx",
+      "apps/web/src/components/chat/ThinkingBar.tsx",
+      "apps/web/src/components/chat/TodoBar.tsx",
+      "apps/web/src/components/chat/AskUserQuestionPanel.tsx",
+      "apps/web/src/components/chat/tool-cards/",
+      "apps/web/src/stores/agentStore.ts"
+    ]
+  }
+}

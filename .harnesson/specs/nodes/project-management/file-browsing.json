@@ -1,0 +1,49 @@
+{
+  "id": "file-browsing",
+  "name": "文件浏览",
+  "level": 3,
+  "parent": "project-management",
+  "children": [],
+  "isLeaf": true,
+  "summary": "功能待实现。文件浏览将允许用户在 Web 界面中浏览项目目录结构，查看和编辑文件内容。",
+  "goals": [
+    "浏览项目目录结构",
+    "查看和编辑文件内容"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "用户在文件页面",
+      "when": "页面加载",
+      "then": "显示占位提示，表明功能尚未实现"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "specDetail": {
+    "description": "功能待实现。当前 FilesPage 为占位页面，仅渲染标题。文件浏览将允许用户在 Web 界面中查看项目目录树、浏览文件内容，以及进行基本的文件操作。",
+    "parameters": [
+      "目录树视图展示项目文件结构",
+      "文件内容以只读或编辑模式显示",
+      "支持常见文本文件和代码文件的语法高亮"
+    ]
+  },
+  "constraints": [
+    "当前功能未实现，FilesPage 仅渲染占位标题",
+    "尚无后端 API 路由或文件系统访问逻辑",
+    "功能实现后需处理大文件读取的性能和内存限制"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "6d11cf5",
+    "baseCommitMessage": "perf(sync-specs): streamline skill from 500→201 lines, 8→5 steps, 3→1 validation loop",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/pages/FilesPage.tsx"
+    ]
+  }
+}

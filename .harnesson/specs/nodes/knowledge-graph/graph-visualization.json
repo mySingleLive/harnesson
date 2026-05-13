@@ -1,0 +1,86 @@
+{
+  "id": "graph-visualization",
+  "name": "图谱可视化",
+  "level": 3,
+  "parent": "knowledge-graph",
+  "children": [],
+  "isLeaf": true,
+  "summary": "以交互式可视化图展示项目的规格图谱和架构图谱。支持缩放、平移、适应视图等操作，包含三种节点类型（项目/领域/功能）。同时提供树形列表视图作为替代浏览方式，以及可滑出的节点详情面板。",
+  "goals": [
+    "以 DAG 图可视化的方式展示项目领域和功能之间的层次关系",
+    "支持缩放、平移、自动布局和适应视图等交互操作",
+    "提供树形列表作为图的替代浏览方式",
+    "点击节点显示详细信息面板"
+  ],
+  "design": "design/knowledge-graph/graph-visualization.md",
+  "acceptanceCriteria": [
+    {
+      "given": "图谱数据已加载",
+      "when": "用户打开规格图谱标签页",
+      "then": "显示自上而下的 DAG 图，节点按类型着色（项目紫色、领域蓝色、功能绿色）"
+    },
+    {
+      "given": "图谱正在显示",
+      "when": "用户点击一个节点",
+      "then": "右侧滑出详情面板，显示节点类型、ID、层级和内容"
+    },
+    {
+      "given": "图谱正在显示",
+      "when": "用户切换到列表视图标签",
+      "then": "显示树形层次列表，可展开/折叠各级节点"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "图谱数据已通过同步生成",
+        "when": "用户查看规格图谱",
+        "then": "节点和边正确渲染，布局层次清晰"
+      },
+      {
+        "level": "p1",
+        "given": "图谱中有大量节点",
+        "when": "用户缩放和平移视图",
+        "then": "操作流畅，节点清晰可辨"
+      }
+    ],
+    "script-test": []
+  },
+  "specDetail": {
+    "description": "图谱可视化使用 @xyflow/react (React Flow) 和 Dagre 布局引擎实现自上而下的有向无环图。三种节点类型：\n\n- **ProjectNode**（紫色/强调色）：根项目节点\n- **DomainNode**（蓝色）：业务域节点\n- **FeatureNode**（绿色）：功能节点\n\n图支持标准交互：缩放（滚轮）、平移（拖拽）、适应视图（自动调整）、点击节点查看详情。\n\n树形列表视图（SpecsList）以嵌套结构展示相同的节点树，每个节点可独立展开/折叠。节点详情面板（DetailPanel）从右侧滑入，显示选中节点的元数据。",
+    "parameters": [
+      "Dagre 布局方向：TB（自上而下），节点间距 ranksep=120，同层间距 nodesep=80",
+      "三种节点颜色：ProjectNode 紫色(#8b5cf6)、DomainNode 蓝色(#3b82f6)、FeatureNode 绿色(#22c55e)",
+      "缩放范围：0.1x 到 2x，默认适应视图",
+      "详情面板宽度 320px，从右侧滑入动画",
+      "标签页切换无数据重新加载（同一 GraphFullData 在多个视图间共享）"
+    ]
+  },
+  "constraints": [
+    "图谱仅在同步完成后才显示（SyncView 占位直到数据就绪）",
+    "图谱节点数量超过 500 时可能影响布局性能",
+    "树形列表的展开/折叠状态不持久化（页面刷新后重置）",
+    "架构图谱使用与规格图谱相同的渲染引擎但数据源不同",
+    "详情面板同时只能显示一个节点的信息"
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "6d11cf5",
+    "baseCommitMessage": "perf(sync-specs): streamline skill from 500→201 lines, 8→5 steps, 3→1 validation loop",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/graph/SpecsGraph.tsx",
+      "apps/web/src/components/graph/ArchitectGraph.tsx",
+      "apps/web/src/components/graph/FlowGraph.tsx",
+      "apps/web/src/components/graph/GraphNodes.tsx",
+      "apps/web/src/components/graph/SpecsList.tsx",
+      "apps/web/src/components/graph/GraphTabBar.tsx",
+      "apps/web/src/components/graph/DetailPanel.tsx",
+      "apps/web/src/stores/graphStore.ts",
+      "packages/shared/src/types/graph.ts"
+    ]
+  }
+}

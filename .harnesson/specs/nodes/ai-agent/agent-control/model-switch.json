@@ -1,0 +1,71 @@
+{
+  "id": "model-switch",
+  "name": "模型切换",
+  "level": 4,
+  "parent": "agent-control",
+  "children": [],
+  "isLeaf": true,
+  "summary": "在 Agent 会话中切换 AI 模型。用户通过模型下拉菜单从可用模型列表中选择不同的模型，后续消息将使用新模型。支持在创建会话时选择模型，以及运行中通过 /model 斜杠命令切换。",
+  "goals": [
+    "提供可用 AI 模型的列表供用户选择",
+    "支持在会话创建时和运行过程中切换模型",
+    "支持通过 /model 斜杠命令快速切换"
+  ],
+  "design": "design/ai-agent/agent-control/model-switch.md",
+  "acceptanceCriteria": [
+    {
+      "given": "新建会话页面或聊天面板已打开",
+      "when": "用户点击模型下拉菜单",
+      "then": "显示所有可用模型及其描述"
+    },
+    {
+      "given": "模型下拉菜单已打开",
+      "when": "用户选择一个不同的模型",
+      "then": "模型更新为选中值，后续消息使用新模型"
+    },
+    {
+      "given": "Agent 会话正在运行",
+      "when": "用户输入 /model 斜杠命令并选择模型",
+      "then": "Agent 模型切换为新选择的值"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "模型列表已从后端获取",
+        "when": "用户从下拉菜单中选择一个不同模型",
+        "then": "模型选择更新，发送下一条消息时使用新模型"
+      }
+    ],
+    "script-test": []
+  },
+  "specDetail": {
+    "description": "模型切换通过 ModelDropdown 组件实现。可用模型列表从 GET /api/models 获取（由 Claude Code SDK 的 __list_models__ 查询或硬编码列表提供）。\n\n**切换方式**：\n1. **新建会话时**：NewSessionPage 上的模型下拉菜单，选择后传给 createAgent\n2. **聊天输入中**：RichTextInput 底部的模型下拉菜单\n3. **斜杠命令**：输入 /model 触发 model-switch 逻辑\n\n模型信息包含 value（如 claude-sonnet-4-6）、displayName 和 description。模型参数在每次 sendMessage 时发送给后端，后端调用 adapter.updateSessionModel() 更新会话模型。",
+    "parameters": [
+      "ModelDropdown 组件位于输入框底部右侧",
+      "模型选择通过 onModelChange 回调通知父组件",
+      "模型值持久化在 agentStore 的 sessionModel 字段中",
+      "模型列表为空时下拉菜单显示空状态"
+    ]
+  },
+  "constraints": [
+    "模型切换后不影响已在处理中的消息（仅影响后续消息）",
+    "可用模型列表取决于后端 SDK 支持的模型",
+    "模型列表获取失败时不显示错误，列表为空",
+    "同一会话的不同消息可以使用不同模型"
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "6d11cf5",
+    "baseCommitMessage": "perf(sync-specs): streamline skill from 500→201 lines, 8→5 steps, 3→1 validation loop",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/layout/ModelDropdown.tsx",
+      "apps/server/src/routes/agents.ts",
+      "apps/server/src/lib/claude-code-adapter.ts"
+    ]
+  }
+}

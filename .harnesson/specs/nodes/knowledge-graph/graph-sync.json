@@ -1,0 +1,83 @@
+{
+  "id": "graph-sync",
+  "name": "图谱同步",
+  "level": 3,
+  "parent": "knowledge-graph",
+  "children": [],
+  "isLeaf": true,
+  "summary": "触发外部同步工具扫描项目代码，生成规格图谱和架构图谱。用户选择存储位置（项目目录或用户目录），通过 SSE 流实时接收同步进度，支持取消同步操作。自动检测是否需要重新同步（基于 Git commit 变更）。",
+  "goals": [
+    "支持一键触发项目代码扫描和知识图谱生成",
+    "实时显示同步进度（初始化→扫描→分析→生成→完成）",
+    "支持取消正在进行的同步",
+    "自动检测 Git commit 变更并提示需要重新同步"
+  ],
+  "design": "design/knowledge-graph/graph-sync.md",
+  "acceptanceCriteria": [
+    {
+      "given": "图谱页面已打开且项目尚未同步",
+      "when": "用户选择存储位置并点击开始同步",
+      "then": "进度条显示同步各个阶段，日志实时更新"
+    },
+    {
+      "given": "同步正在进行中",
+      "when": "用户点击取消",
+      "then": "同步进程终止，状态恢复为空闲"
+    },
+    {
+      "given": "项目已完成同步但之后有新的 Git commit",
+      "when": "用户打开图谱页面",
+      "then": "系统提示图谱数据可能过时，建议重新同步"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "项目路径有效且已选择存储位置",
+        "when": "用户点击开始同步",
+        "then": "同步进度事件通过 SSE 实时到达前端，进度条更新"
+      },
+      {
+        "level": "p1",
+        "given": "同步正在进行中",
+        "when": "用户点击取消按钮",
+        "then": "同步取消，syncStatus 变为 idle"
+      }
+    ],
+    "script-test": []
+  },
+  "specDetail": {
+    "description": "图谱同步功能通过调用外部 CLI 工具（由 HARNESSON_SYNC_COMMAND 环境变量配置）扫描项目代码并生成结构化的知识图谱。同步过程分为多个阶段：\n\n1. **初始化**：准备存储目录，检查现有数据\n2. **扫描**：扫描项目代码文件\n3. **分析**：分析代码结构和依赖关系\n4. **生成**：生成图谱节点和边数据\n5. **完成**：写入 manifest 和生成文件\n\n同步进度通过 SSE 流实时传输到前端，包含阶段名称、进度百分比和详细日志。同步前会自动归档现有数据到历史目录。\n\n图谱数据存储在两个位置之一：项目目录下的 `.harnesson/` 或用户目录 `~/.harnesson/<project>/`。",
+    "parameters": [
+      "同步阶段：initializing → scanning → analyzing → generating → completing",
+      "同步进度通过 SSE 事件 `progress` 传输，包含 phase、percentage、log 字段",
+      "存储位置可选 project（项目目录 .harnesson/）或 user（~/.harnesson/<name>/）",
+      "同步过程中禁止对同一项目路径发起第二个同步请求",
+      "manifest.json 记录 lastSyncCommit 用于检测是否需要重新同步"
+    ]
+  },
+  "constraints": [
+    "同步需要 HARNESSON_SYNC_COMMAND 环境变量配置了有效的 CLI 工具路径",
+    "同一项目路径同时只能有一个活跃的同步操作",
+    "同步取消后无法恢复进度，需重新开始",
+    "同步 CLI 进程崩溃时前端收到 error 事件并显示错误信息",
+    "历史数据归档最多保留所有历史版本（无自动清理策略）"
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "6d11cf5",
+    "baseCommitMessage": "perf(sync-specs): streamline skill from 500→201 lines, 8→5 steps, 3→1 validation loop",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/graph/SyncView.tsx",
+      "apps/web/src/components/graph/SyncProgress.tsx",
+      "apps/web/src/stores/graphStore.ts",
+      "apps/server/src/routes/graph.ts",
+      "apps/server/src/lib/sync-engine.ts",
+      "apps/server/src/lib/graph-storage.ts"
+    ]
+  }
+}

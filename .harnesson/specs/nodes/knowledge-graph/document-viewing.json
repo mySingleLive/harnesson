@@ -1,0 +1,65 @@
+{
+  "id": "document-viewing",
+  "name": "文档查看",
+  "level": 3,
+  "parent": "knowledge-graph",
+  "children": [],
+  "isLeaf": true,
+  "summary": "以 Markdown 文档形式查看项目的规格说明和技术架构。规格文档描述项目的功能需求和结构，技术文档描述项目的技术架构和设计。两者均以渲染后的 Markdown 格式展示。",
+  "goals": [
+    "以可读的 Markdown 文档形式展示项目规格说明",
+    "以 Markdown 文档形式展示项目技术架构"
+  ],
+  "design": "design/knowledge-graph/document-viewing.md",
+  "acceptanceCriteria": [
+    {
+      "given": "图谱数据已同步且包含规格文档",
+      "when": "用户切换到规格文档标签页",
+      "then": "规格文档以渲染后的 Markdown 格式完整显示"
+    },
+    {
+      "given": "图谱数据已同步且包含技术文档",
+      "when": "用户切换到技术文档标签页",
+      "then": "技术文档以渲染后的 Markdown 格式完整显示"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "同步已完成且包含文档数据",
+        "when": "用户查看规格文档标签页",
+        "then": "Markdown 内容正确渲染，包含标题、列表和代码块"
+      }
+    ],
+    "script-test": []
+  },
+  "specDetail": {
+    "description": "文档查看功能将图谱数据中的 Markdown 文档以渲染后的富文本形式展示。使用 react-markdown 和 remark-gfm 进行渲染，支持标准 Markdown 语法和 GitHub Flavored Markdown（表格、删除线、任务列表）。\n\n规格文档（document.md）描述项目的功能需求和业务结构。技术文档描述项目的技术架构和设计决策。\n\n文档内容来自图谱同步时由外部 CLI 工具生成。",
+    "parameters": [
+      "Markdown 渲染支持 GFM 扩展：表格、删除线、任务列表",
+      "文档内容为只读展示，不支持编辑",
+      "MarkdownViewer 使用 Tailwind Typography 插件进行排版样式",
+      "无文档数据时显示空状态提示"
+    ]
+  },
+  "constraints": [
+    "文档内容完全由外部同步工具生成，平台不提供编辑功能",
+    "无网络环境下文档仍可正常显示（本地数据）",
+    "文档内容过长时页面滚动可能影响性能（依赖浏览器渲染）",
+    "Markdown 中的图片引用可能无效（外部工具生成时需处理资源路径）"
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "6d11cf5",
+    "baseCommitMessage": "perf(sync-specs): streamline skill from 500→201 lines, 8→5 steps, 3→1 validation loop",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/graph/SpecsDocument.tsx",
+      "apps/web/src/components/graph/TechnicalDocument.tsx",
+      "apps/web/src/components/graph/MarkdownViewer.tsx"
+    ]
+  }
+}

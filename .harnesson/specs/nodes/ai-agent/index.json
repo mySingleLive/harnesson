@@ -1,0 +1,70 @@
+{
+  "id": "ai-agent",
+  "name": "AI Agent 会话",
+  "level": 2,
+  "parent": "project",
+  "children": ["agent-session", "message-display", "message-input", "agent-control"],
+  "isLeaf": false,
+  "summary": "AI Agent 是 Harnesson 的核心功能。用户创建 Agent 会话让 AI 在项目中执行编码任务，实时查看 Agent 的思考过程、工具调用和输出结果。支持消息输入（文本、图片、斜杠命令）、工具执行卡片展示、待办事项跟踪、交互式问答和 Agent 控制（中止、模型切换）。",
+  "goals": [
+    "支持创建和管理 AI Agent 会话，与 Claude Code SDK 集成",
+    "实时展示 Agent 的文本输出、思考过程和工具调用结果",
+    "提供丰富的消息输入方式：文本、图片粘贴/拖拽、斜杠命令自动补全",
+    "支持中止执行、切换 AI 模型等 Agent 控制操作"
+  ],
+  "design": "design/ai-agent.md",
+  "acceptanceCriteria": [
+    {
+      "given": "用户在项目中选择了一个分支和模型",
+      "when": "用户输入提示词并发送",
+      "then": "新的 Agent 会话创建成功，右侧面板显示 Agent 的执行流"
+    },
+    {
+      "given": "Agent 正在执行任务",
+      "when": "用户点击中止按钮",
+      "then": "Agent 停止执行，状态更新为已停止"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "项目和分支已就绪",
+        "when": "用户创建 Agent 并发送消息",
+        "then": "Agent 开始执行，SSE 流实时传输事件到前端"
+      },
+      {
+        "level": "p0",
+        "given": "Agent 正在运行",
+        "when": "用户点击中止按钮",
+        "then": "Agent 停止并更新状态"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "6d11cf5",
+    "baseCommitMessage": "perf(sync-specs): streamline skill from 500→201 lines, 8→5 steps, 3→1 validation loop",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/pages/NewSessionPage.tsx",
+      "apps/web/src/components/layout/AgentPanel.tsx",
+      "apps/web/src/components/layout/AgentContextHeader.tsx",
+      "apps/web/src/components/layout/AgentContextMenu.tsx",
+      "apps/web/src/components/layout/AgentStatusDot.tsx",
+      "apps/web/src/components/layout/Sidebar.tsx",
+      "apps/web/src/stores/agentStore.ts",
+      "apps/web/src/hooks/useChatPanel.ts",
+      "apps/web/src/hooks/useElapsedTime.ts",
+      "apps/web/src/lib/serverApi.ts",
+      "apps/server/src/routes/agents.ts",
+      "apps/server/src/lib/agent-service.ts",
+      "apps/server/src/lib/agent-adapter.ts",
+      "apps/server/src/lib/claude-code-adapter.ts",
+      "packages/shared/src/types/agent.ts"
+    ]
+  }
+}

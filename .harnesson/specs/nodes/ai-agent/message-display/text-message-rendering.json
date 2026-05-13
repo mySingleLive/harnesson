@@ -1,0 +1,65 @@
+{
+  "id": "text-message-rendering",
+  "name": "文本消息渲染",
+  "level": 4,
+  "parent": "message-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "将 Agent 的文本回复以 Markdown 格式渲染显示。支持流式输出（逐字/逐块显示），区分用户消息和 Agent 消息，以及自动滚动到最新内容。",
+  "goals": [
+    "以富文本 Markdown 格式渲染 Agent 的文本回复",
+    "支持流式输出，新内容到达时自动追加显示",
+    "自动滚动到最新消息位置"
+  ],
+  "design": "design/ai-agent/message-display/text-message-rendering.md",
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 正在流式输出文本",
+      "when": "新的文本片段到达",
+      "then": "文本实时追加到消息面板末尾，自动滚动到底部"
+    },
+    {
+      "given": "用户手动滚动到历史消息位置",
+      "when": "新的消息内容到达",
+      "then": "不强制滚动，显示\"滚动到底部\"按钮"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "Agent 已开始回复",
+        "when": "Agent 输出包含 Markdown 语法的文本",
+        "then": "文本正确渲染为富文本（标题、列表、代码块等）"
+      }
+    ],
+    "script-test": []
+  },
+  "specDetail": {
+    "description": "文本消息渲染使用 react-markdown 将 Agent 的 Markdown 格式回复转换为富文本。支持 GitHub Flavored Markdown（表格、任务列表、删除线）和代码块语法高亮。\n\n消息按时间顺序排列，用户消息和 Agent 消息采用不同的视觉样式（对齐方向、背景色）。\n\n自动滚动行为：内容更新时默认滚动到底部；用户手动上滚后停止自动滚动，显示浮动\"滚动到底部\"按钮。",
+    "parameters": [
+      "Markdown 渲染支持：标题、列表、代码块（语法高亮）、表格、链接、图片、引用块",
+      "用户消息右对齐，Agent 消息左对齐",
+      "自动滚动阈值为距底部 100px 以内",
+      "\"滚动到底部\"按钮在用户上滚超过 200px 时显示"
+    ]
+  },
+  "constraints": [
+    "仅渲染文本内容，不执行嵌入的 JavaScript 或 HTML",
+    "超长代码块自动启用横向滚动",
+    "用户离线时已渲染的消息仍可查看",
+    "消息历史仅在当前会话期间保留（刷新后重新加载）"
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "6d11cf5",
+    "baseCommitMessage": "perf(sync-specs): streamline skill from 500→201 lines, 8→5 steps, 3→1 validation loop",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/MessageRenderer.tsx",
+      "apps/web/src/stores/agentStore.ts"
+    ]
+  }
+}

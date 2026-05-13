@@ -1,0 +1,58 @@
+{
+  "id": "message-input",
+  "name": "消息输入",
+  "level": 3,
+  "parent": "ai-agent",
+  "children": ["text-input", "image-upload", "slash-command-completion"],
+  "isLeaf": false,
+  "summary": "向 Agent 发送消息的输入系统。支持富文本输入、图片粘贴和拖拽上传、以及斜杠命令的自动补全。提供 Emacs 风格快捷键和输入法组合输入支持。",
+  "goals": [
+    "提供富文本输入框，支持多行文本和自动高度调整",
+    "支持通过粘贴、拖拽和文件选择器添加图片",
+    "提供斜杠命令的自动补全和键盘导航"
+  ],
+  "design": "design/ai-agent/message-input.md",
+  "acceptanceCriteria": [
+    {
+      "given": "聊天面板已打开",
+      "when": "用户输入文本并按 Enter",
+      "then": "消息发送给 Agent，输入框清空"
+    },
+    {
+      "given": "用户输入以 / 开头",
+      "when": "斜杠命令弹窗显示匹配的命令列表",
+      "then": "用户可以选择命令或继续输入过滤"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "聊天输入框可见",
+        "when": "用户输入消息并按 Enter 发送",
+        "then": "消息发送成功，SSE 流开始接收回复"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "6d11cf5",
+    "baseCommitMessage": "perf(sync-specs): streamline skill from 500→201 lines, 8→5 steps, 3→1 validation loop",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/RichTextInput.tsx",
+      "apps/web/src/components/chat/SlashCommandPopup.tsx",
+      "apps/web/src/components/chat/HighlightOverlay.tsx",
+      "apps/web/src/components/chat/ImagePreview.tsx",
+      "apps/web/src/hooks/useEmacsKeybindings.ts",
+      "apps/web/src/hooks/useSlashCompletion.ts",
+      "apps/web/src/hooks/useImageInput.ts",
+      "apps/web/src/hooks/useKeyboardNavigation.ts",
+      "apps/web/src/stores/slashCommandStore.ts",
+      "apps/web/src/lib/slashCommandUtils.ts"
+    ]
+  }
+}

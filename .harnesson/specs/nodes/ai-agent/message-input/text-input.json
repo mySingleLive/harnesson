@@ -1,0 +1,85 @@
+{
+  "id": "text-input",
+  "name": "文本输入",
+  "level": 4,
+  "parent": "message-input",
+  "children": [],
+  "isLeaf": true,
+  "summary": "主要的文本消息输入功能。使用 contentEditable div 实现富文本编辑体验，支持多行输入、自动高度调整（40px-140px）、Enter 发送/Shift+Enter 换行、以及 Emacs 风格快捷键。",
+  "goals": [
+    "提供多行文本输入，高度自动在 40px-140px 之间调整",
+    "支持 Enter 发送消息、Shift+Enter 插入换行",
+    "提供 Emacs 风格快捷键（Ctrl+A/E/B/F/P/N/D/H/W/K/U/Y）"
+  ],
+  "design": "design/ai-agent/message-input/text-input.md",
+  "acceptanceCriteria": [
+    {
+      "given": "输入框为空",
+      "when": "用户输入多行文本",
+      "then": "输入框高度自动增长，最大到 140px 后出现滚动条"
+    },
+    {
+      "given": "输入框中有文本",
+      "when": "用户按 Enter（非 Shift+Enter）",
+      "then": "消息发送给 Agent"
+    },
+    {
+      "given": "输入框中有文本且光标在字符后",
+      "when": "用户在该字符后输入 \\ 再按 Enter",
+      "then": "插入换行符而非发送消息"
+    }
+  ],
+  "testCases": {
+    "unit-test": [
+      {
+        "level": "p2",
+        "given": "输入框中有超长文本（10000+ 字符）",
+        "when": "用户按 Enter 发送",
+        "then": "消息正常发送，内容不截断"
+      }
+    ],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "输入框可见且聚焦",
+        "when": "用户输入文本并按 Enter",
+        "then": "消息发送，输入框清空"
+      },
+      {
+        "level": "p1",
+        "given": "输入框中有文本",
+        "when": "用户按 Ctrl+A 然后按 Ctrl+K",
+        "then": "全选并剪切到行尾（Emacs 快捷键）"
+      }
+    ],
+    "script-test": []
+  },
+  "specDetail": {
+    "description": "文本输入使用 contentEditable div 而非 textarea，以实现内嵌图片等富文本功能。输入框最小高度 24px（单行），最大高度 140px（约 6 行），超出后出现垂直滚动条。\n\n**发送逻辑**：\n- 输入非空且非输入法组合状态时，Enter 发送\n- Shift+Enter 强制插入换行\n- 反斜杠 \\ 后接 Enter 也插入换行（escape 发送）\n\n**Emacs 快捷键**（通过 useEmacsKeybindings hook 实现）：\n- Ctrl+A/E：跳转到行首/行尾\n- Ctrl+B/F/P/N：前后移动字符\n- Ctrl+D：删除后一个字符\n- Ctrl+H：删除前一个字符（退格）\n- Ctrl+W：删除前一个词\n- Ctrl+K/U：删除到行尾/行首（带剪切环）\n- Ctrl+Y：粘贴剪切环内容",
+    "parameters": [
+      "输入框最小高度 24px，最大高度 140px",
+      "Enter 发送，Shift+Enter 换行，\\+Enter 换行",
+      "输入法组合输入期间（isComposing=true）禁用 Enter 发送",
+      "发送按钮在无文本且无图片时禁用（灰色不可点击）"
+    ]
+  },
+  "constraints": [
+    "输入为空时按 Enter 不触发任何操作",
+    "输入法激活时 Enter 用于确认组合字符，不发送消息",
+    "Emacs 快捷键仅在非输入法组合状态下生效",
+    "纯粘贴文本时使用 insertText 命令保留纯文本格式",
+    "文本发送后输入框立即清空，不支持撤销恢复"
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "6d11cf5",
+    "baseCommitMessage": "perf(sync-specs): streamline skill from 500→201 lines, 8→5 steps, 3→1 validation loop",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/RichTextInput.tsx",
+      "apps/web/src/hooks/useEmacsKeybindings.ts",
+      "apps/web/src/hooks/useKeyboardNavigation.ts"
+    ]
+  }
+}

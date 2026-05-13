@@ -1,0 +1,56 @@
+{
+  "id": "knowledge-graph",
+  "name": "项目知识图谱",
+  "level": 2,
+  "parent": "project",
+  "children": ["graph-sync", "graph-visualization", "document-viewing"],
+  "isLeaf": false,
+  "summary": "项目知识图谱功能通过外部同步工具扫描代码仓库，生成结构化的规格图谱和架构图谱。用户可以在可视化图中浏览项目结构、查看节点详情，也可以阅读完整的规格文档和技术文档。",
+  "goals": [
+    "支持一键同步生成项目的规格图谱和架构图谱",
+    "以交互式可视化图展示项目结构（领域→功能层次）",
+    "提供树形列表、Markdown 文档等替代浏览方式",
+    "支持查看同步历史版本"
+  ],
+  "design": "design/knowledge-graph.md",
+  "acceptanceCriteria": [
+    {
+      "given": "用户打开图谱页面且项目尚未同步",
+      "when": "用户选择存储位置并点击开始同步",
+      "then": "同步进度条显示各个阶段，完成后图谱数据加载"
+    },
+    {
+      "given": "图谱数据已加载",
+      "when": "用户点击图谱中的某个节点",
+      "then": "右侧显示该节点的详细信息面板"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "项目已打开，图谱页面已加载",
+        "when": "用户发起同步",
+        "then": "同步完成，图谱可视化显示"
+      }
+    ],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "6d11cf5",
+    "baseCommitMessage": "perf(sync-specs): streamline skill from 500→201 lines, 8→5 steps, 3→1 validation loop",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/pages/GraphPage.tsx",
+      "apps/web/src/components/graph/",
+      "apps/web/src/stores/graphStore.ts",
+      "apps/server/src/routes/graph.ts",
+      "apps/server/src/lib/graph-storage.ts",
+      "apps/server/src/lib/sync-engine.ts",
+      "packages/shared/src/types/graph.ts"
+    ]
+  }
+}

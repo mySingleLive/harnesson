@@ -1,0 +1,94 @@
+{
+  "id": "tool-execution-display",
+  "name": "工具执行展示",
+  "level": 4,
+  "parent": "message-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "以卡片形式可视化 Agent 使用的各类工具及其结果。包括读文件（ReadCard）、写文件（WriteCard）、文件编辑（EditCard）、命令执行（BashCard）、内容搜索（GrepCard）、文件搜索（GlobCard）、LSP 操作（LSPCard）、子 Agent（StreamingAgentCard）、问答卡片和通用卡片。每种卡片针对特定工具类型优化显示格式。",
+  "goals": [
+    "为每种工具类型提供专门优化的卡片展示",
+    "显示工具的输入参数和执行结果",
+    "支持卡片折叠/展开，减少界面杂乱",
+    "支持嵌套 Agent（子 Agent 工具调用树形展示）"
+  ],
+  "design": "design/ai-agent/message-display/tool-execution-display.md",
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 调用 Read 工具读取文件",
+      "when": "工具使用和结果事件到达",
+      "then": "显示 ReadCard，包含文件路径、行号范围和内容预览"
+    },
+    {
+      "given": "Agent 调用 Bash 工具执行命令",
+      "when": "命令开始执行",
+      "then": "显示 BashCard，包含命令文本，状态标记为运行中"
+    },
+    {
+      "given": "Agent 在工具调用中使用了嵌套 Agent",
+      "when": "子 Agent 事件到达",
+      "then": "显示 StreamingAgentCard，子 Agent 事件以树形结构嵌套展示"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [
+      {
+        "level": "p0",
+        "given": "Agent 在回复中使用了 Read、Write、Bash 工具",
+        "when": "所有工具事件到达",
+        "then": "每种工具显示对应的卡片类型，包含正确的输入输出数据"
+      },
+      {
+        "level": "p1",
+        "given": "工具卡片正在显示",
+        "when": "用户点击卡片标题栏",
+        "then": "卡片内容折叠/展开切换"
+      }
+    ],
+    "script-test": []
+  },
+  "specDetail": {
+    "description": "工具执行展示系统将 Agent 的工具调用事件流解析为结构化的卡片树。核心处理流程：\n\n1. **事件分段**（segmentEvents）：将混合事件流切分为文本段、工具调用段、问答段\n2. **事件配对**（pairEvents）：将 tool_use 和 tool_result 事件配对\n3. **树构建**（buildEventTree）：处理嵌套 Agent 调用，构建父子关系树\n\n支持的卡片类型及展示内容：\n\n- **ReadCard**：文件路径、行号范围、内容预览（截断 50 行）\n- **WriteCard**：文件路径、语法高亮代码、文件大小\n- **EditCard**：文件路径、统一 diff 视图、+/- 行数统计\n- **BashCard**：命令文本、输出内容（截断）、执行耗时\n- **GrepCard**：搜索模式、路径、匹配数量\n- **GlobCard**：Glob 模式、匹配文件数量、文件列表\n- **LSPCard**：LSP 操作类型、文件路径、行号\n- **StreamingAgentCard**：嵌套子 Agent 的完整事件树\n- **AskUserQuestionCard**：问题内容、选项列表\n- **GenericCard**：fallback，显示原始 JSON 输入输出\n\n所有卡片支持折叠/展开，状态指示（运行中旋转动画、完成、错误）。",
+    "parameters": [
+      "ReadCard 内容预览截断阈值：50 行",
+      "BashCard 输出内容截断阈值：200 行",
+      "卡片状态动画：运行中脉冲、完成绿色、错误红色边框",
+      "EditCard 使用 diff 库生成统一 diff 视图",
+      "WriteCard/EditCard 使用 prism-react-renderer 进行代码语法高亮",
+      "嵌套 Agent 卡片以缩进+树形连线展示父子关系"
+    ]
+  },
+  "constraints": [
+    "工具事件的展示依赖 SSE 事件流的完整性（丢失事件可能导致卡片不完整）",
+    "超长输出内容自动截断，用户无法展开查看完整内容",
+    "未知工具类型回退到 GenericCard（原始 JSON）",
+    "嵌套 Agent 的深度理论上无限但实际受 SDK 限制"
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "6d11cf5",
+    "baseCommitMessage": "perf(sync-specs): streamline skill from 500→201 lines, 8→5 steps, 3→1 validation loop",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/tool-cards/ToolEventCard.tsx",
+      "apps/web/src/components/chat/tool-cards/CollapsibleCard.tsx",
+      "apps/web/src/components/chat/tool-cards/StreamingAgentCard.tsx",
+      "apps/web/src/components/chat/tool-cards/ReadCard.tsx",
+      "apps/web/src/components/chat/tool-cards/WriteCard.tsx",
+      "apps/web/src/components/chat/tool-cards/EditCard.tsx",
+      "apps/web/src/components/chat/tool-cards/BashCard.tsx",
+      "apps/web/src/components/chat/tool-cards/GrepCard.tsx",
+      "apps/web/src/components/chat/tool-cards/GlobCard.tsx",
+      "apps/web/src/components/chat/tool-cards/LSPCard.tsx",
+      "apps/web/src/components/chat/tool-cards/AskUserQuestionCard.tsx",
+      "apps/web/src/components/chat/tool-cards/QAResultCard.tsx",
+      "apps/web/src/components/chat/tool-cards/GenericCard.tsx",
+      "apps/web/src/components/chat/tool-cards/TodoCard.tsx",
+      "apps/web/src/components/chat/tool-cards/buildEventTree.ts",
+      "apps/web/src/components/chat/tool-cards/pairEvents.ts",
+      "apps/web/src/components/chat/tool-cards/segmentEvents.ts"
+    ]
+  }
+}
