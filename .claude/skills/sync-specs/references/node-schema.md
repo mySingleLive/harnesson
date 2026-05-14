@@ -15,7 +15,7 @@
 | level | integer | 层级深度。根节点 = 1，子节点递增。 |
 | parent | string \| null | 父节点 id。根节点为 null。 |
 | children | string[] | 子节点 id 列表。叶子节点为空数组 `[]`。 |
-| isLeaf | boolean | 是否叶子节点。无子节点时为 true。 |
+| isLeaf | boolean | 是否叶子节点。判定依据见 SKILL.md 节点识别原则中的叶子判定核心规则。无子节点时为 true。 |
 | summary | string | 功能简述/摘要。1-3 句话。 |
 | status | string | 节点状态，固定枚举值，见下方状态定义。 |
 | syncMeta | object | 同步元信息，结构见下方。 |
