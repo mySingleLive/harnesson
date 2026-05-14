@@ -1,0 +1,46 @@
+{
+  "id": "sync-ui",
+  "name": "Sync UI",
+  "level": 4,
+  "parent": "graph-sync",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Frontend sync view with progress tracking and status display",
+  "goals": [
+    "Provide a visual interface for triggering and monitoring graph sync",
+    "Show sync progress with phase details and error reporting"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "A SyncView component with SyncProgress display that shows the sync workflow. Provides buttons to start incremental or full sync, displays progress bars for each phase (discovery, analysis, generation), and reports errors.",
+    "parameters": [
+      { "name": "syncStatus", "type": "string", "description": "Current sync status: 'idle', 'running', 'completed', 'failed'" },
+      { "name": "progress", "type": "object", "description": "Progress details with phase, percentage, and current step" },
+      { "name": "onStartSync", "type": "function", "description": "Callback to start sync (full or incremental)" },
+      { "name": "lastSyncResult", "type": "object", "description": "Result of the last sync operation including stats and errors" }
+    ]
+  },
+  "constraints": [
+    "Must show real-time progress updates during sync (polled or SSE)",
+    "Must allow cancelling an in-progress sync",
+    "Must display sync errors with actionable messages"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "a project has code changes",
+      "when": "the user triggers an incremental sync",
+      "then": "a progress display shows each sync phase with percentage completion"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/SyncView.tsx",
+      "src/components/SyncProgress.tsx"
+    ]
+  }
+}

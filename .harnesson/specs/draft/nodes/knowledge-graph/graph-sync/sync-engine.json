@@ -1,0 +1,46 @@
+{
+  "id": "sync-engine",
+  "name": "Sync Engine",
+  "level": 4,
+  "parent": "graph-sync",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Backend sync engine that scans project code, analyzes structure, and generates spec nodes",
+  "goals": [
+    "Scan project source code and generate corresponding spec nodes",
+    "Support incremental sync by detecting changed files"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "The sync-engine module that orchestrates the spec synchronization process. Scans source directories, analyzes file structure, determines node hierarchy, generates spec JSON, and persists results to graph storage.",
+    "parameters": [
+      { "name": "projectId", "type": "string", "description": "Project to sync (required)" },
+      { "name": "mode", "type": "string", "description": "Sync mode: 'incremental' or 'full'" },
+      { "name": "changedFiles", "type": "string[]", "description": "List of changed files for incremental sync (auto-detected if empty)" },
+      { "name": "options", "type": "object", "description": "Sync options including exclude patterns and depth limits" }
+    ]
+  },
+  "constraints": [
+    "Must complete full sync within 5 minutes for projects with up to 1000 source files",
+    "Must preserve manually edited spec content during incremental sync",
+    "Must generate valid JSON spec files conforming to the schema"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "a project with source code files",
+      "when": "a full sync is triggered",
+      "then": "all source files are scanned and a complete spec tree is generated with proper hierarchy"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/lib/sync-engine.ts",
+      "src/routes/graph.ts"
+    ]
+  }
+}

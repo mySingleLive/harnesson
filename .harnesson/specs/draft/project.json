@@ -1,0 +1,28 @@
+{
+  "id": "project",
+  "name": "Harnesson",
+  "level": 1,
+  "parent": null,
+  "treeDepth": 5,
+  "treeScenario": "multi-domain",
+  "children": [
+    "project-management",
+    "ai-agent",
+    "knowledge-graph",
+    "git-integration"
+  ],
+  "isLeaf": false,
+  "summary": "Visual AI Coding Management Platform — 基于可视化的 AI 编码管理平台",
+  "goals": [
+    "Provide a visual management platform for AI-assisted coding workflows",
+    "Unify project management, AI agent interaction, knowledge graph, and git integration into a cohesive experience"
+  ],
+  "design": "design/project.md",
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page"
+  }
+}

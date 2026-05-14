@@ -1,0 +1,22 @@
+{
+  "id": "document-viewing",
+  "name": "Document Viewing",
+  "level": 3,
+  "parent": "knowledge-graph",
+  "children": [
+    "detail-panel"
+  ],
+  "isLeaf": false,
+  "summary": "Document viewing panel for displaying detailed content of graph nodes and specs",
+  "goals": [
+    "Provide a detail panel for viewing spec and document content"
+  ],
+  "design": null,
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page"
+  }
+}

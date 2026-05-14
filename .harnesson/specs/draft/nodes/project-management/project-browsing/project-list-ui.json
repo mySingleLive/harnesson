@@ -1,0 +1,50 @@
+{
+  "id": "project-list-ui",
+  "name": "Project List UI",
+  "level": 4,
+  "parent": "project-browsing",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Frontend UI for displaying the project list with cards, rows, empty states, and dropdown actions",
+  "goals": [
+    "Render a responsive project list with card and row layout options",
+    "Provide empty state guidance when no projects exist",
+    "Enable per-project dropdown actions (open, clone, delete)"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "Renders the main project listing page. Displays projects as cards or rows depending on user preference. Shows an empty state component when no projects are available. Each project item provides a dropdown menu for quick actions.",
+    "parameters": [
+      { "name": "viewMode", "type": "string", "description": "Toggle between card ('grid') and row ('list') display modes" },
+      { "name": "searchQuery", "type": "string", "description": "Filter projects by name using a search input" },
+      { "name": "projects", "type": "Project[]", "description": "Array of project objects fetched from the API" },
+      { "name": "isLoading", "type": "boolean", "description": "Loading state while fetching project data" }
+    ]
+  },
+  "constraints": [
+    "Must render project list within 500ms of data arrival for up to 100 projects",
+    "Empty state must be shown immediately when filtered result set is empty",
+    "Dropdown actions must be accessible via keyboard navigation"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "the user navigates to the project list page",
+      "when": "projects exist in the database",
+      "then": "a list of project cards is displayed with name, status, and last modified date"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/ProjectList.tsx",
+      "src/components/ProjectCard.tsx",
+      "src/components/ProjectRow.tsx",
+      "src/components/EmptyState.tsx",
+      "src/components/ProjectDropdown.tsx"
+    ]
+  }
+}

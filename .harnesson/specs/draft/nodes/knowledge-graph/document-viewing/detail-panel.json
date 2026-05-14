@@ -1,0 +1,47 @@
+{
+  "id": "detail-panel",
+  "name": "Detail Panel",
+  "level": 4,
+  "parent": "document-viewing",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Detail panel component for viewing node details with Markdown rendering and technical documentation",
+  "goals": [
+    "Display selected node details in a side panel with rich formatting",
+    "Support Markdown and technical document rendering"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "A DetailPanel component that displays detailed information about a selected graph node. Includes MarkdownViewer for rendering markdown content and TechnicalDocument for displaying structured technical specifications.",
+    "parameters": [
+      { "name": "nodeId", "type": "string", "description": "ID of the selected node to display" },
+      { "name": "contentType", "type": "string", "description": "Content type: 'spec', 'design', 'markdown'" },
+      { "name": "isOpen", "type": "boolean", "description": "Whether the panel is visible" },
+      { "name": "onClose", "type": "function", "description": "Callback to close the panel" }
+    ]
+  },
+  "constraints": [
+    "Must render as a slide-out panel from the right side",
+    "Must support scrolling for content exceeding the panel height",
+    "Must render Markdown content with syntax-highlighted code blocks"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "a graph node is selected",
+      "when": "the detail panel opens",
+      "then": "the node's full specification is rendered with Markdown support in a slide-out panel"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/DetailPanel.tsx",
+      "src/components/MarkdownViewer.tsx",
+      "src/components/TechnicalDocument.tsx"
+    ]
+  }
+}

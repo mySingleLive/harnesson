@@ -1,0 +1,45 @@
+{
+  "id": "branch-api",
+  "name": "Branch API",
+  "level": 4,
+  "parent": "branch-management",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Backend API for Git branch operations including listing, switching, and creating branches",
+  "goals": [
+    "Provide secure Git branch operations via REST API",
+    "Handle branch operations with proper conflict detection"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "Exposes Git branch API endpoints under /api/branches. GET /api/branches/:projectId returns all branches. POST /api/branches/:projectId/switch switches the working tree. POST /api/branches/:projectId/create creates a new branch.",
+    "parameters": [
+      { "name": "projectId", "type": "string", "description": "Project ID for branch operations (required)" },
+      { "name": "branchName", "type": "string", "description": "Target branch name for switch or create operations" },
+      { "name": "startPoint", "type": "string", "description": "Starting point for new branch (default: HEAD)" },
+      { "name": "force", "type": "boolean", "description": "Force switch even with uncommitted changes (default false)" }
+    ]
+  },
+  "constraints": [
+    "Must sanitize branch names to prevent command injection",
+    "Must detect and report uncommitted changes before switching",
+    "Must handle merge conflicts gracefully during branch operations"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "a project repository with a clean working tree",
+      "when": "POST /api/branches/:projectId/switch is called with an existing branch name",
+      "then": "the working tree is switched to the target branch and success is returned"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/routes/branches.ts"
+    ]
+  }
+}

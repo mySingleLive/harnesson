@@ -1,0 +1,23 @@
+{
+  "id": "git-integration",
+  "name": "Git Integration",
+  "level": 2,
+  "parent": "project",
+  "children": [
+    "branch-management"
+  ],
+  "isLeaf": false,
+  "summary": "Git integration features including branch management and repository operations",
+  "goals": [
+    "Provide Git integration within the platform UI",
+    "Enable branch management without leaving the application"
+  ],
+  "design": "design/git-integration.md",
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page"
+  }
+}

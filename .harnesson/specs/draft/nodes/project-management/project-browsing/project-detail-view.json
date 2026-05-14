@@ -1,0 +1,44 @@
+{
+  "id": "project-detail-view",
+  "name": "Project Detail View",
+  "level": 4,
+  "parent": "project-browsing",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Modal dialog for viewing detailed project information including metadata, specs, and status",
+  "goals": [
+    "Display comprehensive project details in a modal overlay",
+    "Show project metadata, associated specs, and current status"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "A modal component that opens when a user clicks on a project card or row. Displays full project details including name, path, description, creation date, last modified date, spec count, and status indicators.",
+    "parameters": [
+      { "name": "projectId", "type": "string", "description": "Unique identifier of the project to display" },
+      { "name": "isOpen", "type": "boolean", "description": "Controls modal visibility" },
+      { "name": "onClose", "type": "function", "description": "Callback invoked when the modal is closed" }
+    ]
+  },
+  "constraints": [
+    "Modal must trap focus when open for accessibility",
+    "Must close on Escape key press",
+    "Content must be scrollable when project details exceed viewport height"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "a project exists with full metadata",
+      "when": "the user clicks on the project card",
+      "then": "a modal opens displaying all project details including name, path, status, and timestamps"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/ProjectDetailModal.tsx"
+    ]
+  }
+}
