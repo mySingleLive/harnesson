@@ -1,0 +1,23 @@
+{
+  "id": "folder-opening",
+  "name": "Folder Opening",
+  "level": 3,
+  "parent": "project-management",
+  "children": [
+    "open-folder-trigger",
+    "native-folder-dialog"
+  ],
+  "isLeaf": false,
+  "summary": "Open local folders as projects using native OS file dialogs",
+  "goals": [
+    "Enable users to open existing local folders as projects"
+  ],
+  "design": null,
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page"
+  }
+}

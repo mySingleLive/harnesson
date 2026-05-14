@@ -1,0 +1,46 @@
+{
+  "id": "image-upload-ui",
+  "name": "Image Upload UI",
+  "level": 5,
+  "parent": "image-upload",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Frontend image upload component with preview, drag-and-drop, and paste support",
+  "goals": [
+    "Provide intuitive image upload with preview and multiple input methods",
+    "Support drag-and-drop, clipboard paste, and file picker"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "An ImagePreview component combined with useImageInput hook that provides image upload functionality. Supports drag-and-drop, clipboard paste (Ctrl+V), and file picker. Shows image previews before sending.",
+    "parameters": [
+      { "name": "images", "type": "Image[]", "description": "Array of uploaded images with preview data" },
+      { "name": "onImageAdd", "type": "function", "description": "Callback when a new image is added" },
+      { "name": "onImageRemove", "type": "function", "description": "Callback when an image is removed by index" },
+      { "name": "maxImages", "type": "number", "description": "Maximum number of images per message (default 5)" }
+    ]
+  },
+  "constraints": [
+    "Must accept PNG, JPG, GIF, and WebP formats only",
+    "Must enforce maximum image size of 10MB per image",
+    "Must show upload progress for large images"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "the message input is active",
+      "when": "the user pastes an image from clipboard",
+      "then": "a preview of the image appears in the input area ready to send"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/ImagePreview.tsx",
+      "src/hooks/useImageInput.ts"
+    ]
+  }
+}

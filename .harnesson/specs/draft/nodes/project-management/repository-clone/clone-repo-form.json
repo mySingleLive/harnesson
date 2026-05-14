@@ -1,0 +1,45 @@
+{
+  "id": "clone-repo-form",
+  "name": "Clone Repo Form",
+  "level": 4,
+  "parent": "repository-clone",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Frontend modal form for entering repository URL and target project name for cloning",
+  "goals": [
+    "Collect repository clone parameters with URL validation",
+    "Show clone progress feedback to the user"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "A modal form that accepts a Git repository URL, optional target name, and branch. Validates the URL format and initiates the clone operation through the backend API.",
+    "parameters": [
+      { "name": "repoUrl", "type": "string", "description": "Git repository URL (required, must be valid URL format)" },
+      { "name": "projectName", "type": "string", "description": "Target project name (optional, defaults to repo name)" },
+      { "name": "branch", "type": "string", "description": "Branch to clone (optional, defaults to default branch)" },
+      { "name": "onCloneComplete", "type": "function", "description": "Callback invoked after successful clone" }
+    ]
+  },
+  "constraints": [
+    "Must validate URL format before enabling submit",
+    "Must show progress indicator during clone operation",
+    "Must handle and display clone errors (auth failure, repo not found, network error)"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "the clone repo modal is open",
+      "when": "the user enters a valid Git URL and submits",
+      "then": "the clone operation starts with a progress indicator and completes with a success notification"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/CloneRepoModal.tsx"
+    ]
+  }
+}

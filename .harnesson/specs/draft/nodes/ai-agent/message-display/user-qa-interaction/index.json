@@ -1,0 +1,23 @@
+{
+  "id": "user-qa-interaction",
+  "name": "User Q&A Interaction",
+  "level": 4,
+  "parent": "message-display",
+  "children": [
+    "qa-panel-ui",
+    "qa-response-api"
+  ],
+  "isLeaf": false,
+  "summary": "Interactive Q&A panel where the agent asks the user questions during execution",
+  "goals": [
+    "Enable the agent to ask questions and receive user responses mid-execution"
+  ],
+  "design": null,
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page"
+  }
+}

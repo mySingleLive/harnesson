@@ -1,0 +1,46 @@
+{
+  "id": "slash-command-popup",
+  "name": "Slash Command Popup",
+  "level": 5,
+  "parent": "slash-command",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Frontend autocomplete popup for slash commands with fuzzy matching",
+  "goals": [
+    "Provide a responsive slash command popup with fuzzy search",
+    "Enable keyboard navigation through command suggestions"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "A SlashCommandPopup component combined with useSlashCompletion hook that displays a popup of available commands when the user types '/'. Supports fuzzy matching, keyboard navigation (arrow keys), and auto-completion on Enter or Tab.",
+    "parameters": [
+      { "name": "query", "type": "string", "description": "Current slash command query (after '/')" },
+      { "name": "commands", "type": "Command[]", "description": "Available slash commands list" },
+      { "name": "selectedIndex", "type": "number", "description": "Currently highlighted command index" },
+      { "name": "onSelect", "type": "function", "description": "Callback when a command is selected" }
+    ]
+  },
+  "constraints": [
+    "Must appear within 50ms of typing '/'",
+    "Must support keyboard navigation (up/down arrows, Enter, Escape)",
+    "Must fuzzy-match command names against the typed query"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "the text input is focused",
+      "when": "the user types '/' followed by command characters",
+      "then": "a filtered popup of matching commands appears with the best match highlighted"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/SlashCommandPopup.tsx",
+      "src/hooks/useSlashCompletion.ts"
+    ]
+  }
+}

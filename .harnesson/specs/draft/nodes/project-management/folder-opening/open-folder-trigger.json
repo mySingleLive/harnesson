@@ -1,0 +1,44 @@
+{
+  "id": "open-folder-trigger",
+  "name": "Open Folder Trigger",
+  "level": 4,
+  "parent": "folder-opening",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Frontend trigger button and action card for initiating the open-folder workflow",
+  "goals": [
+    "Provide a clear entry point for opening local folders",
+    "Trigger the native folder dialog via the backend"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "An ActionCard component that provides the 'Open Folder' button. When clicked, it triggers the backend native dialog endpoint and processes the returned folder path.",
+    "parameters": [
+      { "name": "onFolderSelected", "type": "function", "description": "Callback invoked with the selected folder path" },
+      { "name": "disabled", "type": "boolean", "description": "Disables the trigger when a dialog is already open" },
+      { "name": "variant", "type": "string", "description": "Visual variant: 'card' or 'button'" }
+    ]
+  },
+  "constraints": [
+    "Must prevent multiple simultaneous dialog opens",
+    "Must show loading state while dialog is open",
+    "Must handle dialog cancellation gracefully"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "the user is on the project management page",
+      "when": "the user clicks the 'Open Folder' action card",
+      "then": "a native OS folder picker dialog appears"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/ActionCard.tsx"
+    ]
+  }
+}

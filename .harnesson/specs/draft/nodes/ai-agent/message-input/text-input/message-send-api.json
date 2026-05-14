@@ -1,0 +1,46 @@
+{
+  "id": "message-send-api",
+  "name": "Message Send API",
+  "level": 5,
+  "parent": "text-input",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Backend API endpoint for sending messages to the AI agent and initiating response streaming",
+  "goals": [
+    "Process incoming user messages and initiate AI agent responses",
+    "Support streaming response delivery via SSE"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "Exposes POST /api/agents/sessions/:sessionId/messages endpoint that accepts a user message, appends it to the conversation history, and initiates an AI agent response stream.",
+    "parameters": [
+      { "name": "sessionId", "type": "string", "description": "Target session ID (required, path parameter)" },
+      { "name": "content", "type": "string", "description": "Message text content (required)" },
+      { "name": "images", "type": "string[]", "description": "Optional array of base64-encoded or URL-referenced images" },
+      { "name": "attachments", "type": "object[]", "description": "Optional file attachments metadata" }
+    ]
+  },
+  "constraints": [
+    "Must validate message content length (1-50000 chars)",
+    "Must enqueue the message for processing and return immediately with a stream URL",
+    "Must handle rate limiting per session to prevent abuse"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "a valid session exists",
+      "when": "POST /api/agents/sessions/:sessionId/messages is called with content",
+      "then": "the message is stored and a streaming response is initiated"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/routes/agents.ts",
+      "src/lib/agent-service.ts"
+    ]
+  }
+}

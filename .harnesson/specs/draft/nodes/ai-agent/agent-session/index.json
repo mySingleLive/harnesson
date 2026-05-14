@@ -1,0 +1,25 @@
+{
+  "id": "agent-session",
+  "name": "Agent Session",
+  "level": 3,
+  "parent": "ai-agent",
+  "children": [
+    "session-creation",
+    "session-switching",
+    "session-deletion"
+  ],
+  "isLeaf": false,
+  "summary": "Manage AI agent sessions including creation, switching between sessions, and deletion",
+  "goals": [
+    "Support multiple concurrent agent sessions per project",
+    "Enable seamless switching between sessions"
+  ],
+  "design": null,
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "id": "session-switching",
+  "name": "Session Switching",
+  "level": 4,
+  "parent": "agent-session",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Frontend sidebar component for switching between active agent sessions",
+  "goals": [
+    "Enable quick switching between multiple agent sessions",
+    "Preserve session state during switching"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "A Sidebar component that lists all active agent sessions for the current project. Allows users to click on a session to switch to it, loading the conversation history and state for the selected session.",
+    "parameters": [
+      { "name": "sessions", "type": "Session[]", "description": "List of active sessions to display" },
+      { "name": "activeSessionId", "type": "string", "description": "Currently active session ID for highlighting" },
+      { "name": "onSessionSelect", "type": "function", "description": "Callback invoked when a session is selected" }
+    ]
+  },
+  "constraints": [
+    "Must load session data within 300ms of selection",
+    "Must preserve scroll position and input state when switching sessions",
+    "Must visually indicate the currently active session"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "multiple sessions exist for a project",
+      "when": "the user clicks a different session in the sidebar",
+      "then": "the conversation view switches to the selected session with its full history"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/Sidebar.tsx"
+    ]
+  }
+}

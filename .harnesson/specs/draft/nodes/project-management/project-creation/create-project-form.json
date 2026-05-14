@@ -1,0 +1,45 @@
+{
+  "id": "create-project-form",
+  "name": "Create Project Form",
+  "level": 4,
+  "parent": "project-creation",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Frontend modal form for creating a new project with name, path, and description fields",
+  "goals": [
+    "Collect project creation details with real-time validation",
+    "Provide clear error messages for invalid inputs"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "A modal form component that collects project name, path, and optional description. Validates inputs in real-time and submits to the create project API endpoint.",
+    "parameters": [
+      { "name": "projectName", "type": "string", "description": "Name for the new project (required, 1-100 chars)" },
+      { "name": "projectPath", "type": "string", "description": "File system path for the project directory (required)" },
+      { "name": "description", "type": "string", "description": "Optional project description (max 500 chars)" },
+      { "name": "onSuccess", "type": "function", "description": "Callback invoked after successful project creation" }
+    ]
+  },
+  "constraints": [
+    "Project name must be unique across existing projects",
+    "Path must be a valid filesystem path and not already in use",
+    "Form must disable submit button until all required fields pass validation"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "the create project modal is open",
+      "when": "the user fills in a valid name and path and submits",
+      "then": "the project is created and the modal closes with a success notification"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/CreateProjectModal.tsx"
+    ]
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "id": "delete-project-api",
+  "name": "Delete Project API",
+  "level": 4,
+  "parent": "project-deletion",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Backend API endpoint for deleting a project and cleaning up associated resources",
+  "goals": [
+    "Safely remove project records and associated data",
+    "Provide options for keeping or removing project files on disk"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "Exposes DELETE /api/projects/:id endpoint that removes a project record from the database. Optionally removes project files from disk based on the removeFiles parameter.",
+    "parameters": [
+      { "name": "id", "type": "string", "description": "Project ID to delete (required, path parameter)" },
+      { "name": "removeFiles", "type": "boolean", "description": "Whether to delete project files from disk (default false)" },
+      { "name": "force", "type": "boolean", "description": "Skip safety checks for active sessions (default false, admin only)" }
+    ]
+  },
+  "constraints": [
+    "Must return 404 if project does not exist",
+    "Must refuse deletion if project has active agent sessions",
+    "Must clean up all associated database records (specs, sessions, metadata)"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "a project exists with no active sessions",
+      "when": "DELETE /api/projects/:id is called",
+      "then": "the project and all associated data are removed and status 204 is returned"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/routes/projects.ts"
+    ]
+  }
+}

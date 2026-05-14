@@ -1,0 +1,44 @@
+{
+  "id": "todo-api",
+  "name": "Todo API",
+  "level": 5,
+  "parent": "todo-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Backend API for managing agent todo/task lists during execution",
+  "goals": [
+    "Track and persist agent task lists during execution",
+    "Provide real-time updates on task completion"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "Backend endpoints for todo management. GET /api/agents/sessions/:sessionId/todos returns the current todo list. Task updates are streamed as part of the agent's SSE stream.",
+    "parameters": [
+      { "name": "sessionId", "type": "string", "description": "Session ID for the todo list (required)" },
+      { "name": "taskId", "type": "string", "description": "Specific task ID for status updates" },
+      { "name": "status", "type": "string", "description": "New task status: 'pending', 'in-progress', 'completed', 'failed'" }
+    ]
+  },
+  "constraints": [
+    "Must persist todo state across session reconnections",
+    "Must emit SSE events for each task status change",
+    "Must allow only valid status transitions (pending -> in-progress -> completed/failed)"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "a session has an active agent execution",
+      "when": "a task status changes",
+      "then": "the updated todo list is available via the API and streamed to connected clients"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/routes/agents.ts"
+    ]
+  }
+}

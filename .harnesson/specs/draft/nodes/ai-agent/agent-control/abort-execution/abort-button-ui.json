@@ -1,0 +1,44 @@
+{
+  "id": "abort-button-ui",
+  "name": "Abort Button UI",
+  "level": 5,
+  "parent": "abort-execution",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Frontend abort button in the agent context header for stopping execution",
+  "goals": [
+    "Provide a prominent abort button during agent execution",
+    "Show clear visual feedback when abort is in progress"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "An abort button in the AgentContextHeader component that appears during active agent execution. Shows a stop icon and 'Abort' label. Displays a loading state while the abort request is being processed.",
+    "parameters": [
+      { "name": "isExecuting", "type": "boolean", "description": "Whether the agent is currently executing (button only visible when true)" },
+      { "name": "onAbort", "type": "function", "description": "Callback invoked when abort is clicked" },
+      { "name": "isAborting", "type": "boolean", "description": "Whether the abort request is in progress" }
+    ]
+  },
+  "constraints": [
+    "Must only be visible during active agent execution",
+    "Must show a confirmation tooltip on hover to prevent accidental clicks",
+    "Must disable the button after abort is triggered to prevent double-abort"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "the agent is actively executing a request",
+      "when": "the user clicks the abort button",
+      "then": "the agent execution is stopped and a confirmation is shown"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/AgentContextHeader.tsx"
+    ]
+  }
+}

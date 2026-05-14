@@ -1,0 +1,44 @@
+{
+  "id": "session-deletion-ui",
+  "name": "Session Deletion UI",
+  "level": 5,
+  "parent": "session-deletion",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Context menu UI for deleting agent sessions from the sidebar",
+  "goals": [
+    "Provide a right-click context menu option for session deletion",
+    "Show confirmation before deleting"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "An AgentContextMenu component that provides a right-click context menu on session items in the sidebar. Includes a 'Delete Session' option that triggers a confirmation dialog.",
+    "parameters": [
+      { "name": "sessionId", "type": "string", "description": "ID of the session to delete" },
+      { "name": "sessionName", "type": "string", "description": "Display name for confirmation" },
+      { "name": "onDelete", "type": "function", "description": "Callback invoked after deletion is confirmed" }
+    ]
+  },
+  "constraints": [
+    "Must require confirmation before deletion",
+    "Must prevent deletion of the last remaining session",
+    "Must auto-select another session after deletion"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "a session exists in the sidebar",
+      "when": "the user right-clicks and confirms deletion",
+      "then": "the session is removed from the sidebar and another session becomes active"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/AgentContextMenu.tsx"
+    ]
+  }
+}

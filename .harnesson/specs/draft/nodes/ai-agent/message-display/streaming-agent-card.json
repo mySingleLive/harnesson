@@ -1,0 +1,44 @@
+{
+  "id": "streaming-agent-card",
+  "name": "Streaming Agent Card",
+  "level": 4,
+  "parent": "message-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Displays the AI agent's streaming response with real-time text and tool execution updates",
+  "goals": [
+    "Render streaming AI responses in real-time as chunks arrive",
+    "Show tool execution progress during agent processing"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "A component that renders the AI agent's streaming response in real-time. Displays text as it arrives via SSE, shows tool execution cards as they start and complete, and provides visual feedback for the overall agent progress.",
+    "parameters": [
+      { "name": "streamState", "type": "object", "description": "Current streaming state including text buffer, active tools, and status" },
+      { "name": "isStreaming", "type": "boolean", "description": "Whether the stream is currently active" },
+      { "name": "onStreamComplete", "type": "function", "description": "Callback when the stream ends" }
+    ]
+  },
+  "constraints": [
+    "Must render new text chunks within 100ms of arrival",
+    "Must show a pulsing cursor or typing indicator during streaming",
+    "Must handle stream interruption gracefully without content loss"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "an agent is processing a request",
+      "when": "streaming text chunks arrive",
+      "then": "the response text is rendered in real-time with a visible cursor"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/StreamingAgentCard.tsx"
+    ]
+  }
+}

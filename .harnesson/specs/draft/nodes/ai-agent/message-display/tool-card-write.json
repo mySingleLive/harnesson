@@ -1,0 +1,45 @@
+{
+  "id": "tool-card-write",
+  "name": "Tool Card: Write",
+  "level": 4,
+  "parent": "message-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Displays file write operations with created/overwritten file details",
+  "goals": [
+    "Render file write results showing the created or overwritten file",
+    "Indicate whether a file was created new or overwritten"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "A specialized tool card for file write operations. Displays the file path, whether the file was created or overwritten, file size, and a preview of the written content.",
+    "parameters": [
+      { "name": "filePath", "type": "string", "description": "Path of the file that was written" },
+      { "name": "content", "type": "string", "description": "Content that was written to the file" },
+      { "name": "isOverwrite", "type": "boolean", "description": "Whether the file existed and was overwritten" },
+      { "name": "fileSize", "type": "number", "description": "Size of the written content in bytes" }
+    ]
+  },
+  "constraints": [
+    "Must visually distinguish between new file creation and file overwrite",
+    "Must show content preview with syntax highlighting based on file extension",
+    "Must truncate preview for files exceeding 50 lines with an expand option"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "a file write operation result is received",
+      "when": "the tool card is rendered",
+      "then": "the file path, creation/overwrite status, and content preview are displayed"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/tools/WriteToolCard.tsx"
+    ]
+  }
+}

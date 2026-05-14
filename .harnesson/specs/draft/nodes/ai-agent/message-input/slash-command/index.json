@@ -1,0 +1,23 @@
+{
+  "id": "slash-command",
+  "name": "Slash Command",
+  "level": 4,
+  "parent": "message-input",
+  "children": [
+    "slash-command-popup",
+    "slash-command-api"
+  ],
+  "isLeaf": false,
+  "summary": "Slash command system for quick actions and agent configuration",
+  "goals": [
+    "Provide slash command autocomplete and execution"
+  ],
+  "design": null,
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page"
+  }
+}

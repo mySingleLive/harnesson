@@ -1,0 +1,45 @@
+{
+  "id": "slash-command-api",
+  "name": "Slash Command API",
+  "level": 5,
+  "parent": "slash-command",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Backend API for registering and executing slash commands",
+  "goals": [
+    "Provide a registry of available slash commands with metadata",
+    "Execute slash commands and return results"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "Backend endpoints for slash command management. GET /api/agents/slash-commands returns available commands. POST /api/agents/sessions/:sessionId/commands/:commandName executes a specific command.",
+    "parameters": [
+      { "name": "commandName", "type": "string", "description": "Name of the slash command to execute (required)" },
+      { "name": "args", "type": "string[]", "description": "Command arguments parsed from input" },
+      { "name": "sessionId", "type": "string", "description": "Session context for command execution" }
+    ]
+  },
+  "constraints": [
+    "Must validate command names against the registered command registry",
+    "Must enforce permission checks for privileged commands",
+    "Must return command results in a standardized format"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "slash commands are registered",
+      "when": "GET /api/agents/slash-commands is called",
+      "then": "a list of available commands with names, descriptions, and parameter schemas is returned"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/routes/agents.ts",
+      "src/lib/slash-commands.ts"
+    ]
+  }
+}

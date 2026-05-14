@@ -1,0 +1,24 @@
+{
+  "id": "agent-control",
+  "name": "Agent Control",
+  "level": 3,
+  "parent": "ai-agent",
+  "children": [
+    "model-switch",
+    "abort-execution"
+  ],
+  "isLeaf": false,
+  "summary": "Controls for managing agent execution including model switching and abort",
+  "goals": [
+    "Allow users to control agent execution in real-time",
+    "Support model switching and execution abort"
+  ],
+  "design": null,
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page"
+  }
+}

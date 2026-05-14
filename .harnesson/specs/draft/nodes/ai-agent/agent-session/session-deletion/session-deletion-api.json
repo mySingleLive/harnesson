@@ -1,0 +1,43 @@
+{
+  "id": "session-deletion-api",
+  "name": "Session Deletion API",
+  "level": 5,
+  "parent": "session-deletion",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Backend API endpoint for deleting agent sessions and cleaning up resources",
+  "goals": [
+    "Remove session records and associated conversation history",
+    "Clean up any active streaming connections for the session"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "Exposes DELETE /api/agents/sessions/:id endpoint that removes a session, its conversation history, and any associated resources. Aborts any active streaming connections.",
+    "parameters": [
+      { "name": "id", "type": "string", "description": "Session ID to delete (required, path parameter)" },
+      { "name": "force", "type": "boolean", "description": "Force deletion even if session has active streams (default false)" }
+    ]
+  },
+  "constraints": [
+    "Must return 404 if session does not exist",
+    "Must abort any active agent execution before deleting",
+    "Must clean up all conversation messages and tool execution logs"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "a session exists with no active execution",
+      "when": "DELETE /api/agents/sessions/:id is called",
+      "then": "the session and all associated data are removed and status 204 is returned"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/routes/agents.ts"
+    ]
+  }
+}

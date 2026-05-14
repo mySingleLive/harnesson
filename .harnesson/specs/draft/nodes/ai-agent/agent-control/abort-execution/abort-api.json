@@ -1,0 +1,45 @@
+{
+  "id": "abort-api",
+  "name": "Abort API",
+  "level": 5,
+  "parent": "abort-execution",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Backend API for aborting agent execution and cleaning up resources",
+  "goals": [
+    "Abort running agent execution and terminate streaming connections",
+    "Clean up partial state from aborted executions"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "Exposes POST /api/agents/sessions/:sessionId/abort endpoint that signals the agent to stop execution, terminates any active streaming connections, and cleans up partial state.",
+    "parameters": [
+      { "name": "sessionId", "type": "string", "description": "Session ID to abort (required, path parameter)" },
+      { "name": "reason", "type": "string", "description": "Optional reason for the abort (for logging)" },
+      { "name": "savePartial", "type": "boolean", "description": "Whether to save partial results (default true)" }
+    ]
+  },
+  "constraints": [
+    "Must terminate streaming within 1 second of receiving the abort request",
+    "Must clean up any temporary files or partial tool execution results",
+    "Must log the abort event with reason for audit purposes"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "an agent is actively executing in a session",
+      "when": "POST /api/agents/sessions/:sessionId/abort is called",
+      "then": "the execution is stopped, the stream is terminated, and the session returns to idle state"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/routes/agents.ts",
+      "src/lib/agent-service.ts"
+    ]
+  }
+}

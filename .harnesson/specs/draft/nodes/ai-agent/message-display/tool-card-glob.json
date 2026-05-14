@@ -1,0 +1,45 @@
+{
+  "id": "tool-card-glob",
+  "name": "Tool Card: Glob",
+  "level": 4,
+  "parent": "message-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Displays glob pattern search results with matched file paths",
+  "goals": [
+    "Render glob search results as a list of matched file paths",
+    "Show pattern and match count summary"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "A specialized tool card for glob file search operations. Displays the search pattern, number of matches, and the list of matched file paths with their modification times.",
+    "parameters": [
+      { "name": "pattern", "type": "string", "description": "Glob pattern used for the search" },
+      { "name": "matches", "type": "string[]", "description": "Array of matched file paths" },
+      { "name": "searchDir", "type": "string", "description": "Base directory for the search" },
+      { "name": "matchCount", "type": "number", "description": "Total number of matches found" }
+    ]
+  },
+  "constraints": [
+    "Must display match count prominently in the card header",
+    "Must support collapsing the match list when exceeding 20 results",
+    "Must show relative paths from the project root"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "a glob search operation returns matches",
+      "when": "the tool card is rendered",
+      "then": "the pattern, match count, and file path list are displayed"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/tools/GlobToolCard.tsx"
+    ]
+  }
+}

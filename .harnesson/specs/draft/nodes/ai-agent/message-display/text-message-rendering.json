@@ -1,0 +1,44 @@
+{
+  "id": "text-message-rendering",
+  "name": "Text Message Rendering",
+  "level": 4,
+  "parent": "message-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Renders AI agent text messages with Markdown support, code highlighting, and inline elements",
+  "goals": [
+    "Render Markdown text with syntax-highlighted code blocks",
+    "Support inline images, links, and LaTeX where applicable"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "A MessageRenderer component that renders text messages from the AI agent. Supports full Markdown with syntax-highlighted code blocks, inline code, links, images, tables, and custom extensions.",
+    "parameters": [
+      { "name": "content", "type": "string", "description": "Markdown text content to render" },
+      { "name": "role", "type": "string", "description": "Message role: 'user', 'assistant', or 'system'" },
+      { "name": "streaming", "type": "boolean", "description": "Whether the content is still streaming (partial render)" }
+    ]
+  },
+  "constraints": [
+    "Must render Markdown correctly including GFM extensions (tables, strikethrough, task lists)",
+    "Must apply syntax highlighting to fenced code blocks",
+    "Must sanitize HTML to prevent XSS in rendered content"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "an assistant message contains Markdown with code blocks",
+      "when": "the message is rendered",
+      "then": "code blocks display with appropriate syntax highlighting and a copy button"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/MessageRenderer.tsx"
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "graph-visualization",
+  "name": "Graph Visualization",
+  "level": 3,
+  "parent": "knowledge-graph",
+  "children": [
+    "graph-data-loading",
+    "graph-data-api",
+    "specs-graph-view",
+    "specs-list-view",
+    "specs-document-view",
+    "architect-graph-view"
+  ],
+  "isLeaf": false,
+  "summary": "Interactive graph visualization components for specs, architecture, and relationships",
+  "goals": [
+    "Provide multiple visualization views for project knowledge",
+    "Support graph, list, document, and architecture views"
+  ],
+  "design": null,
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "id": "tool-card-bash",
+  "name": "Tool Card: Bash",
+  "level": 4,
+  "parent": "message-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Displays Bash command execution results with command, output, and exit code",
+  "goals": [
+    "Render Bash tool execution cards with command and output",
+    "Support collapsible output for long-running commands"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "A specialized tool card component for Bash command executions. Shows the command, working directory, output stream (stdout/stderr), exit code, and execution duration.",
+    "parameters": [
+      { "name": "command", "type": "string", "description": "The Bash command that was executed" },
+      { "name": "output", "type": "string", "description": "Command output (stdout and stderr combined)" },
+      { "name": "exitCode", "type": "number", "description": "Process exit code (0 for success)" },
+      { "name": "duration", "type": "number", "description": "Execution duration in milliseconds" },
+      { "name": "workingDir", "type": "string", "description": "Working directory for the command" }
+    ]
+  },
+  "constraints": [
+    "Must highlight exit code visually (green for 0, red for non-zero)",
+    "Must support collapsible output sections for outputs exceeding 50 lines",
+    "Must provide a copy button for both command and output"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "a Bash tool execution result is received",
+      "when": "the tool card is rendered",
+      "then": "the command, output, exit code, and duration are displayed in a structured card layout"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/tools/BashToolCard.tsx"
+    ]
+  }
+}

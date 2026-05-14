@@ -1,0 +1,47 @@
+{
+  "id": "text-input-ui",
+  "name": "Text Input UI",
+  "level": 5,
+  "parent": "text-input",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Rich text input component with Emacs keybindings for message composition",
+  "goals": [
+    "Provide a feature-rich text input with Emacs-style keybindings",
+    "Support multiline input with auto-resize"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "A RichTextInput component that provides a multiline text area with Emacs keybindings, auto-resize, and markdown preview support. Integrates with the useEmacsKeybindings hook for power-user keyboard shortcuts.",
+    "parameters": [
+      { "name": "value", "type": "string", "description": "Current text value (controlled input)" },
+      { "name": "onChange", "type": "function", "description": "Callback when text changes" },
+      { "name": "onSubmit", "type": "function", "description": "Callback when message is submitted (Enter or Ctrl+Enter)" },
+      { "name": "placeholder", "type": "string", "description": "Placeholder text when input is empty" },
+      { "name": "disabled", "type": "boolean", "description": "Whether the input is disabled during agent processing" }
+    ]
+  },
+  "constraints": [
+    "Must support Emacs keybindings (Ctrl+A, Ctrl+E, Ctrl+K, Ctrl+Y, etc.)",
+    "Must auto-resize vertically up to a maximum height",
+    "Must submit on Enter and insert newline on Shift+Enter (configurable)"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "the text input is focused",
+      "when": "the user types a message and presses Enter",
+      "then": "the message is submitted and the input is cleared"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/RichTextInput.tsx",
+      "src/hooks/useEmacsKeybindings.ts"
+    ]
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "id": "tool-card-grep",
+  "name": "Tool Card: Grep",
+  "level": 4,
+  "parent": "message-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Displays grep search results with matched content and context lines",
+  "goals": [
+    "Render grep search results with highlighted match context",
+    "Show pattern, file paths, and matched lines"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "A specialized tool card for grep content search operations. Displays the search pattern, matched files, matched lines with context, and highlight the matching portions.",
+    "parameters": [
+      { "name": "pattern", "type": "string", "description": "Regex pattern used for the search" },
+      { "name": "matches", "type": "object[]", "description": "Array of match objects with filePath, lineNumber, lineContent, and context" },
+      { "name": "fileCount", "type": "number", "description": "Number of files with matches" },
+      { "name": "totalMatches", "type": "number", "description": "Total number of individual matches" }
+    ]
+  },
+  "constraints": [
+    "Must highlight the matching portion within each line",
+    "Must group results by file path",
+    "Must support collapsible file groups when many files match"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "a grep search operation returns matches",
+      "when": "the tool card is rendered",
+      "then": "the pattern, file count, and highlighted matches are displayed grouped by file"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/tools/GrepToolCard.tsx"
+    ]
+  }
+}

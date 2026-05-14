@@ -1,0 +1,46 @@
+{
+  "id": "tool-card-read",
+  "name": "Tool Card: Read",
+  "level": 4,
+  "parent": "message-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Displays file read operation results with file path, content preview, and line numbers",
+  "goals": [
+    "Render file read results with syntax-highlighted content",
+    "Show file metadata and line number navigation"
+  ],
+  "design": null,
+  "specDetail": {
+    "description": "A specialized tool card for file read operations. Displays the file path, language-detected syntax highlighting, line numbers, and content preview with optional range display.",
+    "parameters": [
+      { "name": "filePath", "type": "string", "description": "Path of the file that was read" },
+      { "name": "content", "type": "string", "description": "File content or content snippet" },
+      { "name": "startLine", "type": "number", "description": "Starting line number for partial reads" },
+      { "name": "endLine", "type": "number", "description": "Ending line number for partial reads" },
+      { "name": "language", "type": "string", "description": "Detected programming language for syntax highlighting" }
+    ]
+  },
+  "constraints": [
+    "Must detect file language from extension for syntax highlighting",
+    "Must show line numbers alongside content",
+    "Must support collapsible content for files exceeding 100 lines"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "a file read operation result is received",
+      "when": "the tool card is rendered",
+      "then": "the file path, syntax-highlighted content, and line numbers are displayed"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-14T00:00:00Z",
+    "baseCommit": "944b334",
+    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "src/components/tools/ReadToolCard.tsx"
+    ]
+  }
+}
