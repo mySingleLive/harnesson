@@ -1,7 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type { SpecNode, RootSpecNode } from './schema.ts';
-import { fillDefaults } from './schema.ts';
 import {
   rootJsonPath,
   nodeJsonPath,
@@ -50,6 +49,7 @@ export function readTree(opts: PathResolverOptions): Map<string, SpecNode | Root
 
   result.set('project', root);
 
+  const visited = new Set<string>(root.children);
   const queue: string[] = [...root.children];
 
   while (queue.length > 0) {
@@ -59,7 +59,12 @@ export function readTree(opts: PathResolverOptions): Map<string, SpecNode | Root
       const fullNodePath = buildFullPath(node, result);
       result.set(fullNodePath, node);
       if (!node.isLeaf && node.children) {
-        queue.push(...node.children);
+        for (const c of node.children) {
+          if (!visited.has(c)) {
+            visited.add(c);
+            queue.push(c);
+          }
+        }
       }
     }
   }
@@ -84,6 +89,7 @@ export function readSubtree(
   result.set(startPath, startNode);
 
   if (!startNode.isLeaf && startNode.children) {
+    const visited = new Set<string>(startNode.children);
     const queue: string[] = [...startNode.children];
     while (queue.length > 0) {
       const childId = queue.shift()!;
@@ -92,7 +98,12 @@ export function readSubtree(
         const fullNodePath = buildFullPath(node, result);
         result.set(fullNodePath, node);
         if (!node.isLeaf && node.children) {
-          queue.push(...node.children);
+          for (const c of node.children) {
+            if (!visited.has(c)) {
+              visited.add(c);
+              queue.push(c);
+            }
+          }
         }
       }
     }

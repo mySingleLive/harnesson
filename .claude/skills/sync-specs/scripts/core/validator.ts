@@ -277,7 +277,9 @@ export function fixTree(opts: PathResolverOptions, repoPath: string = process.cw
   try {
     gitInfo.shortHash = getShortHash(repoPath);
     gitInfo.branch = getBranch(repoPath);
-  } catch {}
+  } catch (e) {
+    process.stderr.write(`Warning: git info unavailable: ${(e as Error).message}\n`);
+  }
 
   for (const [nodePath, node] of tree) {
     let modified = false;

@@ -1,4 +1,5 @@
 import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 // ---- Minimal arg parser ----
 
@@ -145,6 +146,11 @@ async function main() {
       const node = nodeId === 'project' ? readRootNode(opts) : readNode(nodeId, opts);
       if (!node) error(`Node not found: ${nodeId}`);
 
+      // Safety: only allow deletion of leaf nodes (nodes with no children)
+      if (node.children && node.children.length > 0) {
+        error(`Cannot delete non-leaf node with children. Remove children first.`);
+      }
+
       // Remove from parent's children array
       if (node.parent) {
         // Find parent path: remove last segment from nodePath
@@ -203,7 +209,7 @@ async function main() {
 
         // Copy design doc if exists
         if (node.design) {
-          const draftDocPath = `${root}/draft/${node.design}`;
+          const draftDocPath = path.join(root, 'draft', node.design);
           if (fs.existsSync(draftDocPath)) {
             const content = fs.readFileSync(draftDocPath, 'utf-8');
             writeDesignDoc(node.design, content, opts);
@@ -213,7 +219,7 @@ async function main() {
       }
 
       // Clean up draft directory
-      const draftDir = `${root}/draft`;
+      const draftDir = path.join(root, 'draft');
       if (fs.existsSync(draftDir)) {
         fs.rmSync(draftDir, { recursive: true });
         fs.mkdirSync(draftDir, { recursive: true });

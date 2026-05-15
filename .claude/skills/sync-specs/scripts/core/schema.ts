@@ -113,3 +113,4 @@ export function fillDefaults(node: Partial<SpecNode>): SpecNode {
   if (!node.status) node.status = 'draft';
   return node as SpecNode;
 }
+
