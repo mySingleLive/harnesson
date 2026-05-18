@@ -208,14 +208,15 @@ node --experimental-strip-types .claude/skills/sync-specs/scripts/specs-cli.ts p
 .harnesson/specs/
 ├── project.json                     # 根节点（level 1）
 ├── nodes/                           # 非根节点
-│   └── {id}.json                    # 叶子节点，或
-│   └── {id}/index.json              # 中间节点（有子节点时用目录）
-│       └── {child-id}.json          # 子节点，递归展开
-├── design/                          # 设计文档，路径结构与 nodes/ 对应
-│   └── {path}.md
+│   └── {id}/                        # 每个节点一个文件夹
+│       ├── node.json                # 节点数据（统一命名）
+│       ├── design.md                # 设计文档（可选）
+│       └── {child-id}/              # 子节点，递归展开
+│           ├── node.json
+│           └── design.md
 ├── draft/                           # 草稿（审核中，结构同上）
 │   ├── README.md                    # 变更清单
-│   └── design/
+│   └── nodes/
 └── sync-plans/                      # 历史同步计划（保留目录，优化后不再新增）
 ```
 
