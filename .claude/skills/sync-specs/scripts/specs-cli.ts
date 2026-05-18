@@ -167,9 +167,8 @@ async function main() {
         }
       }
 
-      const isLeaf = node.isLeaf;
       if (nodeId !== 'project') {
-        deleteNode(nodeId, isLeaf, opts);
+        deleteNode(nodeId, opts);
       }
       output({ ok: true, deleted: nodeId });
       break;
@@ -184,7 +183,8 @@ async function main() {
     }
 
     case 'promote-draft': {
-      const { readTree, writeRootNode, writeNode, writeDesignDoc } = await import('./core/file-io.ts');
+      const { readTree, writeRootNode, writeNode, writeDesignDocForNode } = await import('./core/file-io.ts');
+      const { designDocPathFromNodePath } = await import('./core/path-resolver.ts');
       const draftOpts = { ...opts, draft: true };
       const draftTree = readTree(draftOpts);
 
@@ -196,7 +196,6 @@ async function main() {
       const promotedPaths: string[] = [];
 
       for (const [nodePath, node] of draftTree) {
-        // Update lastSyncAt
         node.syncMeta.lastSyncAt = new Date().toISOString();
 
         if (nodePath === 'project') {
@@ -207,13 +206,13 @@ async function main() {
           promotedPaths.push(p);
         }
 
-        // Copy design doc if exists
-        if (node.design) {
-          const draftDocPath = path.join(root, 'draft', node.design);
-          if (fs.existsSync(draftDocPath)) {
-            const content = fs.readFileSync(draftDocPath, 'utf-8');
-            writeDesignDoc(node.design, content, opts);
-            promotedPaths.push(node.design);
+        // Copy design doc if exists at node-derived path
+        if (nodePath !== 'project') {
+          const draftDesignPath = designDocPathFromNodePath(nodePath, draftOpts);
+          if (fs.existsSync(draftDesignPath)) {
+            const content = fs.readFileSync(draftDesignPath, 'utf-8');
+            writeDesignDocForNode(nodePath, content, opts);
+            promotedPaths.push(`${nodePath}/design.md`);
           }
         }
       }
@@ -229,8 +228,15 @@ async function main() {
       break;
     }
 
+    case 'migrate': {
+      const { migrateStructure } = await import('./core/file-io.ts');
+      const result = migrateStructure(opts);
+      output({ ok: true, ...result });
+      break;
+    }
+
     default:
-      error(`Unknown command: ${command}\nAvailable: init-tree, read-tree, read-node, create-node, update-node, delete-node, validate, promote-draft`);
+      error(`Unknown command: ${command}\nAvailable: init-tree, read-tree, read-node, create-node, update-node, delete-node, validate, promote-draft, migrate`);
   }
 }
 
