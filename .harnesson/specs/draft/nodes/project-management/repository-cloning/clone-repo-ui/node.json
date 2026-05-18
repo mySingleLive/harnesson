@@ -1,0 +1,44 @@
+{
+  "id": "clone-repo-ui",
+  "name": "Clone Repo UI",
+  "level": 4,
+  "parent": "repository-cloning",
+  "children": [],
+  "isLeaf": true,
+  "summary": "克隆仓库的模态对话框，输入 URL 和本地路径。",
+  "goals": [
+    "提供 Git 仓库 URL 和本地路径输入表单",
+    "展示克隆进度状态"
+  ],
+  "specDetail": {
+    "description": "CloneRepoModal 组件。模态对话框包含仓库 URL 和本地路径输入框。提交后触发克隆流程，展示克隆中状态。",
+    "parameters": [
+      "表单字段：repository URL（必填）、local path（必填）",
+      "提交按钮触发克隆流程",
+      "错误信息展示在表单中"
+    ]
+  },
+  "constraints": [
+    "URL 格式需有效",
+    "本地路径不能与已有项目冲突"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "用户打开克隆对话框",
+      "when": "输入有效 URL 和路径后提交",
+      "then": "开始克隆并展示进度状态"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/projects/CloneRepoModal.tsx",
+      "apps/web/src/hooks/useProjectActions.ts"
+    ]
+  }
+}

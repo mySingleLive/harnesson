@@ -1,0 +1,38 @@
+{
+  "id": "streaming-display",
+  "name": "Streaming Display",
+  "level": 4,
+  "parent": "message-display",
+  "children": [
+    "streaming-agent-card",
+    "stream-endpoint"
+  ],
+  "isLeaf": false,
+  "summary": "Agent 响应的实时流式展示功能，通过 SSE 接收和渲染增量内容。",
+  "goals": [
+    "实时流式展示 Agent 的响应过程",
+    "展示思考状态和任务进度",
+    "处理流式事件中的工具调用和问答"
+  ],
+  "design": "nodes/ai-agent/message-display/streaming-display/design.md",
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 正在处理用户消息",
+      "when": "流式事件到达",
+      "then": "实时在聊天面板中增量展示 Agent 的响应内容"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/MessageRenderer.tsx",
+      "apps/web/src/stores/agentStore.ts",
+      "apps/server/src/routes/agents.ts",
+      "apps/server/src/lib/agent-service.ts"
+    ]
+  }
+}

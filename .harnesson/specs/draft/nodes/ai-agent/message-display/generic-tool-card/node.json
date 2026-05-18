@@ -1,0 +1,56 @@
+{
+  "id": "generic-tool-card",
+  "name": "Generic Tool Card",
+  "level": 4,
+  "parent": "message-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "各类工具调用结果的卡片式展示组件集。",
+  "goals": [
+    "以卡片形式展示文件读写、命令执行、代码搜索等工具结果",
+    "支持折叠展开查看详细信息",
+    "区分成功和失败的工具调用"
+  ],
+  "specDetail": {
+    "description": "工具卡片组件集，包含 BashCard（命令执行）、EditCard（文件编辑）、ReadCard（文件读取）、WriteCard（文件写入）、GrepCard（搜索）、GlobCard（文件匹配）、LSPCard（语言服务）、AskUserQuestionCard（用户问答）和 TodoCard（任务列表）等多种卡片。每种卡片针对对应的工具结果类型进行专门渲染。",
+    "parameters": [
+      "支持的工具类型：bash, edit, read, write, grep, glob, lsp, question, todo",
+      "卡片支持折叠/展开查看详情",
+      "命令执行卡片展示命令和输出",
+      "文件操作卡片展示文件路径和变更差异",
+      "搜索卡片展示匹配结果列表"
+    ]
+  },
+  "constraints": [
+    "未知工具类型使用 ToolEventCard 通用卡片渲染",
+    "大量匹配结果的搜索卡片需要限制展示数量"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 使用了工具",
+      "when": "工具结果返回",
+      "then": "以对应的卡片类型展示结果内容"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/tool-cards/BashCard.tsx",
+      "apps/web/src/components/chat/tool-cards/EditCard.tsx",
+      "apps/web/src/components/chat/tool-cards/ReadCard.tsx",
+      "apps/web/src/components/chat/tool-cards/WriteCard.tsx",
+      "apps/web/src/components/chat/tool-cards/GrepCard.tsx",
+      "apps/web/src/components/chat/tool-cards/GlobCard.tsx",
+      "apps/web/src/components/chat/tool-cards/LSPCard.tsx",
+      "apps/web/src/components/chat/tool-cards/AskUserQuestionCard.tsx",
+      "apps/web/src/components/chat/tool-cards/TodoCard.tsx",
+      "apps/web/src/components/chat/tool-cards/ToolEventCard.tsx",
+      "apps/web/src/components/chat/tool-cards/QAResultCard.tsx"
+    ]
+  }
+}

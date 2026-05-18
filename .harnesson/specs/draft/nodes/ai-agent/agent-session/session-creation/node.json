@@ -1,0 +1,37 @@
+{
+  "id": "session-creation",
+  "name": "Session Creation",
+  "level": 4,
+  "parent": "agent-session",
+  "children": [
+    "session-creation-ui",
+    "session-creation-api"
+  ],
+  "isLeaf": false,
+  "summary": "创建新的 AI Agent 会话，支持设置名称、模型和分支等参数。",
+  "goals": [
+    "通过表单或快捷操作创建新的 Agent 会话",
+    "支持选择 AI 模型和 Git 分支"
+  ],
+  "design": "nodes/ai-agent/agent-session/session-creation/design.md",
+  "acceptanceCriteria": [
+    {
+      "given": "用户在首页",
+      "when": "输入描述并选择模型后提交",
+      "then": "创建新的 Agent 会话并发送初始消息"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/pages/NewSessionPage.tsx",
+      "apps/web/src/stores/agentStore.ts",
+      "apps/server/src/routes/agents.ts",
+      "apps/server/src/lib/agent-service.ts"
+    ]
+  }
+}

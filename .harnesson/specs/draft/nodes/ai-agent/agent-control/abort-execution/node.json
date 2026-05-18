@@ -1,0 +1,37 @@
+{
+  "id": "abort-execution",
+  "name": "Abort Execution",
+  "level": 4,
+  "parent": "agent-control",
+  "children": [
+    "abort-button-ui",
+    "abort-api"
+  ],
+  "isLeaf": false,
+  "summary": "中止 Agent 当前正在执行的任务。",
+  "goals": [
+    "允许用户随时停止 Agent 的处理",
+    "中止后 Agent 返回空闲状态"
+  ],
+  "design": "nodes/ai-agent/agent-control/abort-execution/design.md",
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 正在处理任务",
+      "when": "用户点击中止按钮",
+      "then": "Agent 停止处理并恢复到空闲状态"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/layout/AgentPanel.tsx",
+      "apps/web/src/stores/agentStore.ts",
+      "apps/server/src/routes/agents.ts",
+      "apps/server/src/lib/agent-service.ts"
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "id": "ai-agent",
+  "name": "AI Agent",
+  "level": 2,
+  "parent": "project",
+  "children": [
+    "agent-session",
+    "agent-control",
+    "message-display",
+    "message-input"
+  ],
+  "isLeaf": false,
+  "summary": "AI 编码助手的核心交互功能，包括会话管理、消息收发、指令控制和任务追踪。",
+  "goals": [
+    "支持创建、切换和删除 AI Agent 会话",
+    "提供实时的消息流式传输和展示",
+    "支持斜杠命令快捷操作和图片上传",
+    "允许用户中止 Agent 执行和切换模型"
+  ],
+  "design": "nodes/ai-agent/design.md",
+  "acceptanceCriteria": [
+    {
+      "given": "用户在平台首页",
+      "when": "输入描述并提交",
+      "then": "创建新的 AI Agent 会话并开始交互"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "packages/shared/src/types/agent.ts",
+      "apps/web/src/stores/agentStore.ts",
+      "apps/server/src/routes/agents.ts",
+      "apps/server/src/lib/agent-service.ts",
+      "apps/server/src/lib/agent-adapter.ts",
+      "apps/server/src/lib/claude-code-adapter.ts"
+    ]
+  }
+}

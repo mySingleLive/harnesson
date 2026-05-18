@@ -1,0 +1,47 @@
+{
+  "id": "stream-endpoint",
+  "name": "Stream Endpoint",
+  "level": 5,
+  "parent": "streaming-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Agent 消息流式传输的 SSE 端点，实时推送处理事件。",
+  "goals": [
+    "通过 SSE 实时推送 Agent 处理事件",
+    "处理消息流中的工具调用和问答",
+    "管理 SSE 连接生命周期"
+  ],
+  "specDetail": {
+    "description": "GET /api/agents/:id/stream SSE 端点。建立 Server-Sent Events 连接，将 Agent 的处理过程以事件流形式实时推送给客户端。事件类型包括文本增量、工具调用、问答请求和状态变更。",
+    "parameters": [
+      "端点：GET /api/agents/:id/stream",
+      "Content-Type: text/event-stream",
+      "事件类型：text_delta, tool_use, tool_result, question, status",
+      "支持多客户端同时订阅同一 Agent"
+    ]
+  },
+  "constraints": [
+    "每个 SSE 连接有超时限制",
+    "Agent 销毁时自动关闭 SSE 连接",
+    "网络中断时客户端需重新建立连接"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "客户端连接到 SSE 端点",
+      "when": "Agent 开始处理消息",
+      "then": "实时推送处理事件直到完成或出错"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/agents.ts",
+      "apps/server/src/lib/agent-service.ts"
+    ]
+  }
+}

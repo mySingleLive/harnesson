@@ -1,0 +1,48 @@
+{
+  "id": "streaming-agent-card",
+  "name": "Streaming Agent Card",
+  "level": 5,
+  "parent": "streaming-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "流式 Agent 卡片的前端渲染，实时展示 Agent 的响应内容。",
+  "goals": [
+    "实时增量渲染流式内容",
+    "展示思考指示器和任务进度条",
+    "处理问答面板弹出"
+  ],
+  "specDetail": {
+    "description": "AgentPanel 中的流式内容渲染组件。通过 SSE 连接接收实时事件流，增量渲染文本内容、工具卡片和状态指示器。包含思考状态动画和任务进度展示。",
+    "parameters": [
+      "SSE 连接到 GET /api/agents/:id/stream",
+      "增量渲染文本、工具调用和状态事件",
+      "展示 ThinkingBar 思考状态动画",
+      "展示 TodoBar 任务进度"
+    ]
+  },
+  "constraints": [
+    "SSE 连接断开后自动重连",
+    "不支持回溯修改已渲染的内容",
+    "同一 Agent 只能有一个活跃 SSE 连接"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 正在处理消息",
+      "when": "SSE 事件到达",
+      "then": "实时增量展示 Agent 的响应内容"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/MessageRenderer.tsx",
+      "apps/web/src/stores/agentStore.ts",
+      "apps/web/src/components/layout/AgentPanel.tsx"
+    ]
+  }
+}

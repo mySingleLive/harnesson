@@ -1,0 +1,36 @@
+{
+  "id": "project-creation",
+  "name": "Project Creation",
+  "level": 3,
+  "parent": "project-management",
+  "children": [
+    "create-project-ui",
+    "create-project-api"
+  ],
+  "isLeaf": false,
+  "summary": "创建新项目的功能，支持设置名称、路径、描述和 Git 初始化。",
+  "goals": [
+    "通过表单创建新项目",
+    "支持可选的 Git 初始化"
+  ],
+  "design": "nodes/project-management/project-creation/design.md",
+  "acceptanceCriteria": [
+    {
+      "given": "用户打开创建项目对话框",
+      "when": "填写名称和路径并提交",
+      "then": "项目被创建并出现在项目列表中"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/projects/CreateProjectModal.tsx",
+      "apps/web/src/hooks/useProjectActions.ts",
+      "apps/server/src/routes/projects.ts"
+    ]
+  }
+}

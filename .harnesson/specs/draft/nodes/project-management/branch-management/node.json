@@ -1,0 +1,36 @@
+{
+  "id": "branch-management",
+  "name": "Branch Management",
+  "level": 3,
+  "parent": "project-management",
+  "children": [
+    "branch-selector-ui",
+    "branches-api"
+  ],
+  "isLeaf": false,
+  "summary": "Git 分支查看和切换功能，支持本地和远程分支。",
+  "goals": [
+    "列出项目的所有本地和远程 Git 分支",
+    "支持切换到指定分支"
+  ],
+  "design": "nodes/project-management/branch-management/design.md",
+  "acceptanceCriteria": [
+    {
+      "given": "项目有多个 Git 分支",
+      "when": "用户在分支选择器中选择另一个分支",
+      "then": "工作目录切换到所选分支"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/stores/projectStore.ts",
+      "apps/web/src/components/chat/RichTextInput.tsx",
+      "apps/server/src/routes/branches.ts"
+    ]
+  }
+}

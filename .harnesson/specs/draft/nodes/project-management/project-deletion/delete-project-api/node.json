@@ -1,0 +1,43 @@
+{
+  "id": "delete-project-api",
+  "name": "Delete Project API",
+  "level": 4,
+  "parent": "project-deletion",
+  "children": [],
+  "isLeaf": true,
+  "summary": "删除项目的后端 API，级联清理关联的 Agent 会话。",
+  "goals": [
+    "删除项目记录",
+    "级联删除关联的 AgentSession、Message 和 TodoItem"
+  ],
+  "specDetail": {
+    "description": "DELETE /api/projects/:id 端点。删除项目记录，Prisma 的级联删除自动清理关联的 AgentSession、Message 和 TodoItem 记录。",
+    "parameters": [
+      "端点：DELETE /api/projects/:id",
+      "级联删除关联的 AgentSession、Message、TodoItem",
+      "项目不存在时返回 404"
+    ]
+  },
+  "constraints": [
+    "删除操作不可逆",
+    "级联删除会清理所有关联数据"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "项目存在",
+      "when": "客户端发送 DELETE /api/projects/:id",
+      "then": "项目及关联数据被删除"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/projects.ts"
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "id": "sync-progress-ui",
+  "name": "Sync Progress UI",
+  "level": 4,
+  "parent": "graph-sync",
+  "children": [],
+  "isLeaf": true,
+  "summary": "同步进度的界面展示，通过 SSE 实时显示同步状态和日志。",
+  "goals": [
+    "实时展示同步进度",
+    "显示同步日志输出",
+    "支持取消正在进行的同步"
+  ],
+  "specDetail": {
+    "description": "GraphPage 中的同步进度展示组件。通过 SSE 连接接收同步进度事件，实时更新进度条和日志输出。提供取消按钮中止同步操作。",
+    "parameters": [
+      "SSE 连接接收进度事件",
+      "进度条展示同步完成百分比",
+      "日志区域展示同步过程输出",
+      "取消按钮触发 POST /api/graph/sync/cancel"
+    ]
+  },
+  "constraints": [
+    "同步完成后自动加载图谱数据",
+    "取消操作不可撤销",
+    "网络中断时显示错误状态"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "用户点击同步按钮",
+      "when": "同步开始",
+      "then": "展示进度条和实时日志，提供取消选项"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/pages/GraphPage.tsx",
+      "apps/web/src/stores/graphStore.ts"
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "id": "graph-visualization",
+  "name": "Graph Visualization",
+  "level": 2,
+  "parent": "project",
+  "children": [
+    "graph-sync",
+    "specs-visualization",
+    "architecture-visualization",
+    "technical-documentation"
+  ],
+  "isLeaf": false,
+  "summary": "项目代码结构的可视化展示，支持规格图、架构图和技术文档等多种视图。",
+  "goals": [
+    "同步项目代码生成可视化图谱",
+    "以图、列表、文档等多种形式展示项目规格",
+    "展示项目架构和技术文档"
+  ],
+  "design": "nodes/graph-visualization/design.md",
+  "acceptanceCriteria": [
+    {
+      "given": "用户已选择一个项目",
+      "when": "进入 Graph 页面并点击同步",
+      "then": "项目代码被分析并生成可视化图谱"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/stores/graphStore.ts",
+      "apps/web/src/pages/GraphPage.tsx",
+      "apps/server/src/routes/graph.ts",
+      "apps/server/src/lib/sync-engine.ts",
+      "apps/server/src/lib/graph-storage.ts",
+      "packages/shared/src/types/graph.ts"
+    ]
+  }
+}

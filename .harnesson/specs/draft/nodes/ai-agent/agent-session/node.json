@@ -1,0 +1,38 @@
+{
+  "id": "agent-session",
+  "name": "Agent Session",
+  "level": 3,
+  "parent": "ai-agent",
+  "children": [
+    "session-creation",
+    "session-switching",
+    "session-deletion"
+  ],
+  "isLeaf": false,
+  "summary": "AI Agent 会话的生命周期管理，包括创建新会话、在多个会话间切换以及删除不需要的会话。",
+  "goals": [
+    "支持快速创建新的 AI 编码助手会话",
+    "允许用户在多个 Agent 会话之间自由切换",
+    "支持删除不再需要的会话并清理资源"
+  ],
+  "design": "nodes/ai-agent/agent-session/design.md",
+  "acceptanceCriteria": [
+    {
+      "given": "用户在首页或侧边栏",
+      "when": "点击创建新会话",
+      "then": "创建一个新的 Agent 会话并激活"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/stores/agentStore.ts",
+      "apps/server/src/routes/agents.ts",
+      "apps/server/src/lib/agent-service.ts"
+    ]
+  }
+}

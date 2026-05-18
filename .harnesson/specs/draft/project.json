@@ -6,23 +6,38 @@
   "treeDepth": 5,
   "treeScenario": "multi-domain",
   "children": [
-    "project-management",
     "ai-agent",
-    "knowledge-graph",
-    "git-integration"
+    "project-management",
+    "graph-visualization",
+    "task-management",
+    "file-explorer",
+    "git-operations"
   ],
   "isLeaf": false,
-  "summary": "Visual AI Coding Management Platform — 基于可视化的 AI 编码管理平台",
+  "summary": "Visual AI Coding Management Platform — 基于 AI Agent 的可视化编码管理平台。支持创建和管理 AI 编码助手会话、项目管理和代码结构可视化。",
   "goals": [
-    "Provide a visual management platform for AI-assisted coding workflows",
-    "Unify project management, AI agent interaction, knowledge graph, and git integration into a cohesive experience"
+    "提供 AI Agent 驱动的编码辅助能力",
+    "管理多个开发项目的生命周期",
+    "可视化展示项目规格和架构"
   ],
   "design": "design/project.md",
+  "acceptanceCriteria": [
+    {
+      "given": "用户访问平台",
+      "when": "打开应用首页",
+      "then": "显示可用的 AI Agent 会话创建界面和项目列表"
+    }
+  ],
   "status": "in-progress",
   "syncMeta": {
-    "lastSyncAt": "2026-05-14T00:00:00Z",
-    "baseCommit": "944b334",
-    "baseCommitMessage": "docs(sync-specs): implement leaf determination redesign with frontend/backend criteria",
-    "branch": "feature/specs-page"
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "package.json",
+      "tsconfig.base.json",
+      "pnpm-workspace.yaml"
+    ]
   }
 }

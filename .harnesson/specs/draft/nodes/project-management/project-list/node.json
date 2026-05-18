@@ -1,0 +1,37 @@
+{
+  "id": "project-list",
+  "name": "Project List",
+  "level": 3,
+  "parent": "project-management",
+  "children": [
+    "project-list-ui",
+    "projects-api"
+  ],
+  "isLeaf": false,
+  "summary": "项目列表的展示和浏览功能，支持卡片和列表两种视图模式。",
+  "goals": [
+    "展示用户添加的所有项目",
+    "支持卡片和列表两种视图模式切换",
+    "支持项目搜索过滤"
+  ],
+  "design": "nodes/project-management/project-list/design.md",
+  "acceptanceCriteria": [
+    {
+      "given": "用户已添加多个项目",
+      "when": "进入项目页面",
+      "then": "显示所有项目，支持卡片和列表视图切换"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/pages/ProjectsPage.tsx",
+      "apps/web/src/stores/projectStore.ts",
+      "apps/server/src/routes/projects.ts"
+    ]
+  }
+}

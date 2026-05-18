@@ -1,0 +1,41 @@
+{
+  "id": "architecture-visualization",
+  "name": "Architecture Visualization",
+  "level": 3,
+  "parent": "graph-visualization",
+  "children": [],
+  "isLeaf": true,
+  "summary": "以交互式图谱展示项目架构视图。",
+  "goals": [
+    "可视化展示项目的架构组成和模块关系"
+  ],
+  "specDetail": {
+    "description": "架构图谱组件，以流程图形式展示项目的架构层次和模块之间的依赖关系。用户可以点击节点查看详细信息。",
+    "parameters": [
+      "使用流程图渲染引擎展示架构图",
+      "支持节点点击选择和详情面板联动"
+    ]
+  },
+  "constraints": [
+    "需要先完成 Graph Sync 同步后才有数据可展示",
+    "架构数据依赖于同步过程中生成的 architect 数据"
+  ],
+  "design": "nodes/graph-visualization/architecture-visualization/design.md",
+  "acceptanceCriteria": [
+    {
+      "given": "项目已完成同步且包含架构数据",
+      "when": "用户选择架构视图",
+      "then": "展示交互式架构图谱"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/graph/ArchitectGraph.tsx"
+    ]
+  }
+}

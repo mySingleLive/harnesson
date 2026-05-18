@@ -1,0 +1,21 @@
+{
+  "id": "git-operations",
+  "name": "Git Operations",
+  "level": 2,
+  "parent": "project",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Git 操作功能，用于管理版本控制。功能待实现。",
+  "goals": [
+    "查看提交历史和差异",
+    "管理暂存区和提交操作"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": []
+  }
+}

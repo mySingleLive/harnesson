@@ -1,0 +1,36 @@
+{
+  "id": "project-deletion",
+  "name": "Project Deletion",
+  "level": 3,
+  "parent": "project-management",
+  "children": [
+    "delete-project-ui",
+    "delete-project-api"
+  ],
+  "isLeaf": false,
+  "summary": "删除项目的功能，需要二次确认防止误操作。",
+  "goals": [
+    "安全删除项目，需要用户确认",
+    "删除后自动从列表中移除"
+  ],
+  "design": "nodes/project-management/project-deletion/design.md",
+  "acceptanceCriteria": [
+    {
+      "given": "用户在项目详情中点击删除",
+      "when": "确认删除操作",
+      "then": "项目从列表中移除且相关 Agent 会话被清理"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/projects/ProjectDetailModal.tsx",
+      "apps/web/src/stores/projectStore.ts",
+      "apps/server/src/routes/projects.ts"
+    ]
+  }
+}

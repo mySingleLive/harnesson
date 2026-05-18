@@ -1,0 +1,46 @@
+{
+  "id": "create-project-ui",
+  "name": "Create Project UI",
+  "level": 4,
+  "parent": "project-creation",
+  "children": [],
+  "isLeaf": true,
+  "summary": "创建项目的模态对话框，支持设置名称、路径、描述和 Git 初始化。",
+  "goals": [
+    "提供项目名称和路径输入表单",
+    "支持可选的项目描述",
+    "支持 Git 初始化开关"
+  ],
+  "specDetail": {
+    "description": "CreateProjectModal 组件。模态对话框包含项目名称、路径、描述输入框和 Git 初始化开关。提交后调用创建 API 创建项目。",
+    "parameters": [
+      "表单字段：name（必填）、path（必填）、description（可选）",
+      "Git 初始化开关，默认开启",
+      "提交按钮触发创建流程",
+      "错误信息展示在表单中"
+    ]
+  },
+  "constraints": [
+    "名称和路径为必填字段",
+    "路径冲突时显示错误提示"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "用户打开创建项目对话框",
+      "when": "填写名称和路径后提交",
+      "then": "项目被创建并出现在列表中"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/projects/CreateProjectModal.tsx",
+      "apps/web/src/hooks/useProjectActions.ts"
+    ]
+  }
+}

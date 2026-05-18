@@ -1,0 +1,50 @@
+{
+  "id": "sync-api",
+  "name": "Sync API",
+  "level": 4,
+  "parent": "graph-sync",
+  "children": [],
+  "isLeaf": true,
+  "summary": "项目同步的后端 API，通过外部 CLI 进程执行同步并返回进度。",
+  "goals": [
+    "启动同步进程分析项目代码",
+    "通过 SSE 流式推送同步进度",
+    "管理同步进程的生命周期",
+    "存储同步结果和历史快照"
+  ],
+  "specDetail": {
+    "description": "POST /api/graph/sync 和 POST /api/graph/sync/cancel 端点。spawn 外部同步 CLI 进程，通过 SSE 推送进度事件。支持同步前归档旧数据，同步完成后存储结果到文件系统。",
+    "parameters": [
+      "POST /api/graph/sync 启动同步，返回 SSE 流",
+      "POST /api/graph/sync/cancel 取消活跃同步",
+      "GET /api/graph/status 检查同步状态",
+      "GET /api/graph/data 获取同步结果",
+      "GET /api/graph/history 列出历史快照"
+    ]
+  },
+  "constraints": [
+    "同一时间只能有一个活跃同步",
+    "同步进程异常退出时更新错误状态",
+    "历史快照按时间戳存储"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "项目代码有变更",
+      "when": "客户端发送 sync 请求",
+      "then": "启动同步进程并通过 SSE 推送进度直到完成"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/graph.ts",
+      "apps/server/src/lib/sync-engine.ts",
+      "apps/server/src/lib/graph-storage.ts"
+    ]
+  }
+}

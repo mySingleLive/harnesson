@@ -1,0 +1,44 @@
+{
+  "id": "abort-button-ui",
+  "name": "Abort Button UI",
+  "level": 5,
+  "parent": "abort-execution",
+  "children": [],
+  "isLeaf": true,
+  "summary": "中止按钮的界面展示，在 Agent 处理任务时显示。",
+  "goals": [
+    "在 Agent 运行时显示中止按钮",
+    "点击后调用中止 API"
+  ],
+  "specDetail": {
+    "description": "AgentPanel 中的中止按钮组件。当 Agent 状态为 running 或 waiting 时显示，点击后调用 POST /api/agents/:id/abort API。",
+    "parameters": [
+      "按钮仅在 Agent 处于 running/waiting 状态时显示",
+      "点击触发 POST /api/agents/:id/abort",
+      "中止后 Agent 状态更新为 idle"
+    ]
+  },
+  "constraints": [
+    "Agent 空闲时不显示中止按钮",
+    "中止操作不可撤销"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 正在运行",
+      "when": "用户点击中止按钮",
+      "then": "发送中止请求，Agent 停止处理"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/layout/AgentPanel.tsx",
+      "apps/web/src/stores/agentStore.ts"
+    ]
+  }
+}

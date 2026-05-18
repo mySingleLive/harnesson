@@ -1,0 +1,37 @@
+{
+  "id": "agent-control",
+  "name": "Agent Control",
+  "level": 3,
+  "parent": "ai-agent",
+  "children": [
+    "abort-execution",
+    "model-switch"
+  ],
+  "isLeaf": false,
+  "summary": "Agent 运行控制功能，包括中止正在执行的任务和切换 AI 模型。",
+  "goals": [
+    "允许用户随时中止 Agent 的当前执行",
+    "支持在会话中切换不同的 AI 模型"
+  ],
+  "design": "nodes/ai-agent/agent-control/design.md",
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 正在处理任务",
+      "when": "用户点击中止按钮",
+      "then": "Agent 停止当前执行并返回空闲状态"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/layout/AgentPanel.tsx",
+      "apps/web/src/stores/agentStore.ts",
+      "apps/server/src/routes/agents.ts",
+      "apps/server/src/lib/agent-service.ts"
+    ]
+  }
+}

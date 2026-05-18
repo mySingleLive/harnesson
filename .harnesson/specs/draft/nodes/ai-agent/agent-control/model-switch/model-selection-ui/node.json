@@ -1,0 +1,43 @@
+{
+  "id": "model-selection-ui",
+  "name": "Model Selection UI",
+  "level": 5,
+  "parent": "model-switch",
+  "children": [],
+  "isLeaf": true,
+  "summary": "模型选择下拉框，展示可用的 AI 模型供用户选择。",
+  "goals": [
+    "展示可用 AI 模型列表",
+    "允许用户选择模型用于后续交互"
+  ],
+  "specDetail": {
+    "description": "RichTextInput 和 AgentPanel 中的模型选择下拉框。从 GET /api/models 获取可用模型列表并展示，用户选择后应用于后续消息处理。",
+    "parameters": [
+      "下拉框展示可用 AI 模型列表",
+      "模型列表从 GET /api/models 获取",
+      "选择模型后应用于后续消息"
+    ]
+  },
+  "constraints": [
+    "模型列表依赖后端 API",
+    "无可用模型时显示空状态"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "用户打开模型选择器",
+      "when": "从列表中选择一个模型",
+      "then": "该模型被设置为当前会话的活跃模型"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/RichTextInput.tsx"
+    ]
+  }
+}

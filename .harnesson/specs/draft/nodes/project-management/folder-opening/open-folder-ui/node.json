@@ -1,0 +1,44 @@
+{
+  "id": "open-folder-ui",
+  "name": "Open Folder UI",
+  "level": 4,
+  "parent": "folder-opening",
+  "children": [],
+  "isLeaf": true,
+  "summary": "打开文件夹的界面触发入口，通过顶部栏按钮或项目页面菜单访问。",
+  "goals": [
+    "提供打开文件夹的交互入口",
+    "调用系统原生文件夹选择器"
+  ],
+  "specDetail": {
+    "description": "Topbar 和 ProjectsPage 中的打开文件夹按钮。点击后调用 POST /api/open-folder API 触发系统原生文件夹选择对话框，选择后自动将路径注册为项目。",
+    "parameters": [
+      "入口位于 Topbar 和项目页面",
+      "点击后调用系统原生文件夹选择器",
+      "选择后自动注册为项目"
+    ]
+  },
+  "constraints": [
+    "需要服务器运行才能触发原生对话框",
+    "用户取消选择时不创建项目"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "用户点击打开文件夹按钮",
+      "when": "在系统对话框中选择目录",
+      "then": "目录被注册为项目并添加到列表中"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/layout/Topbar.tsx",
+      "apps/web/src/hooks/useProjectActions.ts"
+    ]
+  }
+}

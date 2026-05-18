@@ -1,0 +1,37 @@
+{
+  "id": "folder-opening",
+  "name": "Folder Opening",
+  "level": 3,
+  "parent": "project-management",
+  "children": [
+    "open-folder-ui",
+    "open-folder-api"
+  ],
+  "isLeaf": false,
+  "summary": "通过系统原生文件夹选择器打开本地项目目录。",
+  "goals": [
+    "调用系统原生对话框选择文件夹",
+    "自动将选中的文件夹路径注册为项目"
+  ],
+  "design": "nodes/project-management/folder-opening/design.md",
+  "acceptanceCriteria": [
+    {
+      "given": "用户点击打开文件夹按钮",
+      "when": "在系统对话框中选择一个目录",
+      "then": "该目录被添加为项目并出现在列表中"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/hooks/useProjectActions.ts",
+      "apps/web/src/components/layout/Topbar.tsx",
+      "apps/server/src/routes/open-folder.ts",
+      "apps/server/src/lib/native-dialog.ts"
+    ]
+  }
+}

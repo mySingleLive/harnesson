@@ -1,0 +1,41 @@
+{
+  "id": "technical-documentation",
+  "name": "Technical Documentation",
+  "level": 3,
+  "parent": "graph-visualization",
+  "children": [],
+  "isLeaf": true,
+  "summary": "以文档形式展示项目的技术文档内容。",
+  "goals": [
+    "渲染和展示项目的技术文档"
+  ],
+  "specDetail": {
+    "description": "技术文档查看组件，以 Markdown 渲染器展示从同步过程中生成的技术文档内容。",
+    "parameters": [
+      "使用 Markdown 渲染器展示技术文档",
+      "文档内容来自同步生成的数据"
+    ]
+  },
+  "constraints": [
+    "需要先完成 Graph Sync 同步后才有数据可展示",
+    "文档内容为只读展示，不支持编辑"
+  ],
+  "design": "nodes/graph-visualization/technical-documentation/design.md",
+  "acceptanceCriteria": [
+    {
+      "given": "项目已完成同步且包含技术文档",
+      "when": "用户选择技术文档视图",
+      "then": "以 Markdown 格式展示技术文档内容"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/graph/TechnicalDocument.tsx"
+    ]
+  }
+}

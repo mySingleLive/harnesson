@@ -1,0 +1,36 @@
+{
+  "id": "model-switch",
+  "name": "Model Switch",
+  "level": 4,
+  "parent": "agent-control",
+  "children": [
+    "model-selection-ui",
+    "model-list-api"
+  ],
+  "isLeaf": false,
+  "summary": "切换 Agent 使用的 AI 模型。",
+  "goals": [
+    "展示可用的 AI 模型列表",
+    "允许用户在会话中切换模型"
+  ],
+  "design": "nodes/ai-agent/agent-control/model-switch/design.md",
+  "acceptanceCriteria": [
+    {
+      "given": "用户在 Agent 面板或输入区域",
+      "when": "打开模型选择器并选择新模型",
+      "then": "后续消息使用新选择的模型处理"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/RichTextInput.tsx",
+      "apps/server/src/routes/agents.ts",
+      "apps/server/src/lib/claude-code-adapter.ts"
+    ]
+  }
+}

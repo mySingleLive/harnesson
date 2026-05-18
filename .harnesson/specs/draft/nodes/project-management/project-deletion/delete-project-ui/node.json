@@ -1,0 +1,45 @@
+{
+  "id": "delete-project-ui",
+  "name": "Delete Project UI",
+  "level": 4,
+  "parent": "project-deletion",
+  "children": [],
+  "isLeaf": true,
+  "summary": "删除确认界面，在项目详情模态框中提供删除功能。",
+  "goals": [
+    "展示项目详情信息",
+    "提供带确认的删除操作"
+  ],
+  "specDetail": {
+    "description": "ProjectDetailModal 组件。展示项目的元数据信息（名称、路径、来源、Agent 数量等），提供删除按钮需用户确认后执行。",
+    "parameters": [
+      "展示项目名称、路径、描述、来源类型",
+      "删除按钮需要确认操作",
+      "确认后调用 DELETE API",
+      "展示关联的 Agent 数量"
+    ]
+  },
+  "constraints": [
+    "删除操作需要用户确认",
+    "删除确认按钮有防误触延迟"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "用户查看项目详情",
+      "when": "点击删除并确认",
+      "then": "项目被删除并从列表中移除"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/projects/ProjectDetailModal.tsx",
+      "apps/web/src/stores/projectStore.ts"
+    ]
+  }
+}

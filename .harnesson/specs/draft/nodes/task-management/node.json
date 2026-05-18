@@ -1,0 +1,20 @@
+{
+  "id": "task-management",
+  "name": "Task Management",
+  "level": 2,
+  "parent": "project",
+  "children": [],
+  "isLeaf": true,
+  "summary": "任务管理功能，用于追踪和管理工作项。功能待实现。",
+  "goals": [
+    "管理开发任务的创建、分配和追踪"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": []
+  }
+}

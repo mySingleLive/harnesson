@@ -1,0 +1,46 @@
+{
+  "id": "session-deletion-api",
+  "name": "Session Deletion API",
+  "level": 5,
+  "parent": "session-deletion",
+  "children": [],
+  "isLeaf": true,
+  "summary": "删除 Agent 会话的后端 API，清理会话数据和资源。",
+  "goals": [
+    "销毁 Agent 会话并释放资源",
+    "级联删除关联的消息和任务数据"
+  ],
+  "specDetail": {
+    "description": "DELETE /api/agents/:id 端点。将 Agent 状态设为 destroyed，触发 Agent Service 的销毁流程，级联删除关联的 Message 和 TodoItem 记录。",
+    "parameters": [
+      "端点：DELETE /api/agents/:id",
+      "Agent 状态设置为 destroyed",
+      "级联删除 Message 和 TodoItem 记录",
+      "释放 SSE 连接和运行时资源"
+    ]
+  },
+  "constraints": [
+    "不存在的 Agent ID 返回 404",
+    "销毁过程中出错仍返回成功状态",
+    "Agent 运行中也可被销毁"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "客户端发送 DELETE /api/agents/:id",
+      "when": "Agent 存在",
+      "then": "Agent 被标记为 destroyed，关联数据被级联删除"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/agents.ts",
+      "apps/server/src/lib/agent-service.ts"
+    ]
+  }
+}

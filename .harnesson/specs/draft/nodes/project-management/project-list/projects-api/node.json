@@ -1,0 +1,43 @@
+{
+  "id": "projects-api",
+  "name": "Projects API",
+  "level": 4,
+  "parent": "project-list",
+  "children": [],
+  "isLeaf": true,
+  "summary": "项目列表查询的后端 API，支持列表和详情查询。",
+  "goals": [
+    "返回所有项目列表",
+    "支持查询单个项目详情"
+  ],
+  "specDetail": {
+    "description": "GET /api/projects 和 GET /api/projects/:id 端点。GET /api/projects 返回所有项目按最后更新时间排序；GET /api/projects/:id 返回单个项目详情。",
+    "parameters": [
+      "GET /api/projects 返回所有项目按 updatedAt 排序",
+      "GET /api/projects/:id 返回单个项目含 id, name, path, description, source, agentCount",
+      "项目不存在时返回 404"
+    ]
+  },
+  "constraints": [
+    "列表接口无分页，返回全部项目",
+    "项目数据来自 SQLite 数据库"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "数据库中有项目记录",
+      "when": "客户端请求 GET /api/projects",
+      "then": "返回所有项目按更新时间倒序排列"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/projects.ts"
+    ]
+  }
+}

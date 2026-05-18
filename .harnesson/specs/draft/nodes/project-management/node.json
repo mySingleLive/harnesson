@@ -1,0 +1,42 @@
+{
+  "id": "project-management",
+  "name": "Project Management",
+  "level": 2,
+  "parent": "project",
+  "children": [
+    "project-list",
+    "project-creation",
+    "project-deletion",
+    "folder-opening",
+    "branch-management",
+    "repository-cloning"
+  ],
+  "isLeaf": false,
+  "summary": "项目全生命周期管理，包括创建、查看、删除项目，以及 Git 分支切换和仓库克隆。",
+  "goals": [
+    "管理多个开发项目的创建和删除",
+    "支持通过文件夹选择、创建项目和克隆仓库三种方式添加项目",
+    "提供 Git 分支查看和切换能力"
+  ],
+  "design": "nodes/project-management/design.md",
+  "acceptanceCriteria": [
+    {
+      "given": "用户已打开平台",
+      "when": "进入项目页面",
+      "then": "显示所有已添加的项目列表，支持卡片和列表两种视图"
+    }
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-15T14:30:00Z",
+    "baseCommit": "c680f1d",
+    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/stores/projectStore.ts",
+      "apps/web/src/pages/ProjectsPage.tsx",
+      "apps/server/src/routes/projects.ts",
+      "apps/server/prisma/schema.prisma"
+    ]
+  }
+}
