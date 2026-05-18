@@ -5,7 +5,7 @@ import {
   rootJsonPath,
   nodeJsonPath,
   nodeDirPath,
-  designDocPath,
+  designDocPathFromNodePath,
   type PathResolverOptions,
 } from './path-resolver.ts';
 
@@ -17,31 +17,15 @@ export function readRootNode(opts: PathResolverOptions): RootSpecNode | null {
   return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 }
 
-/**
- * Read a non-root node by its full dot-separated path.
- * Returns null if file doesn't exist.
- */
 export function readNode(
   nodePath: string,
   opts: PathResolverOptions,
 ): SpecNode | null {
-  // We need to know isLeaf to resolve the file path.
-  // First try leaf path, then non-leaf path.
-  const leafPath = nodeJsonPath(nodePath, true, opts);
-  if (fs.existsSync(leafPath)) {
-    return JSON.parse(fs.readFileSync(leafPath, 'utf-8'));
-  }
-  const nonLeafPath = nodeJsonPath(nodePath, false, opts);
-  if (fs.existsSync(nonLeafPath)) {
-    return JSON.parse(fs.readFileSync(nonLeafPath, 'utf-8'));
-  }
-  return null;
+  const filePath = nodeJsonPath(nodePath, opts);
+  if (!fs.existsSync(filePath)) return null;
+  return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 }
 
-/**
- * Read the full tree starting from root.
- * Returns a flat map of nodePath → SpecNode.
- */
 export function readTree(opts: PathResolverOptions): Map<string, SpecNode | RootSpecNode> {
   const result = new Map<string, SpecNode | RootSpecNode>();
   const root = readRootNode(opts);
@@ -49,8 +33,8 @@ export function readTree(opts: PathResolverOptions): Map<string, SpecNode | Root
 
   result.set('project', root);
 
-  const visited = new Set<string>(root.children);
-  const queue: string[] = [...root.children];
+  const visited = new Set<string>(root.children ?? []);
+  const queue: string[] = [...(root.children ?? [])];
 
   while (queue.length > 0) {
     const childId = queue.shift()!;
@@ -72,9 +56,6 @@ export function readTree(opts: PathResolverOptions): Map<string, SpecNode | Root
   return result;
 }
 
-/**
- * Read a subtree starting from a given node path.
- */
 export function readSubtree(
   startPath: string,
   opts: PathResolverOptions,
@@ -101,7 +82,6 @@ export function readSubtree(
           for (const c of node.children) {
             if (!visited.has(c)) {
               visited.add(c);
-              queue.push(c);
             }
           }
         }
@@ -122,14 +102,14 @@ export function writeRootNode(node: RootSpecNode, opts: PathResolverOptions): st
 }
 
 export function writeNode(nodePath: string, node: SpecNode, opts: PathResolverOptions): string {
-  const filePath = nodeJsonPath(nodePath, node.isLeaf, opts);
+  const filePath = nodeJsonPath(nodePath, opts);
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, JSON.stringify(node, null, 2) + '\n', 'utf-8');
   return filePath;
 }
 
-export function writeDesignDoc(designRelPath: string, content: string, opts: PathResolverOptions): string {
-  const filePath = designDocPath(designRelPath, opts);
+export function writeDesignDocForNode(nodePath: string, content: string, opts: PathResolverOptions): string {
+  const filePath = designDocPathFromNodePath(nodePath, opts);
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, content, 'utf-8');
   return filePath;
@@ -137,24 +117,14 @@ export function writeDesignDoc(designRelPath: string, content: string, opts: Pat
 
 // ---- Delete operations ----
 
-export function deleteNode(nodePath: string, isLeaf: boolean, opts: PathResolverOptions): boolean {
-  const filePath = nodeJsonPath(nodePath, isLeaf, opts);
-  if (!fs.existsSync(filePath)) return false;
-  fs.unlinkSync(filePath);
-
-  // For non-leaf nodes, clean up the directory if empty
-  if (!isLeaf) {
-    const dir = path.dirname(filePath);
-    const remaining = fs.readdirSync(dir);
-    if (remaining.length === 0) {
-      fs.rmdirSync(dir);
-    }
-  }
-
+export function deleteNode(nodePath: string, opts: PathResolverOptions): boolean {
+  const dir = nodeDirPath(nodePath, opts);
+  if (!fs.existsSync(dir)) return false;
+  fs.rmSync(dir, { recursive: true });
   return true;
 }
 
-// ---- Merge operation (for update-node) ----
+// ---- Merge operation ----
 
 export function mergeNodeData(existing: SpecNode, updates: Partial<SpecNode>): SpecNode {
   const result = { ...existing };
@@ -164,11 +134,9 @@ export function mergeNodeData(existing: SpecNode, updates: Partial<SpecNode>): S
 
     const existingValue = (result as Record<string, unknown>)[key];
 
-    // For array fields: append new items if both exist
     if (Array.isArray(value) && Array.isArray(existingValue)) {
       const existingArr = existingValue as unknown[];
       const newArr = value as unknown[];
-      // Merge by concatenating and deduplicating by JSON string
       const merged = [...existingArr];
       for (const item of newArr) {
         const json = JSON.stringify(item);
@@ -179,10 +147,8 @@ export function mergeNodeData(existing: SpecNode, updates: Partial<SpecNode>): S
       (result as Record<string, unknown>)[key] = merged;
     } else if (typeof value === 'object' && value !== null && !Array.isArray(value)
                && typeof existingValue === 'object' && existingValue !== null && !Array.isArray(existingValue)) {
-      // For object fields: shallow merge
       (result as Record<string, unknown>)[key] = { ...(existingValue as Record<string, unknown>), ...(value as Record<string, unknown>) };
     } else {
-      // Primitive fields: overwrite
       (result as Record<string, unknown>)[key] = value;
     }
   }
@@ -197,21 +163,116 @@ export function initSpecsDir(opts: PathResolverOptions): void {
   const dirs = [
     base,
     path.join(base, 'nodes'),
-    path.join(base, 'design'),
     path.join(base, 'draft', 'nodes'),
-    path.join(base, 'draft', 'design'),
   ];
   for (const dir of dirs) {
     fs.mkdirSync(dir, { recursive: true });
   }
 }
 
+// ---- Migration ----
+
+export interface MigrationResult {
+  migrated: number;
+  errors: string[];
+}
+
+export function migrateStructure(opts: PathResolverOptions): MigrationResult {
+  const errors: string[] = [];
+  let migrated = 0;
+
+  const nodesBase = opts.draft
+    ? path.join(opts.specsRoot, 'draft', 'nodes')
+    : path.join(opts.specsRoot, 'nodes');
+
+  if (!fs.existsSync(nodesBase)) return { migrated: 0, errors };
+
+  // Phase 1 & 2: Migrate all node files
+  scanAndMigrate(nodesBase);
+
+  // Phase 3: Move design docs and update design fields
+  const designBase = opts.draft
+    ? path.join(opts.specsRoot, 'draft', 'design')
+    : path.join(opts.specsRoot, 'design');
+
+  if (fs.existsSync(designBase)) {
+    const tree = readTree(opts);
+    for (const [nodePath, node] of tree) {
+      if (nodePath === 'project' || !node.design) continue;
+
+      const oldDesignPath = path.join(
+        opts.draft ? path.join(opts.specsRoot, 'draft') : opts.specsRoot,
+        node.design,
+      );
+
+      if (fs.existsSync(oldDesignPath)) {
+        const newDesignPath = designDocPathFromNodePath(nodePath, opts);
+        fs.mkdirSync(path.dirname(newDesignPath), { recursive: true });
+        fs.renameSync(oldDesignPath, newDesignPath);
+        migrated++;
+
+        // Update design field to new path
+        const parts = nodePath.split('.');
+        node.design = path.join('nodes', ...parts.slice(1), 'design.md').replace(/\\/g, '/');
+        writeNode(nodePath, node, opts);
+      }
+    }
+
+    // Clean up design directory
+    try {
+      if (fs.existsSync(designBase)) {
+        const remaining = fs.readdirSync(designBase);
+        if (remaining.length === 0) {
+          fs.rmSync(designBase, { recursive: true });
+        }
+      }
+    } catch {
+      // Directory not empty, that's fine
+    }
+  }
+
+  function scanAndMigrate(dir: string): void {
+    if (!fs.existsSync(dir)) return;
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      if (entry.isDirectory()) {
+        // Check for old non-leaf format: <id>/index.json
+        const indexPath = path.join(dir, entry.name, 'index.json');
+        const newNodeJsonPath = path.join(dir, entry.name, 'node.json');
+
+        if (fs.existsSync(indexPath) && !fs.existsSync(newNodeJsonPath)) {
+          fs.renameSync(indexPath, newNodeJsonPath);
+          migrated++;
+        }
+
+        // Recurse into children
+        scanAndMigrate(path.join(dir, entry.name));
+      } else if (
+        entry.isFile()
+        && entry.name !== 'index.json'
+        && entry.name !== 'node.json'
+        && entry.name !== 'design.md'
+        && entry.name.endsWith('.json')
+      ) {
+        // Old leaf format: <id>.json → <id>/node.json
+        const oldFilePath = path.join(dir, entry.name);
+        const id = entry.name.replace('.json', '');
+        const newDir = path.join(dir, id);
+        const newFilePath = path.join(newDir, 'node.json');
+
+        fs.mkdirSync(newDir, { recursive: true });
+        fs.renameSync(oldFilePath, newFilePath);
+        migrated++;
+      }
+    }
+  }
+
+  return { migrated, errors };
+}
+
 // ---- Internal helpers ----
 
-/**
- * Find and read a child node when we know the parent path.
- * Searches all loaded nodes for one whose children array contains childId.
- */
 function findAndReadNode(
   childId: string,
   loadedNodes: Map<string, SpecNode | RootSpecNode>,
@@ -231,8 +292,8 @@ function buildFullPath(
   loadedNodes: Map<string, SpecNode | RootSpecNode>,
 ): string {
   if (node.parent === null) return node.id;
-  for (const [path, n] of loadedNodes) {
-    if (n.id === node.parent) return `${path}.${node.id}`;
+  for (const [p, n] of loadedNodes) {
+    if (n.id === node.parent) return `${p}.${node.id}`;
   }
-  return node.id; // fallback
+  return node.id;
 }
