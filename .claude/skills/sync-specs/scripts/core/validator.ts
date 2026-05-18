@@ -9,7 +9,11 @@ import {
   writeRootNode,
   writeNode,
 } from './file-io.ts';
-import { designDocPath, type PathResolverOptions } from './path-resolver.ts';
+import {
+  designDocPath,
+  designDocPathFromNodePath,
+  type PathResolverOptions,
+} from './path-resolver.ts';
 
 // ---- Validation types ----
 
@@ -166,17 +170,29 @@ function checkUniqueness(
 }
 
 /** Check 5: Design document validation */
-function checkDesignDoc(node: SpecNode | RootSpecNode, opts: PathResolverOptions): CheckResult {
+function checkDesignDoc(nodePath: string, node: SpecNode | RootSpecNode, opts: PathResolverOptions): CheckResult {
   const errors: string[] = [];
 
   if (node.design) {
-    const docPath = designDocPath(node.design, opts);
-    if (!fs.existsSync(docPath)) {
-      errors.push(`design file not found: ${docPath}`);
-    } else {
+    if (nodePath === 'project') return pass();
+
+    // Try new path (derived from nodePath) first
+    const docPath = designDocPathFromNodePath(nodePath, opts);
+    if (fs.existsSync(docPath)) {
       const content = fs.readFileSync(docPath, 'utf-8');
       if (content.trim().length === 0) {
         errors.push(`design file is empty: ${docPath}`);
+      }
+    } else {
+      // Fallback to old-style design field path
+      const fieldPath = designDocPath(node.design!, opts);
+      if (!fs.existsSync(fieldPath)) {
+        errors.push(`design file not found: ${docPath}`);
+      } else {
+        const content = fs.readFileSync(fieldPath, 'utf-8');
+        if (content.trim().length === 0) {
+          errors.push(`design file is empty: ${fieldPath}`);
+        }
       }
     }
   }
@@ -239,7 +255,7 @@ export function validateTree(opts: PathResolverOptions, repoPath: string = proce
     const versionResult = checkVersion(node, repoPath);
     const contentResult = checkContent(node);
     const uniquenessResult = checkUniqueness(node, siblings);
-    const designDocResult = checkDesignDoc(node, opts);
+    const designDocResult = checkDesignDoc(nodePath, node, opts);
     const coverageResult = checkCoverage(node);
 
     results.push({
