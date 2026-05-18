@@ -92,3 +92,75 @@
 - Tool Execution Display → Bash 卡片、文件读取卡片、文件编辑卡片、...（L4）
 - Message Display → 文本消息渲染、思考指示器、用户问答面板（L4）
 - Message Input → 文本输入、图片上传、快捷键操作（L4）
+
+## 概念到节点的映射示例
+
+以下示例展示 Stage 3 提取的概念如何映射到 Stage 4 的规格树节点。
+
+### 映射规则
+
+| 概念 Type | 节点 Level | isLeaf | 说明 |
+|-----------|-----------|--------|------|
+| domain | 2 | false | 顶层业务域 |
+| feature | 3+ | 视子概念而定 | 用户可见功能 |
+| entity | 3+ | 视子概念而定 | 业务实体 |
+| component | 最终层 | true | UI/技术组件 |
+| operation | 最终层 | true | 用户操作/API |
+| interface | 最终层 | true | 接口/契约 |
+
+### 完整映射示例
+
+**概念列表（All-Concepts.md 片段）：**
+
+- CONC-001: AI Agent (domain, module: ai-agent)
+- CONC-002: Message Exchange (feature, module: ai-agent, refs: [CONC-001])
+- CONC-003: Message Input (component, module: ai-agent, refs: [CONC-002])
+- CONC-004: Send Message (operation, module: ai-agent, refs: [CONC-002, CONC-003])
+- CONC-005: Response Display (component, module: ai-agent, refs: [CONC-002])
+- CONC-006: Session Management (feature, module: ai-agent, refs: [CONC-001])
+- CONC-007: Create Session (operation, module: ai-agent, refs: [CONC-006])
+- CONC-008: Delete Session (operation, module: ai-agent, refs: [CONC-006])
+
+**映射后的规格树：**
+
+```
+project (level 1)
+└── ai-agent (level 2, ← CONC-001 domain)
+    ├── message-exchange (level 3, ← CONC-002 feature)
+    │   ├── message-input (level 4, ← CONC-003 component, isLeaf: true)
+    │   ├── send-message (level 4, ← CONC-004 operation, isLeaf: true)
+    │   └── response-display (level 4, ← CONC-005 component, isLeaf: true)
+    └── session-management (level 3, ← CONC-006 feature)
+        ├── create-session (level 4, ← CONC-007 operation, isLeaf: true)
+        └── delete-session (level 4, ← CONC-008 operation, isLeaf: true)
+```
+
+### 跨前后端映射示例
+
+**概念：**
+- CONC-010: Submit Form (operation, refs: [CONC-011 Form UI])
+- CONC-011: Form UI (component, refs: [CONC-010])
+
+**映射：** operation 命中前端叶子条件1（API 调用），拆为前端叶子 + 后端叶子：
+
+```
+form-management (level 3)
+├── form-ui (level 4, ← CONC-011, 前端叶子)
+└── form-submit-api (level 4, ← CONC-010, 后端叶子)
+```
+
+### 实体映射示例
+
+**概念：**
+- CONC-020: Project Settings (entity, refs: [CONC-001])
+- CONC-021: Settings Name Field (component, refs: [CONC-020])
+- CONC-022: Save Settings (operation, refs: [CONC-020])
+
+**映射：** entity 作为中层节点，其子操作和组件作为叶子：
+
+```
+ai-agent (level 2)
+└── project-settings (level 3, ← CONC-020 entity)
+    ├── settings-name-field (level 4, ← CONC-021 component, isLeaf: true)
+    └── save-settings (level 4, ← CONC-022 operation, isLeaf: true)
+```
