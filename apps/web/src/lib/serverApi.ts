@@ -136,6 +136,19 @@ export async function getGraphHistory(projectPath: string): Promise<import('@har
   return res.json();
 }
 
+// --- Specs Tree API ---
+
+export interface SpecsTreeResponse {
+  root: import('@harnesson/shared').SpecTreeNode;
+  nodes: Record<string, import('@harnesson/shared').SpecTreeNode>;
+}
+
+export async function getSpecsTree(projectPath: string): Promise<SpecsTreeResponse> {
+  const res = await fetch(`/api/specs/tree?projectPath=${encodeURIComponent(projectPath)}`);
+  if (!res.ok) throw new Error(`Failed to get specs tree: ${res.status}`);
+  return res.json();
+}
+
 // --- Agent API ---
 
 export interface ModelInfo {
