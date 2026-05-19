@@ -1,14 +1,19 @@
-export type SpecNodeType = 'business' | 'tech';
+export interface AcceptanceCriterion {
+  given: string;
+  when: string;
+  then: string;
+}
 
-export interface SpecNode {
+export interface SpecTreeNode {
   id: string;
-  projectId: string;
-  parentId?: string;
-  type: SpecNodeType;
+  name: string;
   level: number;
-  title: string;
-  content: string;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
+  parent: string | null;
+  children: string[];
+  isLeaf: boolean;
+  summary: string;
+  goals: string[];
+  acceptanceCriteria: AcceptanceCriterion[];
+  status: string;
+  design: unknown;
 }
