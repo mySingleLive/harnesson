@@ -1,0 +1,51 @@
+{
+  "id": "send-message",
+  "name": "发送消息",
+  "level": 4,
+  "parent": "message-exchange",
+  "children": [],
+  "isLeaf": true,
+  "summary": "发送消息到 AI Agent 的前后端协同功能。前端调用 POST /api/agents/:id/message，后端通过 AgentService 将消息转发给 Claude SDK 进行处理。",
+  "goals": [
+    "可靠地将用户消息发送到后端",
+    "触发流式处理并返回 202 状态",
+    "支持文本、图片和内容块混合消息"
+  ],
+  "specDetail": {
+    "description": "前端通过 agentStore.sendMessage 发起请求，包含 message、model、contentBlocks、images 参数。后端校验后启动异步处理。",
+    "parameters": [
+      "API: POST /api/agents/:id/message",
+      "请求体: { message, model?, contentBlocks?, images? }",
+      "成功响应: 202 { status: accepted }",
+      "冲突响应: 409 (Agent 正在处理中)"
+    ]
+  },
+  "constraints": [
+    "消息和内容块不能同时为空",
+    "Agent 正在处理时返回 409",
+    "Agent 不存在时返回 404"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户输入有效消息",
+      "when": "按 Enter 发送",
+      "then": "消息发送成功，Agent 开始流式处理"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/agents.ts",
+      "apps/web/src/stores/agentStore.ts"
+    ]
+  }
+}

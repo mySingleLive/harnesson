@@ -1,0 +1,43 @@
+{
+  "id": "graph-detail-panel",
+  "name": "详情面板",
+  "level": 3,
+  "parent": "spec-graph",
+  "children": [],
+  "isLeaf": true,
+  "summary": "图谱节点详情侧面板，展示选中节点的详细信息和设计文档内容。",
+  "specDetail": {
+    "description": "DetailPanel 组件在图谱右侧展示选中节点的 summary、goals、design 等详细信息。",
+    "parameters": [
+      "显示节点 summary",
+      "显示 goals 列表",
+      "显示设计文档内容"
+    ]
+  },
+  "constraints": [
+    "未选中节点时面板隐藏",
+    "节点数据变化时实时更新"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户点击图谱节点",
+      "when": "节点被选中",
+      "then": "右侧面板显示该节点的详细信息"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/graph/DetailPanel.tsx"
+    ]
+  }
+}

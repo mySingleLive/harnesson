@@ -1,0 +1,46 @@
+{
+  "_nodePath": "project.ai-agent.todo-tracking.todo-ui",
+  "id": "todo-ui",
+  "name": "Todo Tracking UI",
+  "level": 4,
+  "parent": "todo-tracking",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Visual display of task progress within agent chat sessions. Shows a bar of todo items with status indicators that update in real-time as the agent works.",
+  "goals": [
+    "Display real-time task progress with status indicators",
+    "Show completed todo snapshots in message history"
+  ],
+  "design": "design/ai-agent/todo-tracking/todo-ui.md",
+  "acceptanceCriteria": [
+    {
+      "given": "an agent creates todo items via TodoWrite",
+      "when": "items are added or updated",
+      "then": "the todo bar shows each item with pending/in_progress/completed status"
+    }
+  ],
+  "testCases": {"unit-test":[],"end-to-end":[],"script-test":[]},
+  "specDetail": {
+    "description": "TodoBar component that displays a horizontal bar of todo items at the bottom of the chat area during agent processing. Each item shows content text and a status indicator. When all items are completed, a snapshot is taken and displayed as a message in the chat history.",
+    "parameters": [
+      "TodoBar shows items with colored status dots: pending gray, in-progress blue, completed green",
+      "Items update in real-time as agent executes TodoWrite tool",
+      "Completed snapshots preserved in message history as todoSnapshot field",
+      "TodoCard renders individual todo items within tool results"
+    ]
+  },
+  "constraints": [
+    "TodoBar only visible during streaming or when todos exist",
+    "Maximum display length per item, long content may be truncated",
+    "Completed todo snapshot fires 1.5 seconds after all items complete",
+    "Todos are per-agent, not shared across sessions"
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-18T00:00:00Z",
+    "baseCommit": "297f663",
+    "baseCommitMessage": "refactor(specs): migrate spec tree to unified node folder structure",
+    "branch": "feature/specs-page",
+    "sourceFiles": ["apps/web/src/components/chat/TodoBar.tsx", "apps/web/src/components/chat/tool-cards/TodoCard.tsx"]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "specDetail": {
+    "description": "File browser for navigating project directory structure. Feature is not yet implemented — currently shows only a placeholder heading.",
+    "parameters": [
+      "Placeholder page with Files heading only",
+      "No file tree, navigation, or editing functionality implemented"
+    ]
+  },
+  "constraints": [
+    "Feature not yet implemented — displays placeholder only",
+    "No backend API for file operations exists"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "a user navigates to the files page",
+      "when": "the page loads",
+      "then": "a Files heading is displayed as placeholder"
+    }
+  ]
+}

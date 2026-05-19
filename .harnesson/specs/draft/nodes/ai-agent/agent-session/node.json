@@ -1,38 +1,43 @@
 {
   "id": "agent-session",
-  "name": "Agent Session",
+  "name": "会话管理",
   "level": 3,
   "parent": "ai-agent",
   "children": [
-    "session-creation",
-    "session-switching",
-    "session-deletion"
+    "create-session",
+    "list-sessions",
+    "destroy-session",
+    "get-messages",
+    "get-todos"
   ],
   "isLeaf": false,
-  "summary": "AI Agent 会话的生命周期管理，包括创建新会话、在多个会话间切换以及删除不需要的会话。",
+  "summary": "Agent 会话的完整生命周期管理，包括创建、列表、销毁、消息历史获取和 Todo 获取。",
   "goals": [
-    "支持快速创建新的 AI 编码助手会话",
-    "允许用户在多个 Agent 会话之间自由切换",
-    "支持删除不再需要的会话并清理资源"
+    "支持创建和销毁 Agent 会话",
+    "提供会话列表和详情查询",
+    "持久化消息历史和任务状态"
   ],
-  "design": "nodes/ai-agent/agent-session/design.md",
   "acceptanceCriteria": [
     {
-      "given": "用户在首页或侧边栏",
-      "when": "点击创建新会话",
-      "then": "创建一个新的 Agent 会话并激活"
+      "given": "用户发送首条消息",
+      "when": "系统创建新会话",
+      "then": "会话持久化到数据库并出现在列表中"
     }
   ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
   "status": "in-progress",
   "syncMeta": {
-    "lastSyncAt": "2026-05-15T14:30:00Z",
-    "baseCommit": "c680f1d",
-    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
     "branch": "feature/specs-page",
     "sourceFiles": [
-      "apps/web/src/stores/agentStore.ts",
-      "apps/server/src/routes/agents.ts",
-      "apps/server/src/lib/agent-service.ts"
+      "apps/server/src/lib/agent-service.ts",
+      "apps/server/src/routes/agents.ts"
     ]
   }
 }

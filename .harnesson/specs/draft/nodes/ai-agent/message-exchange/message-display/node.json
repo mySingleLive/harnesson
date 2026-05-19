@@ -1,0 +1,40 @@
+{
+  "id": "message-display",
+  "name": "消息展示",
+  "level": 4,
+  "parent": "message-exchange",
+  "children": [
+    "thinking-indicator",
+    "ask-question-panel",
+    "todo-progress-bar"
+  ],
+  "isLeaf": false,
+  "summary": "消息渲染组件，展示对话历史中的文本消息、思考指示器、用户问答面板和任务进度条。",
+  "goals": [
+    "完整渲染对话历史",
+    "展示思考和处理状态",
+    "支持用户问答交互"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 正在处理",
+      "when": "收到 thinking 事件",
+      "then": "显示思考状态指示器"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/MessageRenderer.tsx"
+    ]
+  }
+}

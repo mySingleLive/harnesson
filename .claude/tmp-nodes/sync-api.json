@@ -1,0 +1,48 @@
+{
+  "_nodePath": "project.graph-specs.sync-management.sync-api",
+  "id": "sync-api",
+  "name": "Sync Management API",
+  "level": 4,
+  "parent": "sync-management",
+  "children": [],
+  "isLeaf": true,
+  "summary": "API endpoints for triggering and canceling project data synchronization. Runs an external CLI command to scan the project and sync specification data, streaming progress events via SSE.",
+  "goals": [
+    "Execute project sync via configurable CLI command",
+    "Stream sync progress to connected clients in real-time"
+  ],
+  "design": "design/graph-specs/sync-management/sync-api.md",
+  "acceptanceCriteria": [
+    {
+      "given": "a project path and sync configuration",
+      "when": "POST /api/graph/sync is called",
+      "then": "the sync engine runs the CLI command and streams progress events"
+    }
+  ],
+  "testCases": {"unit-test":[],"end-to-end":[],"script-test":[]},
+  "specDetail": {
+    "description": "API routes for sync management. POST /api/graph/sync starts the sync process by running a configurable CLI command via sync-engine, streaming progress events via SSE. POST /api/graph/sync/cancel terminates the running sync process. The sync engine manages process lifecycle, tracks the base git commit, and archives results with timestamps.",
+    "parameters": [
+      "POST /api/graph/sync: body requires projectPath, optional storageLocation and syncType",
+      "Sync types: full (complete rescan) or incremental",
+      "Progress streamed as SSE events during sync execution",
+      "POST /api/graph/sync/cancel: body requires projectPath",
+      "Sync results archived with timestamp in history directory"
+    ]
+  },
+  "constraints": [
+    "projectPath must be an absolute path",
+    "Only one sync per project can run at a time",
+    "Sync command must be configured in server settings",
+    "Cancel kills the sync child process, may leave partial data",
+    "Sync timeout depends on project size, no hard limit"
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-18T00:00:00Z",
+    "baseCommit": "297f663",
+    "baseCommitMessage": "refactor(specs): migrate spec tree to unified node folder structure",
+    "branch": "feature/specs-page",
+    "sourceFiles": ["apps/server/src/routes/graph.ts", "apps/server/src/lib/sync-engine.ts"]
+  }
+}

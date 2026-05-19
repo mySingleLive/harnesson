@@ -106,6 +106,13 @@ Stage 1: 代码扫描 → Stage 2: 架构文档 → Stage 3: 概念提取 → St
    - Source files（对应的源文件列表）
 5. 写入 `.harnesson/All-Concepts.md`
 
+**展开规则（步骤 3d 执行时必须遵守）：**
+
+- **组件目录展开**：当 sourceFiles 包含一个组件目录（如 `components/chat/tool-cards/`）时，必须扫描目录下每个独立组件文件（如 `BashCard.tsx`、`ReadCard.tsx`），为每个用户可感知的组件提取独立的 `component` 概念。**禁止**将多个独立组件文件合并为一个概念。
+- **API 操作展开**：当 sourceFiles 包含一个 API 路由文件（如 `routes/projects.ts`）时，必须为该文件中的每个独立 HTTP 端点（GET/POST/PUT/DELETE）提取独立的 `operation` 概念。**禁止**将多个 API 端点合并为一个概念。
+- **UI 页面展开**：当 sourceFiles 包含一个页面级目录（如 `components/graph/`）且目录下有多个独立视图组件时，为每个用户可独立使用的视图提取独立的 `component` 概念。
+- **多功能组件展开**：当一个组件的 sourceFiles 包含多个独立 hook/辅助文件（如 `useSlashCompletion.ts`、`useImageInput.ts`、`useEmacsKeybindings.ts`），且这些 hook 各自对应一个独立的用户功能（斜杠命令补全、图片上传、快捷键），必须为每个 hook 对应的用户功能提取独立的 `component` 概念。父组件作为中间概念（`feature` 或 `component`），各 hook 对应的功能作为子概念。
+
 **增量更新：** 只重新提取受影响模块的概念。新概念追加到列表末尾，删除的概念移除，已有概念更新内容。更新引用关系和文件头部元数据。
 
 ---
@@ -146,6 +153,9 @@ Stage 1: 代码扫描 → Stage 2: 架构文档 → Stage 3: 概念提取 → St
 
 **无法确定时**：假定为非叶子，继续拆解；若无法再拆解 → 判定为叶子。
 
+**粒度下限规则**（在叶子判定前先检查）：
+如果一个概念的 sourceFiles 包含 3 个以上独立的用户可感知组件文件或 API 端点，则该概念**不能**映射为叶子节点，必须作为中间节点，每个组件/端点对应一个子概念并映射为独立叶子。
+
 ### 4b — 增量更新（增量模式）
 
 1. 运行 `node --experimental-strip-types .claude/skills/sync-specs/scripts/specs-cli.ts read-tree --root .harnesson/specs` 读取现有规格树
@@ -185,7 +195,7 @@ Stage 1: 代码扫描 → Stage 2: 架构文档 → Stage 3: 概念提取 → St
 4. 写入 `draft/design/{path}.md`
 5. 节点 JSON 中 `design` 设为相对路径
 
-sourceFiles 为空且 level>1 → `design` 设为 null，跳过。
+sourceFiles 为空且 level>1 → 检查该节点是否为非叶子节点（isLeaf=false）。如果是非叶子节点且有 goals 或 acceptanceCriteria，仍然生成 design.md（内容聚焦业务域概述）。仅当非叶子且无实质内容时才跳过，`design` 设为 null。
 
 ### 4e — 统一校验
 

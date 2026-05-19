@@ -1,0 +1,20 @@
+{
+  "specDetail": {
+    "description": "Task management interface for tracking development work across projects. Feature is not yet implemented — currently shows only a placeholder heading.",
+    "parameters": [
+      "Placeholder page with Tasks heading only",
+      "No task board, status tracking, or task CRUD functionality implemented"
+    ]
+  },
+  "constraints": [
+    "Feature not yet implemented — displays placeholder only",
+    "Todo tracking exists within AI agent sessions but not as a standalone feature"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "a user navigates to the tasks page",
+      "when": "the page loads",
+      "then": "a Tasks heading is displayed as placeholder"
+    }
+  ]
+}

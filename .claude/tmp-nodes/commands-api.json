@@ -1,0 +1,46 @@
+{
+  "_nodePath": "project.ai-agent.slash-commands.commands-api",
+  "id": "commands-api",
+  "name": "Slash Commands API",
+  "level": 4,
+  "parent": "slash-commands",
+  "children": [],
+  "isLeaf": true,
+  "summary": "API endpoints for discovering available slash commands and executing them within an agent session. Supports built-in commands and project-specific skills discovery.",
+  "goals": [
+    "List available slash commands including built-in and project skills",
+    "Execute slash commands and return results"
+  ],
+  "design": "design/ai-agent/slash-commands/commands-api.md",
+  "acceptanceCriteria": [
+    {
+      "given": "a project path is provided",
+      "when": "GET /api/slash-commands?cwd=path is called",
+      "then": "built-in commands and project-specific skills are returned"
+    }
+  ],
+  "testCases": {"unit-test":[],"end-to-end":[],"script-test":[]},
+  "specDetail": {
+    "description": "API routes for slash command discovery and execution. GET /api/slash-commands discovers built-in commands and project-specific skills from Claude plugin cache and project .claude/skills. POST /api/agents/:id/command executes a command within an agent session and returns the result.",
+    "parameters": [
+      "GET /api/slash-commands: cwd query param for project context, returns commands array",
+      "POST /api/agents/:id/command: command field is required, optional args string",
+      "Built-in commands: clear, compact, model, help",
+      "Skill discovery scans Claude plugin cache and project skills directory"
+    ]
+  },
+  "constraints": [
+    "Command field is required, empty returns 400",
+    "Agent must exist, non-existent agent returns 404",
+    "Skill discovery may fail if plugin cache is unavailable",
+    "Model command requires a valid model name as argument"
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-18T00:00:00Z",
+    "baseCommit": "297f663",
+    "baseCommitMessage": "refactor(specs): migrate spec tree to unified node folder structure",
+    "branch": "feature/specs-page",
+    "sourceFiles": ["apps/server/src/routes/agents.ts", "apps/server/src/lib/slash-commands.ts"]
+  }
+}

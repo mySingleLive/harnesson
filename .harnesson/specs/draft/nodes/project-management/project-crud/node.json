@@ -1,0 +1,41 @@
+{
+  "id": "project-crud",
+  "name": "项目 CRUD",
+  "level": 3,
+  "parent": "project-management",
+  "children": [
+    "create-project",
+    "get-project",
+    "list-projects",
+    "delete-project"
+  ],
+  "isLeaf": false,
+  "summary": "项目的增删查改 API 操作集合。",
+  "goals": [
+    "创建项目",
+    "查询项目",
+    "删除项目"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户创建项目",
+      "when": "API 调用成功",
+      "then": "项目保存到数据库并出现在列表中"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/projects.ts"
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "id": "edit-card",
+  "name": "文件编辑卡片",
+  "level": 4,
+  "parent": "tool-card-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "展示文件编辑操作的卡片组件，以搜索/替换差异块形式显示修改内容。",
+  "specDetail": {
+    "description": "EditCard 组件，显示 edit 操作的搜索文本和替换文本，以 diff 风格展示。",
+    "parameters": [
+      "显示搜索（旧）文本",
+      "显示替换（新）文本",
+      "可折叠展示详细 diff"
+    ]
+  },
+  "constraints": [
+    "以 diff 格式展示变更",
+    "搜索和替换文本清晰区分"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 编辑文件",
+      "when": "工具结果返回",
+      "then": "以差异格式展示搜索和替换内容"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/tool-cards/EditCard.tsx"
+    ]
+  }
+}

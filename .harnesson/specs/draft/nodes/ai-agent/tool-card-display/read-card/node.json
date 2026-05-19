@@ -1,0 +1,43 @@
+{
+  "id": "read-card",
+  "name": "文件读取卡片",
+  "level": 4,
+  "parent": "tool-card-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "展示文件读取结果的卡片组件，显示文件路径和内容，支持通过 CodeLine 语法高亮。",
+  "specDetail": {
+    "description": "ReadCard 组件，显示文件路径和内容，使用 CodeLine 实现行号和语法高亮。",
+    "parameters": [
+      "显示文件路径",
+      "支持行号显示",
+      "语法高亮通过 CodeLine 组件"
+    ]
+  },
+  "constraints": [
+    "大文件需要折叠显示",
+    "行号与源文件一致"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 读取文件",
+      "when": "工具结果返回",
+      "then": "以带行号的格式展示文件内容"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/tool-cards/ReadCard.tsx"
+    ]
+  }
+}

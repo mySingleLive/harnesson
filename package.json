@@ -7,7 +7,8 @@
     "dev:server": "pnpm --filter @harnesson/server dev",
     "build": "pnpm --filter @harnesson/shared build && pnpm --filter @harnesson/web build",
     "lint": "pnpm -r lint",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "test:sync-specs": "cd .claude/skills/sync-specs/scripts && npx vitest run"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -19,5 +20,8 @@
   },
   "dependencies": {
     "pnpm": "^11.0.9"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.5"
   }
 }

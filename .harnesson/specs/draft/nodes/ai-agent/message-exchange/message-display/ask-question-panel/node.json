@@ -1,0 +1,49 @@
+{
+  "id": "ask-question-panel",
+  "name": "用户问答面板",
+  "level": 5,
+  "parent": "message-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "用户问答面板组件。当 Agent 通过 AskUserQuestion 工具提问时弹出，显示问题选项并收集用户回答，通过 HighlightOverlay 高亮显示。",
+  "goals": [
+    "显示 Agent 提问和选项",
+    "收集用户回答并提交",
+    "支持单选和多选模式"
+  ],
+  "specDetail": {
+    "description": "通过 AskUserQuestionPanel 和 HighlightOverlay 组件实现。接收到 agent.question 事件后弹出面板。",
+    "parameters": [
+      "支持选项类型: label, description, preview",
+      "支持 multiSelect 多选模式",
+      "API: POST /api/agents/:id/tool-result"
+    ]
+  },
+  "constraints": [
+    "必须等待用户回答才能继续",
+    "无待处理问题时隐藏面板"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 发起 AskUserQuestion",
+      "when": "前端收到 agent.question 事件",
+      "then": "弹出问答面板显示问题和选项"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/AskUserQuestionPanel.tsx",
+      "apps/web/src/components/chat/HighlightOverlay.tsx"
+    ]
+  }
+}

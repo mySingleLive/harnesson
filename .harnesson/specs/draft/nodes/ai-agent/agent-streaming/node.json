@@ -1,0 +1,50 @@
+{
+  "id": "agent-streaming",
+  "name": "SSE 流式传输",
+  "level": 3,
+  "parent": "ai-agent",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Agent 事件的 Server-Sent Events 流式传输。通过 SSE 实时推送思考、文本、工具调用等事件到前端。",
+  "goals": [
+    "实时推送 Agent 处理事件",
+    "支持心跳保活",
+    "自动清理断开连接的客户端"
+  ],
+  "specDetail": {
+    "description": "SSE 流式端点，每 30 秒发送心跳。客户端断开时自动从服务端移除。",
+    "parameters": [
+      "心跳间隔 30 秒",
+      "事件类型: agent.thinking, agent.text, agent.tool_use, agent.tool_result, agent.error, agent.done, agent.question",
+      "每个 Agent 支持多个并发 SSE 客户端"
+    ]
+  },
+  "constraints": [
+    "客户端断开时必须清理 SSE 连接",
+    "事件缓冲区上限 200 条，超过后保留最近 100 条",
+    "SSE 心跳失败时自动停止心跳定时器"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 正在处理消息",
+      "when": "客户端连接 SSE 端点",
+      "then": "实时接收到所有 Agent 事件流"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/agents.ts",
+      "apps/server/src/lib/agent-service.ts"
+    ]
+  }
+}

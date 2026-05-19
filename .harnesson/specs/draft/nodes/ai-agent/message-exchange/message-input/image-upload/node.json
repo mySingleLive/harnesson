@@ -1,0 +1,56 @@
+{
+  "id": "image-upload",
+  "name": "图片上传",
+  "level": 5,
+  "parent": "message-input",
+  "children": [],
+  "isLeaf": true,
+  "summary": "图片上传功能，支持三种上传方式：粘贴（Cmd+V）、拖拽和文件选择器。上传后在编辑器中内联显示缩略图，支持点击预览和删除。",
+  "goals": [
+    "支持多种图片上传方式",
+    "在编辑器中内联显示图片预览",
+    "支持图片预览和删除"
+  ],
+  "specDetail": {
+    "description": "通过 useImageInput hook 管理图片状态。支持 image/* MIME 类型的文件。图片以 base64 编码存储在 ContentBlock 中。",
+    "parameters": [
+      "支持格式: image/png, image/jpeg, image/gif, image/webp 等",
+      "上传方式: 粘贴(Cmd+V), 拖拽, 文件选择器(+)",
+      "内联预览: 22px 高度缩略图",
+      "点击图片弹出全尺寸预览"
+    ]
+  },
+  "constraints": [
+    "仅支持图片文件",
+    "拖拽非图片文件时忽略",
+    "文件选择器过滤 image/* 类型"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户在输入框中粘贴图片",
+      "when": "图片被识别",
+      "then": "图片以内联缩略图形式出现在编辑器中"
+    },
+    {
+      "given": "用户拖拽图片文件到输入框",
+      "when": "释放鼠标",
+      "then": "图片被添加到编辑器"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/hooks/useImageInput.ts",
+      "apps/web/src/components/chat/ImagePreview.tsx"
+    ]
+  }
+}

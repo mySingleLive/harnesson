@@ -1,0 +1,45 @@
+{
+  "_nodePath": "project.graph-specs.graph-data.graph-data-ui",
+  "id": "graph-data-ui",
+  "name": "Graph Data UI",
+  "level": 4,
+  "parent": "graph-data",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Client-side data loading and state management for graph specification data. Loads graph data from the server when the graph page mounts and manages sync status checking.",
+  "goals": [
+    "Load specification and architecture data when the graph page opens",
+    "Automatically check if data needs syncing based on git commit"
+  ],
+  "design": "design/graph-specs/graph-data/graph-data-ui.md",
+  "acceptanceCriteria": [
+    {
+      "given": "a user navigates to the graph page for a project",
+      "when": "the page loads",
+      "then": "graph data is fetched from the server and stored in the graph store"
+    }
+  ],
+  "testCases": {"unit-test":[],"end-to-end":[],"script-test":[]},
+  "specDetail": {
+    "description": "The GraphPage component and graphStore manage loading graph specification and architecture data. On mount, the store fetches data from the API and checks if the data is stale based on the last sync commit. If auto-sync is needed, it triggers a sync operation automatically.",
+    "parameters": [
+      "GraphPage loads data via graphStore.loadGraph on project path change",
+      "Auto-sync check runs after data load via checkAutoSync",
+      "graphStore manages specsData, architectData, syncStatus, and activeTab state",
+      "Tab switching between 6 views managed by GraphTabBar"
+    ]
+  },
+  "constraints": [
+    "No graph data shown without an active project",
+    "Auto-sync only triggers when git HEAD differs from lastSyncCommit",
+    "Data loading errors are silently caught and result in empty state"
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-18T00:00:00Z",
+    "baseCommit": "297f663",
+    "baseCommitMessage": "refactor(specs): migrate spec tree to unified node folder structure",
+    "branch": "feature/specs-page",
+    "sourceFiles": ["apps/web/src/pages/GraphPage.tsx", "apps/web/src/stores/graphStore.ts"]
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "id": "message-input",
+  "name": "消息输入",
+  "level": 4,
+  "parent": "message-exchange",
+  "children": [
+    "text-input",
+    "slash-completion",
+    "image-upload",
+    "emacs-keybindings"
+  ],
+  "isLeaf": false,
+  "summary": "多功能消息输入组件，集成了文本编辑、斜杠命令补全、图片上传和 Emacs 快捷键功能。",
+  "goals": [
+    "提供富文本输入编辑体验",
+    "集成斜杠命令自动补全",
+    "支持图片上传和内联预览",
+    "支持 Emacs 风格编辑快捷键"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户在输入框输入文本和图片",
+      "when": "按 Enter 发送",
+      "then": "消息连同图片一起发送到 Agent"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/RichTextInput.tsx",
+      "apps/web/src/hooks/useSlashCompletion.ts",
+      "apps/web/src/hooks/useImageInput.ts",
+      "apps/web/src/hooks/useEmacsKeybindings.ts"
+    ]
+  }
+}

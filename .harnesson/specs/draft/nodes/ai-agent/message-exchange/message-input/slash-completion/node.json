@@ -1,0 +1,57 @@
+{
+  "id": "slash-completion",
+  "name": "斜杠命令补全",
+  "level": 5,
+  "parent": "message-input",
+  "children": [],
+  "isLeaf": true,
+  "summary": "斜杠命令自动补全功能。输入 / 时弹出命令列表，支持键盘导航（上下箭头、Enter/Tab 选择、Escape 关闭）和模糊过滤。",
+  "goals": [
+    "实时检测 / 前缀触发补全",
+    "支持键盘导航选择命令",
+    "模糊过滤匹配命令列表"
+  ],
+  "specDetail": {
+    "description": "通过 useSlashCompletion hook 实现，监听输入变化检测 / 前缀，过滤命令列表并显示 SlashCommandPopup。",
+    "parameters": [
+      "触发条件: 输入 / 字符",
+      "导航: 上/下箭头切换选中项",
+      "选择: Enter 或 Tab 确认",
+      "关闭: Escape 或空格后关闭",
+      "支持插件命名空间: plugin:skill 格式"
+    ]
+  },
+  "constraints": [
+    "IME 输入法组合期间不触发补全",
+    "命令前缀后跟空格时关闭弹窗",
+    "无匹配命令时自动关闭"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户输入 / 字符",
+      "when": "存在匹配的命令",
+      "then": "弹出命令列表供选择"
+    },
+    {
+      "given": "命令弹窗已打开",
+      "when": "按 Escape",
+      "then": "关闭弹窗"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/hooks/useSlashCompletion.ts",
+      "apps/web/src/components/chat/SlashCommandPopup.tsx"
+    ]
+  }
+}

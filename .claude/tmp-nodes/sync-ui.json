@@ -1,0 +1,46 @@
+{
+  "_nodePath": "project.graph-specs.sync-management.sync-ui",
+  "id": "sync-ui",
+  "name": "Sync Management UI",
+  "level": 4,
+  "parent": "sync-management",
+  "children": [],
+  "isLeaf": true,
+  "summary": "User interface for triggering project data synchronization and monitoring progress. Shows sync status, storage location selection, and real-time progress with cancellation support.",
+  "goals": [
+    "Allow users to trigger full or incremental sync",
+    "Display real-time sync progress with cancellation"
+  ],
+  "design": "design/graph-specs/sync-management/sync-ui.md",
+  "acceptanceCriteria": [
+    {
+      "given": "a user is on the graph page with no data",
+      "when": "they trigger a sync with a storage location",
+      "then": "sync starts and progress is displayed in real-time with a cancel option"
+    }
+  ],
+  "testCases": {"unit-test":[],"end-to-end":[],"script-test":[]},
+  "specDetail": {
+    "description": "SyncView component provides the sync trigger interface with storage location selection (project or user). SyncProgress component overlays the graph page during active sync, showing real-time progress messages. Users can cancel an in-progress sync via the cancel button.",
+    "parameters": [
+      "SyncView offers storage location options: project-scoped or user-scoped",
+      "SyncProgress overlays the graph content during sync with semi-transparent backdrop",
+      "Progress messages stream from the server via SSE",
+      "Cancel button available during active sync"
+    ]
+  },
+  "constraints": [
+    "Sync cannot be triggered without an active project",
+    "Only one sync can run at a time per project",
+    "Sync progress overlay blocks interaction with graph views",
+    "Network interruption during sync leaves partial data state"
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-18T00:00:00Z",
+    "baseCommit": "297f663",
+    "baseCommitMessage": "refactor(specs): migrate spec tree to unified node folder structure",
+    "branch": "feature/specs-page",
+    "sourceFiles": ["apps/web/src/components/graph/SyncView.tsx", "apps/web/src/components/graph/SyncProgress.tsx"]
+  }
+}

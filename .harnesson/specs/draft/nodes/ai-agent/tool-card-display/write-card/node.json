@@ -1,0 +1,42 @@
+{
+  "id": "write-card",
+  "name": "文件写入卡片",
+  "level": 4,
+  "parent": "tool-card-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "展示文件写入操作的卡片组件，显示目标文件路径和写入内容。",
+  "specDetail": {
+    "description": "WriteCard 组件，显示写入的文件路径和完整内容。",
+    "parameters": [
+      "显示目标文件路径",
+      "显示写入内容"
+    ]
+  },
+  "constraints": [
+    "写入前不修改原文件",
+    "显示目标文件的完整路径"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 写入文件",
+      "when": "工具结果返回",
+      "then": "展示文件路径和写入内容"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/tool-cards/WriteCard.tsx"
+    ]
+  }
+}

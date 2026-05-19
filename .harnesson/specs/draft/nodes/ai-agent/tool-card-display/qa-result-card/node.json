@@ -1,0 +1,42 @@
+{
+  "id": "qa-result-card",
+  "name": "问答结果卡片",
+  "level": 4,
+  "parent": "tool-card-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "展示用户问答结果的卡片组件，显示 Agent 提问和用户的回答。",
+  "specDetail": {
+    "description": "QAResultCard 组件，展示 AskUserQuestion 的工具调用和用户回答结果。",
+    "parameters": [
+      "显示问题内容",
+      "显示用户选择的答案"
+    ]
+  },
+  "constraints": [
+    "清晰区分问题和答案",
+    "多选项答案用逗号分隔"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户回答了 Agent 提问",
+      "when": "tool_result 返回",
+      "then": "展示问题和用户答案"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/tool-cards/QAResultCard.tsx"
+    ]
+  }
+}

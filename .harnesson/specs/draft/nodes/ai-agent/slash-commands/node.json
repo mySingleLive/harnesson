@@ -1,0 +1,39 @@
+{
+  "id": "slash-commands",
+  "name": "斜杠命令",
+  "level": 3,
+  "parent": "ai-agent",
+  "children": [
+    "list-slash-commands",
+    "execute-command"
+  ],
+  "isLeaf": false,
+  "summary": "斜杠命令发现和执行功能。扫描内置命令、插件技能和项目技能，支持在 Agent 会话中执行命令。",
+  "goals": [
+    "发现并列出可用斜杠命令",
+    "在 Agent 会话中执行命令"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户在输入框输入 /",
+      "when": "弹出命令列表",
+      "then": "显示所有可用的内置和技能命令"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/lib/slash-commands.ts",
+      "apps/web/src/stores/slashCommandStore.ts"
+    ]
+  }
+}

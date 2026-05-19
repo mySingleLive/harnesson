@@ -1,0 +1,45 @@
+{
+  "id": "list-slash-commands",
+  "name": "列出斜杠命令",
+  "level": 4,
+  "parent": "slash-commands",
+  "children": [],
+  "isLeaf": true,
+  "summary": "获取可用斜杠命令列表的 API。GET /api/slash-commands 返回内置命令（clear, compact, model, help）和扫描到的技能命令。",
+  "specDetail": {
+    "description": "API 端点 GET /api/slash-commands?cwd=xxx，扫描 ~/.claude/plugins/cache 和项目 .claude/skills/ 目录发现可用命令。",
+    "parameters": [
+      "API: GET /api/slash-commands",
+      "参数: cwd (可选，项目路径)",
+      "内置命令: clear, compact, model, help",
+      "技能命令: 从插件缓存和项目目录扫描"
+    ]
+  },
+  "constraints": [
+    "cwd 无效时仍返回内置命令",
+    "命令按类型分组"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户请求命令列表",
+      "when": "调用 API",
+      "then": "返回内置命令和所有已安装技能命令"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/agents.ts",
+      "apps/server/src/lib/slash-commands.ts"
+    ]
+  }
+}

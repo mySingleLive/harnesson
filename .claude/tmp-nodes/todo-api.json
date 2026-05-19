@@ -1,0 +1,42 @@
+{
+  "_nodePath": "project.ai-agent.todo-tracking.todo-api",
+  "id": "todo-api",
+  "name": "Todo Tracking API",
+  "level": 4,
+  "parent": "todo-tracking",
+  "children": [],
+  "isLeaf": true,
+  "summary": "API endpoint for retrieving todo items associated with an agent session. Supports loading persisted todos when restoring a previous session.",
+  "goals": [
+    "Return todo items for a specific agent session"
+  ],
+  "design": "design/ai-agent/todo-tracking/todo-api.md",
+  "acceptanceCriteria": [
+    {
+      "given": "an agent session with todo items",
+      "when": "GET /api/agents/:id/todos is called",
+      "then": "the todo items for that session are returned"
+    }
+  ],
+  "testCases": {"unit-test":[],"end-to-end":[],"script-test":[]},
+  "specDetail": {
+    "description": "Simple GET endpoint that returns todo items for an agent session from the database. Used when restoring a previous session to display the last known todo state. Todo data originates from TodoWrite tool events during agent processing.",
+    "parameters": [
+      "GET /api/agents/:id/todos returns array of todo items",
+      "Each item has id, content, status, and optional activeForm"
+    ]
+  },
+  "constraints": [
+    "Returns empty array if agent has no todos",
+    "Agent must exist, otherwise returns 404",
+    "Todos are read-only via this endpoint, updates happen through TodoWrite tool events"
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-18T00:00:00Z",
+    "baseCommit": "297f663",
+    "baseCommitMessage": "refactor(specs): migrate spec tree to unified node folder structure",
+    "branch": "feature/specs-page",
+    "sourceFiles": ["apps/server/src/routes/agents.ts", "apps/server/src/lib/agent-service.ts"]
+  }
+}

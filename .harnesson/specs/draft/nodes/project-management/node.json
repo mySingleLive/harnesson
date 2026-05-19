@@ -1,42 +1,43 @@
 {
   "id": "project-management",
-  "name": "Project Management",
+  "name": "项目管理",
   "level": 2,
   "parent": "project",
   "children": [
     "project-list",
-    "project-creation",
-    "project-deletion",
-    "folder-opening",
-    "branch-management",
-    "repository-cloning"
+    "project-crud",
+    "folder-picker",
+    "branch-management"
   ],
   "isLeaf": false,
-  "summary": "项目全生命周期管理，包括创建、查看、删除项目，以及 Git 分支切换和仓库克隆。",
+  "summary": "项目管理业务域，涵盖项目的创建、打开、克隆、删除，以及 Git 分支管理。",
   "goals": [
-    "管理多个开发项目的创建和删除",
-    "支持通过文件夹选择、创建项目和克隆仓库三种方式添加项目",
-    "提供 Git 分支查看和切换能力"
+    "支持项目 CRUD 操作",
+    "提供原生文件夹选择器",
+    "管理项目 Git 分支"
   ],
-  "design": "nodes/project-management/design.md",
   "acceptanceCriteria": [
     {
-      "given": "用户已打开平台",
-      "when": "进入项目页面",
-      "then": "显示所有已添加的项目列表，支持卡片和列表两种视图"
+      "given": "用户在项目页面",
+      "when": "点击创建项目",
+      "then": "弹出创建对话框，填写信息后成功创建项目"
     }
   ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
   "status": "in-progress",
   "syncMeta": {
-    "lastSyncAt": "2026-05-15T14:30:00Z",
-    "baseCommit": "c680f1d",
-    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
     "branch": "feature/specs-page",
     "sourceFiles": [
-      "apps/web/src/stores/projectStore.ts",
-      "apps/web/src/pages/ProjectsPage.tsx",
+      "apps/web/src/components/projects/",
       "apps/server/src/routes/projects.ts",
-      "apps/server/prisma/schema.prisma"
+      "apps/web/src/stores/projectStore.ts"
     ]
   }
 }

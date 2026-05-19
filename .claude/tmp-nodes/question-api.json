@@ -1,0 +1,45 @@
+{
+  "_nodePath": "project.ai-agent.ask-user-question.question-api",
+  "id": "question-api",
+  "name": "Question Answer API",
+  "level": 4,
+  "parent": "ask-user-question",
+  "children": [],
+  "isLeaf": true,
+  "summary": "API endpoint for submitting user answers to pending agent questions. Resolves the pending question in the agent service and resumes agent processing.",
+  "goals": [
+    "Accept user answers to pending agent questions",
+    "Resume agent processing after answer submission"
+  ],
+  "design": "design/ai-agent/ask-user-question/question-api.md",
+  "acceptanceCriteria": [
+    {
+      "given": "an agent has a pending question",
+      "when": "POST /api/agents/:id/tool-result is called with an answer",
+      "then": "the answer is forwarded to the agent and processing resumes"
+    }
+  ],
+  "testCases": {"unit-test":[],"end-to-end":[],"script-test":[]},
+  "specDetail": {
+    "description": "API endpoint that accepts user answers for pending agent questions. The agent-service.submitAnswer method resolves the pending promise that the Claude adapter is waiting on, allowing the agent to continue processing with the user answer.",
+    "parameters": [
+      "POST /api/agents/:id/tool-result: answer field is required, can be string or array of strings",
+      "Returns ok:true on success",
+      "Returns 404 if agent not found or no pending question"
+    ]
+  },
+  "constraints": [
+    "Answer field is required, undefined returns 400",
+    "No pending question returns 404 error",
+    "Agent must exist, non-existent agent ID returns 404",
+    "Answer can be a single string or array of strings for multi-select"
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-18T00:00:00Z",
+    "baseCommit": "297f663",
+    "baseCommitMessage": "refactor(specs): migrate spec tree to unified node folder structure",
+    "branch": "feature/specs-page",
+    "sourceFiles": ["apps/server/src/routes/agents.ts", "apps/server/src/lib/agent-service.ts"]
+  }
+}

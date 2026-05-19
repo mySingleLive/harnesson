@@ -1,0 +1,42 @@
+{
+  "id": "todo-card",
+  "name": "任务卡片",
+  "level": 4,
+  "parent": "tool-card-display",
+  "children": [],
+  "isLeaf": true,
+  "summary": "展示 TodoWrite 工具调用结果的卡片组件，显示任务列表和各任务状态。",
+  "specDetail": {
+    "description": "TodoCard 组件，展示 TodoWrite 工具调用中的任务列表及各任务状态。",
+    "parameters": [
+      "显示任务列表",
+      "显示每个任务的状态 (pending/in_progress/completed)"
+    ]
+  },
+  "constraints": [
+    "任务状态用颜色区分",
+    "列表可折叠"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 更新任务列表",
+      "when": "TodoWrite 工具被调用",
+      "then": "以卡片形式展示任务列表和状态"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/tool-cards/TodoCard.tsx"
+    ]
+  }
+}

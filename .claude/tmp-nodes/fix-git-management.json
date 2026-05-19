@@ -1,0 +1,20 @@
+{
+  "specDetail": {
+    "description": "Git management interface for visualizing repository operations. Feature is not yet implemented — currently shows only a placeholder heading.",
+    "parameters": [
+      "Placeholder page with Git heading only",
+      "No diff view, commit history, or branch management UI implemented"
+    ]
+  },
+  "constraints": [
+    "Feature not yet implemented — displays placeholder only",
+    "Git operations currently handled via branch-management in project management"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "a user navigates to the git page",
+      "when": "the page loads",
+      "then": "a Git heading is displayed as placeholder"
+    }
+  ]
+}

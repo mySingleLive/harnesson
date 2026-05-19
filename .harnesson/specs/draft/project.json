@@ -3,41 +3,34 @@
   "name": "Harnesson",
   "level": 1,
   "parent": null,
-  "treeDepth": 5,
+  "treeDepth": 4,
   "treeScenario": "multi-domain",
-  "children": [
-    "ai-agent",
-    "project-management",
-    "graph-visualization",
-    "task-management",
-    "file-explorer",
-    "git-operations"
-  ],
+  "children": ["ai-agent", "project-management", "spec-graph"],
   "isLeaf": false,
-  "summary": "Visual AI Coding Management Platform — 基于 AI Agent 的可视化编码管理平台。支持创建和管理 AI 编码助手会话、项目管理和代码结构可视化。",
+  "summary": "Visual AI Coding Management Platform - 基于 AI Agent 的可视化编码管理平台。用户通过对话界面与 AI Agent 交互，管理项目代码，可视化浏览规格图谱。",
   "goals": [
-    "提供 AI Agent 驱动的编码辅助能力",
-    "管理多个开发项目的生命周期",
-    "可视化展示项目规格和架构"
+    "提供 AI Agent 对话界面进行代码管理",
+    "支持项目的创建、克隆和管理",
+    "提供规格图谱可视化展示"
   ],
-  "design": "design/project.md",
   "acceptanceCriteria": [
     {
-      "given": "用户访问平台",
-      "when": "打开应用首页",
-      "then": "显示可用的 AI Agent 会话创建界面和项目列表"
+      "given": "用户打开应用",
+      "when": "选择一个项目并输入消息",
+      "then": "AI Agent 开始处理并实时流式返回结果"
     }
   ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
   "status": "in-progress",
   "syncMeta": {
-    "lastSyncAt": "2026-05-15T14:30:00Z",
-    "baseCommit": "c680f1d",
-    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
     "branch": "feature/specs-page",
-    "sourceFiles": [
-      "package.json",
-      "tsconfig.base.json",
-      "pnpm-workspace.yaml"
-    ]
+    "sourceFiles": []
   }
 }

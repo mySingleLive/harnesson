@@ -1,0 +1,44 @@
+{
+  "id": "get-messages",
+  "name": "获取消息历史",
+  "level": 4,
+  "parent": "agent-session",
+  "children": [],
+  "isLeaf": true,
+  "summary": "获取 Agent 消息历史的 API。支持分页加载，返回用户和 Agent 的对话记录，包含事件数据。",
+  "specDetail": {
+    "description": "API 端点 GET /api/agents/:id/messages，支持 limit 和 before 参数实现游标分页。",
+    "parameters": [
+      "API: GET /api/agents/:id/messages",
+      "参数: limit (默认 100, 最大 500), before (游标 ID)",
+      "返回: Message[] (按时间倒序)"
+    ]
+  },
+  "constraints": [
+    "最大单次返回 500 条",
+    "图片和内容块以 JSON 字符串存储需解析"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "会话有消息历史",
+      "when": "调用获取消息 API",
+      "then": "返回按时间排列的消息列表"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/agents.ts",
+      "apps/server/src/lib/agent-service.ts"
+    ]
+  }
+}

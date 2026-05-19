@@ -4,40 +4,44 @@
   "level": 2,
   "parent": "project",
   "children": [
+    "message-exchange",
     "agent-session",
-    "agent-control",
-    "message-display",
-    "message-input"
+    "tool-card-display",
+    "agent-streaming",
+    "agent-abort",
+    "model-selection",
+    "slash-commands"
   ],
   "isLeaf": false,
-  "summary": "AI 编码助手的核心交互功能，包括会话管理、消息收发、指令控制和任务追踪。",
+  "summary": "AI Agent 对话核心业务域，涵盖消息交互、会话管理、工具调用展示、流式事件传输和斜杠命令功能。",
   "goals": [
-    "支持创建、切换和删除 AI Agent 会话",
-    "提供实时的消息流式传输和展示",
-    "支持斜杠命令快捷操作和图片上传",
-    "允许用户中止 Agent 执行和切换模型"
+    "支持用户与 AI Agent 进行对话交互",
+    "管理 Agent 会话的完整生命周期",
+    "可视化展示工具调用结果",
+    "支持流式实时响应和中断控制"
   ],
-  "design": "nodes/ai-agent/design.md",
   "acceptanceCriteria": [
     {
-      "given": "用户在平台首页",
-      "when": "输入描述并提交",
-      "then": "创建新的 AI Agent 会话并开始交互"
+      "given": "用户在首页输入消息",
+      "when": "点击发送",
+      "then": "创建 Agent 会话并开始流式处理"
     }
   ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
   "status": "in-progress",
   "syncMeta": {
-    "lastSyncAt": "2026-05-15T14:30:00Z",
-    "baseCommit": "c680f1d",
-    "baseCommitMessage": "fix(sync-specs): address code review issues — cycle detection, delete safety, path.join",
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "20df4fe",
+    "baseCommitMessage": "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram",
     "branch": "feature/specs-page",
     "sourceFiles": [
-      "packages/shared/src/types/agent.ts",
-      "apps/web/src/stores/agentStore.ts",
-      "apps/server/src/routes/agents.ts",
       "apps/server/src/lib/agent-service.ts",
-      "apps/server/src/lib/agent-adapter.ts",
-      "apps/server/src/lib/claude-code-adapter.ts"
+      "apps/server/src/routes/agents.ts",
+      "apps/web/src/stores/agentStore.ts"
     ]
   }
 }

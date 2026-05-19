@@ -1,0 +1,47 @@
+{
+  "_nodePath": "project.graph-specs.graph-data.graph-data-api",
+  "id": "graph-data-api",
+  "name": "Graph Data API",
+  "level": 4,
+  "parent": "graph-data",
+  "children": [],
+  "isLeaf": true,
+  "summary": "REST API endpoints for serving project specification and architecture graph data. Provides status checking, data retrieval, manifest access, and history browsing.",
+  "goals": [
+    "Serve graph specification and architecture data to the client",
+    "Track sync status and support history browsing"
+  ],
+  "design": "design/graph-specs/graph-data/graph-data-api.md",
+  "acceptanceCriteria": [
+    {
+      "given": "a project path with synced graph data",
+      "when": "GET /api/graph/data is called",
+      "then": "the full graph data including specs and architecture is returned"
+    }
+  ],
+  "testCases": {"unit-test":[],"end-to-end":[],"script-test":[]},
+  "specDetail": {
+    "description": "API routes for graph data access. GET /api/graph/status checks if data exists and whether it needs re-syncing based on git HEAD. GET /api/graph/data returns the full graph payload. GET /api/graph/manifest returns sync metadata. GET /api/graph/history lists historical sync entries, and GET /api/graph/history/:timestamp returns specific historical data. All endpoints require projectPath as an absolute path.",
+    "parameters": [
+      "GET /api/graph/status: projectPath query param, returns hasData, needsSync, lastSyncCommit",
+      "GET /api/graph/data: returns full specsData and architectData",
+      "GET /api/graph/manifest: returns sync metadata including lastSyncTime and syncStatus",
+      "GET /api/graph/history: returns list of historical sync entries",
+      "Storage locations: project-scoped or user-scoped via storageLocation query param"
+    ]
+  },
+  "constraints": [
+    "projectPath must be an absolute path, relative paths return 400",
+    "Path traversal attempts with .. are rejected",
+    "Returns 404 for manifest if no sync has been performed",
+    "Non-git repos cannot determine needsSync status"
+  ],
+  "status": "in-progress",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-18T00:00:00Z",
+    "baseCommit": "297f663",
+    "baseCommitMessage": "refactor(specs): migrate spec tree to unified node folder structure",
+    "branch": "feature/specs-page",
+    "sourceFiles": ["apps/server/src/routes/graph.ts", "apps/server/src/lib/graph-storage.ts"]
+  }
+}
