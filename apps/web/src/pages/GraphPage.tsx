@@ -18,12 +18,14 @@ export function GraphPage() {
   const projectPath = activeProject?.path ?? null;
 
   const specsData = useGraphStore((s) => s.specsData);
+  const specsTree = useGraphStore((s) => s.specsTree);
   const architectData = useGraphStore((s) => s.architectData);
   const syncStatus = useGraphStore((s) => s.syncStatus);
   const activeTab = useGraphStore((s) => s.activeTab);
   const isDetailPanelOpen = useGraphStore((s) => s.isDetailPanelOpen);
   const setProjectPath = useGraphStore((s) => s.setProjectPath);
   const loadGraph = useGraphStore((s) => s.loadGraph);
+  const loadSpecsTree = useGraphStore((s) => s.loadSpecsTree);
   const checkAutoSync = useGraphStore((s) => s.checkAutoSync);
   const setActiveTab = useGraphStore((s) => s.setActiveTab);
   const startSync = useGraphStore((s) => s.startSync);
@@ -31,13 +33,16 @@ export function GraphPage() {
   useEffect(() => {
     if (projectPath) {
       setProjectPath(projectPath);
-      loadGraph(projectPath).then(() => {
+      Promise.all([
+        loadGraph(projectPath),
+        loadSpecsTree(projectPath),
+      ]).then(() => {
         checkAutoSync(projectPath);
       });
     }
-  }, [projectPath, setProjectPath, loadGraph, checkAutoSync]);
+  }, [projectPath, setProjectPath, loadGraph, loadSpecsTree, checkAutoSync]);
 
-  const hasData = !!(specsData || architectData);
+  const hasData = !!(specsData || architectData || specsTree);
   const isSyncing = syncStatus === 'syncing';
 
   if (!projectPath) {
