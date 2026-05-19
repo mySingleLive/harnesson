@@ -28,6 +28,7 @@ export interface GraphNode {
   title: string;
   content?: string;
   children?: string[];
+  status?: string;
 }
 
 export interface GraphEdge {
