@@ -1,0 +1,22 @@
+{
+  "id": "technical-document",
+  "name": "Technical Document",
+  "parent": "specs-visualization",
+  "level": 4,
+  "isLeaf": true,
+  "children": [],
+  "summary": "技术/架构文档 Markdown 查看器。",
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:09.008Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": []
+  }
+}

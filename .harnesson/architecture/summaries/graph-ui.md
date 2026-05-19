@@ -1,42 +1,57 @@
-# Module: Graph UI
+# Module: graph-ui
 
-> Source files: apps/web/src/components/graph/SpecsGraph.tsx, apps/web/src/components/graph/FlowGraph.tsx, apps/web/src/components/graph/GraphNodes.tsx, apps/web/src/components/graph/SpecsDocument.tsx, apps/web/src/components/graph/SpecsList.tsx, apps/web/src/components/graph/SyncView.tsx, apps/web/src/components/graph/SyncProgress.tsx, apps/web/src/components/graph/DetailPanel.tsx, apps/web/src/components/graph/ArchitectGraph.tsx, apps/web/src/components/graph/GraphTabBar.tsx, apps/web/src/components/graph/MarkdownViewer.tsx, apps/web/src/components/graph/TechnicalDocument.tsx
-> Last synced: 2026-05-19T12:00:00Z | Commit: 20df4fe
+> Source files: apps/web/src/components/graph/**/*.tsx
+> Last synced: 2026-05-19T00:00:00Z | Commit: 1d90ec4
 
 ## Summary
 
-Spec graph visualization module using ReactFlow. Provides interactive graph views for spec nodes (SpecsGraph), architect data (ArchitectGraph), document rendering (MarkdownViewer, TechnicalDocument, SpecsDocument), list views (SpecsList), and sync progress UI (SyncView, SyncProgress).
+Graph visualization components for displaying specs and architecture knowledge graphs. Uses React Flow with Dagre layout for interactive node-edge diagrams, plus tabbed views for graph, list, document, and sync workflows.
 
 ## Key Files
 
-### SpecsGraph.tsx
-ReactFlow-based spec graph visualization with custom node types and layout.
-
 ### FlowGraph.tsx
-Base ReactFlow graph component with shared configuration.
+Core React Flow graph rendering component with Dagre top-to-bottom layout and custom node types.
+
+### GraphNodes.tsx
+Custom React Flow node components for three hierarchy levels: ProjectNode, DomainNode, FeatureNode.
+
+### SpecsGraph.tsx
+Renders the specs knowledge graph by reading specsData from the graph store and delegating to FlowGraph.
+
+### ArchitectGraph.tsx
+Renders the architecture knowledge graph by reading architectData from the graph store.
+
+### SpecsList.tsx
+Collapsible tree-list view of spec items, organized hierarchically from flat SpecsListItem data.
+
+### SpecsDocument.tsx / TechnicalDocument.tsx
+Markdown document viewers for specs and architecture documents using MarkdownViewer.
 
 ### SyncView.tsx
-Sync trigger and progress UI for initiating graph data synchronization.
+Landing view for initiating sync with storage location selection.
+
+### SyncProgress.tsx
+Progress UI with animated spinner, progress bar, phase timeline, log output, and cancel button.
 
 ### DetailPanel.tsx
-Side panel showing details of a selected graph node.
+Side panel showing selected graph node details (id, level, children, content).
+
+### GraphTabBar.tsx
+Tab navigation for five views: Specs Graph, Specs List, Specs Document, Architect Graph, Technical Document.
 
 ## Exports
 
-- SpecsGraph (component)
-- FlowGraph (component)
-- GraphNodes (component)
-- SpecsDocument (component)
-- SpecsList (component)
-- SyncView (component)
-- SyncProgress (component)
-- DetailPanel (component)
-- ArchitectGraph (component)
-- GraphTabBar (component)
+- FlowGraph, SpecsGraph, ArchitectGraph (components)
+- SpecsList, SpecsDocument, TechnicalDocument (components)
+- SyncView, SyncProgress (components)
+- DetailPanel, GraphTabBar (components)
 - MarkdownViewer (component)
-- TechnicalDocument (component)
+- ProjectNode, DomainNode, FeatureNode, nodeTypes (components/map)
 
 ## Dependencies
 
-- → graphStore (graph data state)
-- → shared-types (graph data types)
+- → @xyflow/react (React Flow library)
+- → @dagrejs/dagre (graph layout)
+- → stores (graphStore)
+- → @harnesson/shared (GraphData, SpecsListItem, GraphTab, GraphNode types)
+- → web-lib (utils)

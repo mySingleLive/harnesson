@@ -1,0 +1,43 @@
+{
+  "id": "create-agent",
+  "parent": "agent-session",
+  "level": 4,
+  "children": [],
+  "isLeaf": true,
+  "summary": "POST /api/agents — 创建新 Agent，验证 cwd 绝对路径和 type 必填，返回 201。",
+  "specDetail": {
+    "description": "创建新 Agent 会话，指定工作目录和类型。",
+    "parameters": [
+      "cwd 必须是绝对路径",
+      "type 为必填字段",
+      "返回创建的 Agent 对象含 id、status 等"
+    ]
+  },
+  "constraints": [
+    "cwd 不能包含 '..' 路径遍历",
+    "Agent 创建后自动恢复持久化会话"
+  ],
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:08.963Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/agents.ts"
+    ]
+  },
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "name": "Create Agent",
+  "acceptanceCriteria": [
+    {
+      "given": "User sends first message",
+      "when": "on new session page",
+      "then": "creates Agent and navigates to projects"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "specs-visualization",
+  "name": "Specs Visualization",
+  "parent": "graph-specs",
+  "level": 3,
+  "isLeaf": false,
+  "children": [
+    "specs-graph",
+    "specs-list",
+    "specs-document",
+    "architect-graph",
+    "technical-document"
+  ],
+  "summary": "规格可视化视图集合，包括图谱、列表、文档和架构图视图。",
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:08.954Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/graph/"
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "id": "bash-card",
+  "parent": "tool-cards",
+  "level": 4,
+  "children": [],
+  "isLeaf": true,
+  "summary": "Bash 工具事件的可折叠卡片，显示命令、输出预览和执行时长。",
+  "specDetail": {
+    "description": "渲染 Bash 工具调用和结果，支持折叠展开查看完整输出。",
+    "parameters": [
+      "显示执行命令",
+      "显示 stdout/stderr 输出预览",
+      "显示执行耗时"
+    ]
+  },
+  "constraints": [
+    "长输出自动截断并折叠"
+  ],
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:08.973Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/tool-cards/"
+    ]
+  },
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "name": "Bash Card",
+  "acceptanceCriteria": [
+    {
+      "given": "Agent runs Bash",
+      "when": "result arrives",
+      "then": "shows collapsible card with command, output, status"
+    }
+  ]
+}

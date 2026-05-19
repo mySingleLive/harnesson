@@ -1,0 +1,42 @@
+{
+  "id": "submit-answer",
+  "parent": "message-exchange",
+  "level": 4,
+  "children": [],
+  "isLeaf": true,
+  "summary": "POST /api/agents/:id/tool-result — 提交 AskUserQuestion 的回答。",
+  "specDetail": {
+    "description": "回答 Agent 提出的问题，支持字符串或字符串数组。",
+    "parameters": [
+      "answer 支持单个或多个选项",
+      "无待处理问题时返回 404"
+    ]
+  },
+  "constraints": [
+    "answer 为必填字段",
+    "必须先有待处理问题"
+  ],
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:08.972Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/agents.ts"
+    ]
+  },
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "name": "Submit Answer",
+  "acceptanceCriteria": [
+    {
+      "given": "Agent asks question",
+      "when": "user submits answer",
+      "then": "answer sent to Agent, processing continues"
+    }
+  ]
+}

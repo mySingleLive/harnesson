@@ -1,0 +1,42 @@
+{
+  "id": "execute-command",
+  "parent": "slash-commands",
+  "level": 4,
+  "children": [],
+  "isLeaf": true,
+  "summary": "POST /api/agents/:id/command — 在 Agent 上下文中执行斜杠命令。",
+  "specDetail": {
+    "description": "执行指定斜杠命令并返回结果。",
+    "parameters": [
+      "command 为必填字段",
+      "args 为可选参数"
+    ]
+  },
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:08.988Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/lib/slash-commands.ts"
+    ]
+  },
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "name": "Execute Command",
+  "constraints": [
+    "command name required",
+    "executed in Agent context"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "User selects command",
+      "when": "presses Enter",
+      "then": "command executes and returns result"
+    }
+  ]
+}

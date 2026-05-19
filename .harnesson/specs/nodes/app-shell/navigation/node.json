@@ -1,0 +1,28 @@
+{
+  "id": "navigation",
+  "name": "Navigation",
+  "parent": "app-shell",
+  "level": 3,
+  "isLeaf": false,
+  "children": [
+    "sidebar",
+    "topbar"
+  ],
+  "summary": "应用导航系统，包括侧边栏和顶部栏。",
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:08.959Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/layout/Sidebar.tsx",
+      "apps/web/src/components/layout/Topbar.tsx"
+    ]
+  }
+}

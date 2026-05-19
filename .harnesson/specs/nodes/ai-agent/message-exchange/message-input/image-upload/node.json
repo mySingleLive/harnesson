@@ -1,0 +1,41 @@
+{
+  "id": "image-upload",
+  "parent": "message-input",
+  "level": 5,
+  "children": [],
+  "isLeaf": true,
+  "summary": "图片上传功能，支持文件选择和剪贴板粘贴，转换为 base64 预览。",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:09.039Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/RichTextInput.tsx"
+    ]
+  },
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "name": "Image Upload",
+  "specDetail": {
+    "description": "Image upload via file select or clipboard paste.",
+    "parameters": [
+      "PNG/JPG",
+      "base64 conversion"
+    ]
+  },
+  "constraints": [
+    "image format only"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "User pastes image",
+      "when": "loaded",
+      "then": "shows inline preview"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "delete-project",
+  "name": "Delete Project",
+  "parent": "project-crud",
+  "level": 4,
+  "isLeaf": true,
+  "children": [],
+  "summary": "DELETE /api/projects/:id — 删除项目。",
+  "specDetail": {
+    "description": "从数据库删除项目记录。",
+    "parameters": [
+      "不存在返回 404",
+      "成功返回 { success: true }"
+    ]
+  },
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:08.994Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": []
+  }
+}

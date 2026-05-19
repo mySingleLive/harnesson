@@ -1,0 +1,29 @@
+{
+  "id": "layout-components",
+  "name": "Layout Components",
+  "parent": "app-shell",
+  "level": 3,
+  "isLeaf": false,
+  "children": [
+    "main-layout",
+    "agent-status-dot",
+    "confirm-dialog",
+    "resizable-divider"
+  ],
+  "summary": "布局组件集合，包括主布局、状态指示器、确认对话框和可调整分割器。",
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:08.961Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/layout/"
+    ]
+  }
+}

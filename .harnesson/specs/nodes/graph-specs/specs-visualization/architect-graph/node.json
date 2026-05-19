@@ -1,0 +1,22 @@
+{
+  "id": "architect-graph",
+  "name": "Architect Graph",
+  "parent": "specs-visualization",
+  "level": 4,
+  "isLeaf": true,
+  "children": [],
+  "summary": "架构知识图谱，展示模块和依赖关系。",
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:09.007Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": []
+  }
+}

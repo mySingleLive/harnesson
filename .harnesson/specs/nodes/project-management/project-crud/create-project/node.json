@@ -1,0 +1,34 @@
+{
+  "id": "create-project",
+  "name": "Create Project",
+  "parent": "project-crud",
+  "level": 4,
+  "isLeaf": true,
+  "children": [],
+  "summary": "POST /api/projects — 创建项目，支持可选 git init。",
+  "specDetail": {
+    "description": "创建新项目，检查路径唯一性，可选执行 git init。",
+    "parameters": [
+      "name 和 path 必填",
+      "路径已存在时返回已有项目",
+      "source 默认 'local'"
+    ]
+  },
+  "constraints": [
+    "路径已存在不重复创建",
+    "git init 失败不阻止项目创建"
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:08.992Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": []
+  }
+}

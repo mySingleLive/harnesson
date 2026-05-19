@@ -1,0 +1,43 @@
+{
+  "id": "clone-repo-modal",
+  "name": "Clone Repo Modal",
+  "parent": "project-ui",
+  "level": 4,
+  "isLeaf": true,
+  "children": [],
+  "summary": "克隆 Git 仓库的模态对话框，收集仓库 URL 和本地路径。",
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:08.996Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/projects/CloneRepoModal.tsx"
+    ]
+  },
+  "specDetail": {
+    "description": "克隆 Git 仓库的模态对话框，收集仓库 URL 和本地路径。",
+    "parameters": [
+      "repository URL 为必填",
+      "local path 为必填"
+    ]
+  },
+  "constraints": [
+    "URL 必须是有效的 Git 仓库地址",
+    "路径不能为空",
+    "克隆失败时显示错误"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户点击克隆仓库按钮",
+      "when": "输入仓库 URL 和本地路径并提交",
+      "then": "仓库被克隆并创建为新项目"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "id": "read-card",
+  "parent": "tool-cards",
+  "level": 4,
+  "children": [],
+  "isLeaf": true,
+  "summary": "文件读取工具卡片，显示文件路径、行号范围和内容预览。",
+  "specDetail": {
+    "description": "渲染 Read 工具调用，显示读取的文件路径和内容片段。",
+    "parameters": [
+      "显示文件路径",
+      "显示行号范围",
+      "显示内容预览"
+    ]
+  },
+  "constraints": [
+    "大文件仅显示预览片段"
+  ],
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:08.974Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/tool-cards/"
+    ]
+  },
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "name": "Read Card",
+  "acceptanceCriteria": [
+    {
+      "given": "Agent reads file",
+      "when": "result arrives",
+      "then": "shows file path and line-numbered preview"
+    }
+  ]
+}

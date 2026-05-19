@@ -1,44 +1,47 @@
-# Module: API Routes
+# Module: api-routes
 
-> Source files: apps/server/src/routes/agents.ts, apps/server/src/routes/projects.ts, apps/server/src/routes/branches.ts, apps/server/src/routes/graph.ts, apps/server/src/routes/health.ts, apps/server/src/routes/open-folder.ts
-> Last synced: 2026-05-19T12:00:00Z | Commit: 20df4fe
+> Source files: apps/server/src/routes/**/*.ts
+> Last synced: 2026-05-19T00:00:00Z | Commit: 1d90ec4
 
 ## Summary
 
-REST API layer using Hono framework. Defines HTTP endpoints for agent management (CRUD + SSE streaming + message sending + abort), project CRUD, git branch listing/checkout, graph data sync/status/history, health check, and native folder picker dialog.
+HTTP API route handlers for the Harnesson server, built on Hono. Defines all REST endpoints for agent management, project CRUD, git branch operations, graph/specs data access, sync orchestration, health checks, and native OS folder dialogs.
 
 ## Key Files
 
 ### agents.ts
-Full agent API: POST/GET/DELETE agents, POST message, POST tool-result (QA), GET SSE stream, POST abort, GET models, GET slash-commands, POST command execution.
+Agent lifecycle and messaging routes. Handles create/destroy agents, send messages, SSE streaming of agent events, abort, slash command discovery, model listing, question/answer flow, and todo retrieval. The most complex route file with ~15 endpoints.
 
 ### projects.ts
-Project CRUD: GET all projects, GET single project, POST create project (with git init), DELETE project.
+CRUD endpoints for project entities. Lists, fetches by ID, creates (with optional `git init`), and deletes projects via Prisma ORM.
 
 ### branches.ts
-Git branch operations: GET branches (local + remote), POST checkout (supports remote branch tracking).
+Git branch operations. Lists local/remote branches and handles branch checkout (creating local tracking branches from remote refs).
 
 ### graph.ts
-Graph data management: GET status/manifest/data/history, POST sync (SSE streaming), POST sync cancel.
+Graph/specs visualization endpoints. Provides graph data status, manifest/full-data/history reads, and sync orchestration with SSE progress streaming.
 
 ### health.ts
-Simple health check endpoint: GET /api/health.
+Health-check endpoint returning `{ status: 'ok', timestamp }`.
 
 ### open-folder.ts
-Native folder picker: POST /api/open-folder invokes OS dialog.
+Triggers native OS folder-picker dialog and returns the selected path.
 
 ## Exports
 
-- agentsRoute (Hono router)
-- projectsRoute (Hono router)
-- branchesRoute (Hono router)
-- graphRoute (Hono router)
-- healthRoute (Hono router)
-- openFolderRoute (Hono router)
+- agentsRoute (const: Hono router)
+- branchesRoute (const: Hono router)
+- graphRoute (const: Hono router)
+- healthRoute (const: Hono router)
+- openFolderRoute (const: Hono router)
+- projectsRoute (const: Hono router)
 
 ## Dependencies
 
-- → agent-service (agent operations)
-- → graph-storage (graph data access)
-- → sync-engine (sync execution)
-- → prisma (DB access)
+- → agent-service (agent CRUD, messaging, streaming)
+- → graph-storage (graph data reads/writes)
+- → sync-engine (sync orchestration)
+- → prisma (database access for projects/branches)
+- → native-dialog (folder picker)
+- → slash-commands (command discovery)
+- → @harnesson/shared (request/response types)

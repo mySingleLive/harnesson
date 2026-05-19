@@ -1,0 +1,43 @@
+{
+  "id": "project",
+  "name": "Harnesson",
+  "level": 1,
+  "parent": null,
+  "treeDepth": 5,
+  "treeScenario": "multi-domain",
+  "children": [
+    "ai-agent",
+    "project-management",
+    "graph-specs",
+    "app-shell"
+  ],
+  "isLeaf": false,
+  "summary": "Visual AI Coding Management Platform — 基于 AI Agent 的可视化编码管理平台，提供 AI 对话、项目管理、规格图谱和应用导航功能。",
+  "goals": [
+    "Provide visual management for AI coding agents",
+    "Enable project and branch management",
+    "Visualize codebase specs as knowledge graphs",
+    "Offer intuitive navigation and layout"
+  ],
+  "design": "design/project.md",
+  "acceptanceCriteria": [
+    {
+      "given": "用户打开 Harnesson 应用",
+      "when": "查看主导航",
+      "then": "显示新建会话、项目、图谱、任务、文件、Git 导航项"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:08.929Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": []
+  }
+}

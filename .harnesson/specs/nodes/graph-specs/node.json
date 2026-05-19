@@ -1,0 +1,45 @@
+{
+  "id": "graph-specs",
+  "name": "Graph & Specs",
+  "level": 2,
+  "parent": "project",
+  "children": [
+    "specs-visualization",
+    "sync-workflow",
+    "graph-data-api",
+    "detail-panel"
+  ],
+  "isLeaf": false,
+  "summary": "知识图谱可视化模块，包括规格图/架构图浏览、同步引擎、数据 API 和详情面板。",
+  "goals": [
+    "Visualize specs and architecture as interactive graphs",
+    "Provide tree-list and document views of specs",
+    "Support sync workflow with progress tracking",
+    "Browse graph data history"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "项目有规格数据",
+      "when": "用户打开图谱页面",
+      "then": "显示规格知识图、列表和文档视图"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:08.942Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/lib/graph-storage.ts",
+      "apps/server/src/lib/sync-engine.ts",
+      "apps/server/src/routes/graph.ts",
+      "apps/web/src/components/graph/"
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "id": "text-message-rendering",
+  "parent": "message-display",
+  "level": 5,
+  "children": [],
+  "isLeaf": true,
+  "summary": "文本消息渲染组件，使用 react-markdown 和 remark-gfm 渲染 Agent 的文本响应。",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:09.034Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/MessageRenderer.tsx"
+    ]
+  },
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "name": "Text Message Rendering",
+  "specDetail": {
+    "description": "Renders Agent text as Markdown with react-markdown and remark-gfm.",
+    "parameters": [
+      "GFM support",
+      "code block highlighting"
+    ]
+  },
+  "constraints": [
+    "supports GFM extensions"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "Agent returns text",
+      "when": "message renders",
+      "then": "displays as Markdown"
+    }
+  ]
+}

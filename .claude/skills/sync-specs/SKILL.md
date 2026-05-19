@@ -14,9 +14,10 @@ description: 扫描项目代码，通过4阶段管线（代码扫描→架构文
 
 ## 模式判断
 
-1. `.sync-meta.json` 不存在 → **全量模式**
-2. 用户传入 `--full` → **全量模式**
-3. 否则 → **增量模式**
+1. `.harnesson/.sync-meta.json` 不存在 → **全量模式**
+2. `.harnesson/.sync-meta.json` 存在但 `.harnesson/specs/` 目录不存在或为空（有同步历史但数据文件丢失）→ **全量模式**
+3. 用户传入 `--full` → **全量模式**
+4. 否则 → **增量模式**
 
 ## 流程总览
 
@@ -42,8 +43,9 @@ Stage 1: 代码扫描 → Stage 2: 架构文档 → Stage 3: 概念提取 → St
 3. 标记所有后续阶段为需要执行
 
 **增量模式：**
-1. 读取 `.sync-meta.json` 获取 `lastSyncCommit`
-2. 执行 `git diff --name-only <lastSyncCommit>..HEAD`
+1. 检查 `.harnesson/specs/` 目录是否存在且非空，若不存在或为空 → 提示数据文件丢失，切换为**全量模式**
+2. 读取 `.harnesson/.sync-meta.json` 获取 `lastSyncCommit`
+3. 执行 `git diff --name-only <lastSyncCommit>..HEAD`
 3. 按 Stage 1 全量模式的 Include/Exclude 规则过滤变更文件
 4. 过滤后无变更文件 → 输出"无变更，sync 完成"并结束
 5. 输出变更文件列表，传递给后续阶段
@@ -221,7 +223,7 @@ node --experimental-strip-types .claude/skills/sync-specs/scripts/specs-cli.ts p
 
 ### 4h — 更新同步元数据
 
-写入 `.sync-meta.json`：
+写入 `.harnesson/.sync-meta.json`：
 
 ```json
 {

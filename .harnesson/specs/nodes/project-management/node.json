@@ -1,0 +1,43 @@
+{
+  "id": "project-management",
+  "name": "Project Management",
+  "level": 2,
+  "parent": "project",
+  "children": [
+    "project-crud",
+    "project-ui",
+    "branch-operations"
+  ],
+  "isLeaf": false,
+  "summary": "项目管理功能，包括项目 CRUD、创建/克隆 UI、Git 分支操作和空状态引导。",
+  "goals": [
+    "Create, list, and delete projects",
+    "Clone Git repositories as projects",
+    "Switch Git branches within projects",
+    "Guide users through project onboarding"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户在项目页面",
+      "when": "创建新项目或克隆仓库",
+      "then": "项目被创建并添加到项目列表"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:08.941Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/projects.ts",
+      "apps/server/src/routes/branches.ts",
+      "apps/web/src/components/projects/"
+    ]
+  }
+}

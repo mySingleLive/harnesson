@@ -1,0 +1,22 @@
+{
+  "id": "get-graph-data",
+  "name": "Get Graph Data",
+  "parent": "graph-data-api",
+  "level": 4,
+  "isLeaf": true,
+  "children": [],
+  "summary": "GET /api/graph/data — 获取完整图谱数据。",
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:09.018Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": []
+  }
+}

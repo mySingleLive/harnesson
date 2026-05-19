@@ -1,0 +1,43 @@
+{
+  "id": "model-selection",
+  "parent": "ai-agent",
+  "level": 3,
+  "children": [],
+  "isLeaf": true,
+  "summary": "获取可用 AI 模型列表供用户选择，通过 ModelDropdown 组件展示。",
+  "specDetail": {
+    "description": "GET /api/models 返回支持的模型列表，ModelDropdown 组件提供下拉选择界面。",
+    "parameters": [
+      "支持向上弹出方向检测",
+      "选中模型显示勾选标记"
+    ]
+  },
+  "constraints": [
+    "模型列表从 Claude Code SDK 动态获取",
+    "网络错误时显示错误提示"
+  ],
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:08.950Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/agents.ts",
+      "apps/web/src/components/layout/ModelDropdown.tsx"
+    ]
+  },
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "name": "Model Selection",
+  "acceptanceCriteria": [
+    {
+      "given": "User opens model selector",
+      "when": "viewing models",
+      "then": "shows supported AI models with current selection"
+    }
+  ]
+}

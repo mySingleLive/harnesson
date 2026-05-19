@@ -1,48 +1,60 @@
-# Module: Chat UI
+# Module: chat-ui
 
-> Source files: apps/web/src/components/chat/RichTextInput.tsx, apps/web/src/components/chat/MessageRenderer.tsx, apps/web/src/components/chat/SlashCommandPopup.tsx, apps/web/src/components/chat/ImagePreview.tsx, apps/web/src/components/chat/AskUserQuestionPanel.tsx, apps/web/src/components/chat/ThinkingBar.tsx, apps/web/src/components/chat/ThinkingIndicator.tsx, apps/web/src/components/chat/TodoBar.tsx, apps/web/src/components/chat/HighlightOverlay.tsx, apps/web/src/hooks/useSlashCompletion.ts, apps/web/src/hooks/useImageInput.ts, apps/web/src/hooks/useEmacsKeybindings.ts, apps/web/src/hooks/useAutoScroll.ts, apps/web/src/hooks/useChatPanel.ts
-> Last synced: 2026-05-19T12:00:00Z | Commit: 20df4fe
+> Source files: apps/web/src/components/chat/**/*.{ts,tsx}
+> Last synced: 2026-05-19T00:00:00Z | Commit: 1d90ec4
 
 ## Summary
 
-Chat interface components for AI agent interaction. RichTextInput provides a contentEditable editor with inline image embedding, slash command completion popup, and Emacs-style keybindings. MessageRenderer displays conversation history with tool cards and thinking indicators.
+Chat UI components for the AI agent conversation interface. Includes message rendering with markdown, a rich-text input with image embedding and slash commands, thinking indicators, todo progress bars, and 15+ specialized tool event cards for visualizing Bash, Read, Edit, Write, Glob, Grep, LSP, and other tool operations.
 
 ## Key Files
 
-### RichTextInput.tsx
-Multi-feature input component integrating useSlashCompletion (slash command popup), useImageInput (image upload/paste/drag-drop), useEmacsKeybindings (Ctrl+A/E/B/F/P/N/D/H/W/K/U/Y shortcuts). Uses contentEditable div with inline image spans and auto-resize.
-
 ### MessageRenderer.tsx
-Renders agent message history including text blocks, tool event cards, thinking indicators, and todo progress bar.
+Top-level message renderer dispatching to TodoCard, UserMessage, or AgentMessageBubble. Renders markdown text and tool event cards from event trees.
+
+### RichTextInput.tsx
+Main chat input component. contentEditable editor with inline image embedding, slash command completion, Emacs keybindings, model selection, and abort button.
+
+### AskUserQuestionPanel.tsx
+Interactive question panel with single/multi-select options or custom answer input, keyboard navigation, and preview layouts.
 
 ### SlashCommandPopup.tsx
-Popup component for slash command autocomplete, showing filtered commands with keyboard navigation.
+Floating popup for slash command suggestions grouped into builtin/skills categories with keyboard navigation.
 
-### useSlashCompletion.ts
-Hook managing slash command filtering, popup state, keyboard navigation (arrow keys, enter, tab, escape), and command insertion.
+### tool-cards/ToolEventCard.tsx
+Maps tool names to specific card components. Provides ToolEventCardList and SingleToolEventCard.
 
-### useImageInput.ts
-Hook managing image file processing (File → base64), tracking pending images, and converting to ImageAttachment format.
+### tool-cards/buildEventTree.ts
+Builds hierarchical tree of TreeSegment objects from flat stream events for nested agent rendering.
 
-### useEmacsKeybindings.ts
-Hook implementing Readline-compatible editing shortcuts with a global kill ring (Ctrl+W/K/U/Y for cut/paste).
+### tool-cards/segmentEvents.ts
+Segments flat stream events into ordered Segment objects (text, tool, qa-result).
+
+### tool-cards/pairEvents.ts
+Pairs tool_use and tool_result stream events into PairedToolEvent objects.
+
+### tool-cards/BashCard.tsx, ReadCard.tsx, EditCard.tsx, WriteCard.tsx, GlobCard.tsx, GrepCard.tsx, LSPCard.tsx
+Specialized cards for each tool type with syntax highlighting, diff views, and collapsible output.
+
+### tool-cards/CollapsibleCard.tsx
+Reusable collapsible card shell with running/collapsed/expanded states.
 
 ## Exports
 
-- RichTextInput (component)
-- MessageRenderer (component)
-- SlashCommandPopup (component)
-- ImagePreview (component)
-- AskUserQuestionPanel (component)
-- ThinkingBar (component)
-- ThinkingIndicator (component)
-- TodoBar (component)
-- HighlightOverlay (component)
-- useSlashCompletion (hook)
-- useImageInput (hook)
-- useEmacsKeybindings (hook)
+- MessageRenderer, RichTextInput, AskUserQuestionPanel, SlashCommandPopup (components)
+- ThinkingBar, ThinkingIndicator, TodoBar (components)
+- HighlightOverlay, ImagePreview (components)
+- ToolEventCardList, SingleToolEventCard (components)
+- StreamingAgentCard, TodoCard, QAResultCard (components)
+- BashCard, ReadCard, EditCard, WriteCard, GlobCard, GrepCard, LSPCard, GenericCard, AskUserQuestionCard (components)
+- CodeLine, CollapsibleCard (components)
+- buildEventTree, segmentEvents, pairEvents (functions)
+- detectLanguage (function)
 
 ## Dependencies
 
-- → shared-types (SlashCommand, ImageAttachment, ContentBlock)
-- → slashCommandStore (command data)
+- → @harnesson/shared (Agent, AgentMessage, ContentBlock, AgentStreamEvent, TodoItem, SlashCommand, QuestionData types)
+- → hooks (useAutoScroll, useImageInput, useSlashCompletion, useEmacsKeybindings, useKeyboardNavigation)
+- → stores (agentStore, slashCommandStore)
+- → layout (ModelDropdown)
+- → web-lib (serverApi, utils, slashCommandUtils)

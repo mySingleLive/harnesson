@@ -1,34 +1,34 @@
-# Module: Stores
+# Module: stores
 
-> Source files: apps/web/src/stores/agentStore.ts, apps/web/src/stores/projectStore.ts, apps/web/src/stores/graphStore.ts, apps/web/src/stores/slashCommandStore.ts
-> Last synced: 2026-05-19T12:00:00Z | Commit: 20df4fe
+> Source files: apps/web/src/stores/*.ts
+> Last synced: 2026-05-19T00:00:00Z | Commit: 1d90ec4
 
 ## Summary
 
-Zustand state management stores. AgentStore manages agent sessions, messaging, and SSE event handling. ProjectStore handles project CRUD, branch selection, and folder opening. GraphStore manages graph data fetching and sync state. SlashCommandStore fetches and caches available slash commands.
+Zustand state management stores providing centralized reactive state for agents, graph/specs data, projects, and slash commands. Each store encapsulates its domain's state, server API integration, and SSE streaming logic.
 
 ## Key Files
 
 ### agentStore.ts
-Zustand store for agent lifecycle: create, sendMessage (with SSE streaming), abort, destroy, message history, todo tracking.
-
-### projectStore.ts
-Zustand store for project management: CRUD operations, active project/branch selection, folder picker integration.
+Central agent state: agent list, active agent, messages, SSE connections, streaming status, todos, pending questions, panel dimensions. Actions for full agent lifecycle including create, send, abort, destroy, SSE streaming, todo management, and question handling.
 
 ### graphStore.ts
-Zustand store for graph data: status checking, data loading, sync triggering, and history browsing.
+Graph/specs state: data, sync status/progress, active tab, selected node, detail panel. SSE-based sync streaming with progress events and auto-sync checking.
+
+### projectStore.ts
+Project state: list, active project/branch, view mode, search, loading. Actions for loading projects, switching, branch operations, and localStorage persistence.
 
 ### slashCommandStore.ts
-Zustand store caching slash commands fetched from the server API.
+Slash command cache with 5-minute TTL per CWD. Fetches from server API with cache invalidation.
 
 ## Exports
 
-- useAgentStore (hook)
-- useProjectStore (hook)
-- useGraphStore (hook)
-- useSlashCommandStore (hook)
+- useAgentStore (Zustand hook)
+- useGraphStore (Zustand hook)
+- useProjectStore (Zustand hook)
+- useSlashCommandStore (Zustand hook)
 
 ## Dependencies
 
-- → serverApi (HTTP client)
-- → shared-types (type definitions)
+- → web-lib (serverApi for all server communication)
+- → @harnesson/shared (all domain types)

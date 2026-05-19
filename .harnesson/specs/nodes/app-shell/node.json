@@ -1,0 +1,44 @@
+{
+  "id": "app-shell",
+  "name": "App Shell",
+  "level": 2,
+  "parent": "project",
+  "children": [
+    "navigation",
+    "agent-panel",
+    "layout-components",
+    "pages"
+  ],
+  "isLeaf": false,
+  "summary": "应用外壳，提供布局框架、导航侧栏、顶部栏、Agent 面板和页面路由。",
+  "goals": [
+    "Provide consistent layout across all pages",
+    "Enable navigation between features",
+    "Support resizable agent chat panel",
+    "Render page components based on routes"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户打开 Harnesson",
+      "when": "查看应用布局",
+      "then": "显示侧栏导航、顶部栏和主内容区域"
+    }
+  ],
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:08.943Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/layout/",
+      "apps/web/src/pages/",
+      "apps/web/src/App.tsx"
+    ]
+  }
+}

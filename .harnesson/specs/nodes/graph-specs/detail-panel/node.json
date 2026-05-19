@@ -1,0 +1,44 @@
+{
+  "id": "detail-panel",
+  "name": "Detail Panel",
+  "parent": "graph-specs",
+  "level": 3,
+  "isLeaf": true,
+  "children": [],
+  "summary": "图谱节点详情侧面板，显示选中节点的 ID、层级、子节点和内容。",
+  "testCases": {
+    "unit-test": [],
+    "end-to-end": [],
+    "script-test": []
+  },
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T11:03:08.958Z",
+    "baseCommit": "1d90ec4",
+    "baseCommitMessage": "refactor(specs): restructure spec tree with flatter node hierarchy",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/graph/DetailPanel.tsx"
+    ]
+  },
+  "specDetail": {
+    "description": "图谱节点详情侧面板，显示选中节点的 ID、层级、子节点和内容信息。",
+    "parameters": [
+      "显示节点 id、level、children",
+      "读取 specs 和 architect 数据源",
+      "点击关闭按钮隐藏"
+    ]
+  },
+  "constraints": [
+    "仅在有选中节点时显示",
+    "支持 specs 和 architect 两种数据源",
+    "关闭按钮位于右上角"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户在图谱中点击一个节点",
+      "when": "节点被选中",
+      "then": "右侧弹出详情面板显示节点信息"
+    }
+  ]
+}

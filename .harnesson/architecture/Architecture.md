@@ -1,32 +1,74 @@
 # Architecture: Harnesson
 
-> Last synced: 2026-05-19T12:00:00Z | Commit: 20df4fe
+> Last synced: 2026-05-19T00:00:00Z | Commit: 1d90ec4
 
 ## Module Map
 
 | Module | Path | Key Files | Summary |
 |--------|------|-----------|---------|
-| Server Core | apps/server/src/ | index.ts | Hono HTTP server entry point, route mounting, CORS |
-| Agent Service | apps/server/src/lib/ | agent-service.ts, claude-code-adapter.ts, agent-adapter.ts | AI agent lifecycle, session management, Claude SDK integration, SSE streaming |
-| API Routes | apps/server/src/routes/ | agents.ts, projects.ts, branches.ts, graph.ts, health.ts, open-folder.ts | REST API endpoints for agents, projects, branches, graph data |
-| Graph Storage | apps/server/src/lib/ | graph-storage.ts, sync-engine.ts | Graph/spec data persistence, sync engine with external CLI |
-| Chat UI | apps/web/src/components/chat/ | RichTextInput.tsx, MessageRenderer.tsx | Chat input with rich text editing, message display, tool cards |
-| Tool Cards | apps/web/src/components/chat/tool-cards/ | BashCard.tsx, ReadCard.tsx, WriteCard.tsx, EditCard.tsx, StreamingAgentCard.tsx | Individual tool execution result display cards |
-| Graph UI | apps/web/src/components/graph/ | SpecsGraph.tsx, FlowGraph.tsx, SyncView.tsx | Spec graph visualization, ReactFlow-based rendering, sync progress |
-| Layout | apps/web/src/components/layout/ | MainLayout.tsx, Sidebar.tsx, Topbar.tsx, AgentPanel.tsx | App shell with resizable panels, sidebar navigation, agent context |
-| Projects UI | apps/web/src/components/projects/ | ProjectList.tsx, CreateProjectModal.tsx, ProjectCard.tsx | Project management UI: CRUD, clone, detail view |
-| Pages | apps/web/src/pages/ | NewSessionPage.tsx, ProjectsPage.tsx, GraphPage.tsx | Route-level page components |
-| Stores | apps/web/src/stores/ | agentStore.ts, projectStore.ts, graphStore.ts | Zustand state management for agents, projects, graph data |
-| Hooks | apps/web/src/hooks/ | useSlashCompletion.ts, useImageInput.ts, useEmacsKeybindings.ts | Reusable hooks for chat input features |
-| Shared Types | packages/shared/src/types/ | agent.ts, project.ts, graph.ts | Shared TypeScript type definitions |
-| Slash Commands | apps/server/src/lib/ | slash-commands.ts | Built-in and skill-based slash command discovery |
+| api-routes | apps/server/src/routes/ | agents.ts, projects.ts, graph.ts, branches.ts | Hono REST API endpoints for agents, projects, graph, branches |
+| agent-service | apps/server/src/lib/ | agent-service.ts, claude-code-adapter.ts, graph-storage.ts, sync-engine.ts | Agent management, Claude SDK integration, graph storage, sync engine |
+| chat-ui | apps/web/src/components/chat/ | MessageRenderer.tsx, RichTextInput.tsx, tool-cards/* | Chat interface with message rendering, rich input, and tool event cards |
+| graph-ui | apps/web/src/components/graph/ | FlowGraph.tsx, SpecsGraph.tsx, SpecsList.tsx, SyncView.tsx | Graph visualization with React Flow, specs views, and sync workflow |
+| layout | apps/web/src/components/layout/ | MainLayout.tsx, AgentPanel.tsx, Sidebar.tsx, Topbar.tsx | App shell with navigation, agent panel, and dropdown selectors |
+| projects-ui | apps/web/src/components/projects/ | ProjectList.tsx, CreateProjectModal.tsx, EmptyState.tsx | Project management with card/list views and CRUD modals |
+| pages | apps/web/src/pages/ | NewSessionPage.tsx, GraphPage.tsx, ProjectsPage.tsx | Route-level page components composing feature modules |
+| stores | apps/web/src/stores/ | agentStore.ts, graphStore.ts, projectStore.ts | Zustand state management for agents, graph, projects |
+| hooks | apps/web/src/hooks/ | useSlashCompletion.ts, useImageInput.ts, useEmacsKeybindings.ts | Shared React hooks for UI behavior patterns |
+| web-lib | apps/web/src/lib/ | serverApi.ts, slashCommandUtils.ts | Centralized API client and utility functions |
+| shared-types | packages/shared/src/types/ | agent.ts, graph.ts, project.ts, task.ts | Shared TypeScript type definitions across workspaces |
 
 ## Dependency Graph
 
-```
-Shared Types ← Server Core ← API Routes ← Agent Service ← Claude SDK
-                          ← Graph Storage ← Sync Engine
-Shared Types ← Pages ← Layout ← Stores ← Hooks ← Chat UI ← Tool Cards
-                                          ← Graph UI
-                                          ← Projects UI
+```mermaid
+graph TD
+    shared-types["shared-types"]
+
+    subgraph Server
+        api-routes["api-routes"]
+        agent-service["agent-service"]
+    end
+
+    subgraph Web
+        web-lib["web-lib"]
+        stores["stores"]
+        hooks["hooks"]
+        layout["layout"]
+        chat-ui["chat-ui"]
+        graph-ui["graph-ui"]
+        projects-ui["projects-ui"]
+        pages["pages"]
+    end
+
+    api-routes --> agent-service
+    api-routes --> shared-types
+    agent-service --> shared-types
+
+    web-lib --> shared-types
+    stores --> web-lib
+    hooks --> stores
+    hooks --> web-lib
+
+    layout --> stores
+    layout --> chat-ui
+    layout --> hooks
+    layout --> web-lib
+    layout --> projects-ui
+
+    chat-ui --> stores
+    chat-ui --> hooks
+    chat-ui --> web-lib
+
+    graph-ui --> stores
+    graph-ui --> web-lib
+
+    projects-ui --> stores
+    projects-ui --> hooks
+    projects-ui --> web-lib
+
+    pages --> chat-ui
+    pages --> graph-ui
+    pages --> projects-ui
+    pages --> stores
+    pages --> hooks
 ```

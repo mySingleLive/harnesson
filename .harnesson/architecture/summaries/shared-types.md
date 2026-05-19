@@ -1,27 +1,41 @@
-# Module: Shared Types
+# Module: shared-types
 
-> Source files: packages/shared/src/types/agent.ts, packages/shared/src/types/project.ts, packages/shared/src/types/graph.ts, packages/shared/src/types/spec-node.ts, packages/shared/src/types/task.ts, packages/shared/src/index.ts
-> Last synced: 2026-05-19T12:00:00Z | Commit: 20df4fe
+> Source files: packages/shared/src/**/*.ts
+> Last synced: 2026-05-19T00:00:00Z | Commit: 1d90ec4
 
 ## Summary
 
-Shared TypeScript type definitions used across server and web apps. Defines interfaces for agent operations (sessions, messages, events, slash commands), project data, graph/spec structures, and task management.
+Shared TypeScript type definitions used across server and web workspaces. Defines the data contracts for the entire application: agent types, graph/specs structures, project entities, spec nodes, and task models.
 
 ## Key Files
 
-### agent.ts
-Core agent types: AgentStreamEvent, AgentInfo, CreateAgentRequest/Response, SendMessageRequest, SlashCommand, QuestionData, ContentBlock, ImageAttachment, TodoItem.
+### types/agent.ts
+Core agent types: AgentType, AgentStatus, Agent, AgentStreamEvent, TodoItem, ImageAttachment, ContentBlock, AgentMessage, request/response types, slash command types, question/answer types, and persisted data models.
 
-### graph.ts
-Graph data types: Manifest, GraphData, SpecsListItem, SpecsData, ArchitectData, GraphFullData, HistoryEntry.
+### types/graph.ts
+Graph types: GraphTab, SyncStatus, StorageLocation, SyncType, Manifest, GraphNode, GraphEdge, GraphData, SpecsListItem, SpecsData, ArchitectData, SyncOptions, GraphFullData, HistoryEntry.
 
-### project.ts
-Project data types for the project model.
+### types/project.ts
+Project entity type with id, name, path, description, source, agent count, and timestamps.
+
+### types/spec-node.ts
+Spec node type with hierarchy support (parentId, level, order) and business/tech classification.
+
+### types/task.ts
+Task tracking types: TaskStatus, TaskPriority, Task entity with spec linkage, agent assignment, branch, labels, time tracking, and lifecycle timestamps.
+
+### index.ts
+Barrel re-export of all type modules.
 
 ## Exports
 
-- All type interfaces from types/*.ts
+- Agent, AgentStatus, AgentType, AgentStreamEvent, AgentMessage, ContentBlock (types)
+- TodoItem, ImageAttachment, SlashCommand, QuestionData, PendingQuestion (types)
+- GraphTab, SyncStatus, Manifest, GraphNode, GraphEdge, GraphData, SpecsData, ArchitectData (types)
+- Project (type)
+- SpecNode, SpecNodeType (types)
+- Task, TaskStatus, TaskPriority (types)
 
 ## Dependencies
 
-- (none, leaf module)
+None (pure type definitions).
