@@ -14,6 +14,7 @@ export interface SpecTreeNode {
   summary: string;
   goals: string[];
   acceptanceCriteria: AcceptanceCriterion[];
-  status: string;
+  status: 'draft' | 'review' | 'done';
+  /** Structured design data — shape TBD */
   design: unknown;
 }
