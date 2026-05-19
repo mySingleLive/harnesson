@@ -1,0 +1,43 @@
+{
+  "id": "ask-user-question-panel",
+  "name": "用户提问面板",
+  "level": 4,
+  "parent": "chat-interface",
+  "children": [],
+  "isLeaf": true,
+  "summary": "AskUserQuestion 交互面板，渲染问题和选项，收集用户回答。",
+  "goals": [
+    "渲染 Agent 提问",
+    "收集用户回答"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 提问",
+      "when": "用户选择并提交",
+      "then": "答案发送到 Agent 恢复处理"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "渲染 QuestionData: question, header, options(含 label/description/preview), multiSelect。用户选择后提交答案到 /api/agents/:id/tool-result。",
+    "parameters": [
+      "支持单选和多选",
+      "选项可含 preview 预览"
+    ]
+  },
+  "constraints": [
+    "仅 Agent 等待输入时显示",
+    "多选答案用逗号拼接"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.037Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/AskUserQuestionPanel.tsx"
+    ]
+  }
+}

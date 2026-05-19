@@ -1,0 +1,41 @@
+{
+  "id": "new-session-page",
+  "name": "新会话首页",
+  "level": 3,
+  "parent": "ai-agent",
+  "children": [],
+  "isLeaf": true,
+  "summary": "AI 新会话首页（路由 /）。",
+  "goals": [
+    "提供快速创建会话入口"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "首次访问",
+      "when": "加载首页",
+      "then": "显示快速操作卡片"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "路由 / 的页面组件。展示 ActionCard 快速操作入口和项目列表。有活跃 Agent 时显示面板。",
+    "parameters": [
+      "路由: /",
+      "包含 ActionCard"
+    ]
+  },
+  "constraints": [
+    "有活跃 Agent 面板时不显示快捷操作"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.030Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/pages/NewSessionPage.tsx"
+    ]
+  }
+}

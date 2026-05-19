@@ -1,0 +1,41 @@
+{
+  "id": "model-dropdown",
+  "name": "模型选择器",
+  "level": 4,
+  "parent": "agent-panel",
+  "children": [],
+  "isLeaf": true,
+  "summary": "AI 模型下拉选择器，列出可用模型并切换。",
+  "goals": [
+    "选择和切换 AI 模型"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "打开模型菜单",
+      "when": "选择模型",
+      "then": "会话切换模型"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "下拉菜单列出可用模型（含 displayName 和 description）。选择后调用 /api/agents/:id/command 执行 /model 命令切换。",
+    "parameters": [
+      "列出模型: value, displayName, description"
+    ]
+  },
+  "constraints": [
+    "切换模型立即生效",
+    "切换时 Agent 须空闲"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.038Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/layout/ModelDropdown.tsx"
+    ]
+  }
+}

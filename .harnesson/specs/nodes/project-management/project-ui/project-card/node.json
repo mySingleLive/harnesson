@@ -1,0 +1,40 @@
+{
+  "id": "project-card",
+  "name": "项目卡片",
+  "level": 4,
+  "parent": "project-ui",
+  "children": [],
+  "isLeaf": true,
+  "summary": "卡片视图中的项目展示卡片。",
+  "goals": [
+    "卡片展示项目"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "项目列表",
+      "when": "卡片视图",
+      "then": "每个项目显示为卡片"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "ProjectCard 组件。展示名称、路径、来源类型。",
+    "parameters": [
+      "展示: name, path, source"
+    ]
+  },
+  "constraints": [
+    "卡片可点击进入项目"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.041Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/projects/ProjectCard.tsx"
+    ]
+  }
+}

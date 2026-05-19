@@ -1,0 +1,40 @@
+{
+  "id": "not-found-page",
+  "name": "404 页面",
+  "level": 3,
+  "parent": "app-infrastructure",
+  "children": [],
+  "isLeaf": true,
+  "summary": "路由未匹配的回退页面。",
+  "goals": [
+    "404 回退"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "访问未定义路由",
+      "when": "页面加载",
+      "then": "显示 404 提示"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "NotFoundPage 组件。路由 * 的回退。显示友好的 404 提示。",
+    "parameters": [
+      "路由: *"
+    ]
+  },
+  "constraints": [
+    "必须放在路由最后"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.035Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/pages/NotFoundPage.tsx"
+    ]
+  }
+}

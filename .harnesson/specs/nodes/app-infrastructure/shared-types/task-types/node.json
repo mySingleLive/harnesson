@@ -1,0 +1,40 @@
+{
+  "id": "task-types",
+  "name": "任务类型",
+  "level": 4,
+  "parent": "shared-types",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Task 共享类型定义。",
+  "goals": [
+    "任务类型"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "前后端代码",
+      "when": "使用 Task 类型",
+      "then": "任务结构一致"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "类型: Task(id, content, status, activeForm), TaskStatus(pending|in_progress|completed)。",
+    "parameters": [
+      "TaskStatus: 3 状态"
+    ]
+  },
+  "constraints": [
+    "status 仅 3 种"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.044Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "packages/shared/src/types/task.ts"
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "id": "sidebar",
+  "name": "侧边栏",
+  "level": 3,
+  "parent": "app-infrastructure",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Agent 和项目列表侧边栏。",
+  "goals": [
+    "展示会话和项目"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "有会话",
+      "when": "点击",
+      "then": "切换活跃会话"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "Sidebar 组件。Agent 会话列表（含 AgentStatusDot）+ 项目列表。点击切换活跃会话。",
+    "parameters": [
+      "Agent 列表 + 项目列表"
+    ]
+  },
+  "constraints": [
+    "无 Agent 时显示空状态"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.034Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/layout/Sidebar.tsx"
+    ]
+  }
+}

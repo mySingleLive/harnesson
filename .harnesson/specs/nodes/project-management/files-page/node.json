@@ -1,0 +1,40 @@
+{
+  "id": "files-page",
+  "name": "文件页面",
+  "level": 3,
+  "parent": "project-management",
+  "children": [],
+  "isLeaf": true,
+  "summary": "文件浏览页面（/files）。",
+  "goals": [
+    "浏览项目文件"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "导航到 /files",
+      "when": "页面加载",
+      "then": "显示文件树"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "路由 /files 页面。展示项目文件树。",
+    "parameters": [
+      "路由: /files"
+    ]
+  },
+  "constraints": [
+    "需要活跃项目"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.032Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/pages/FilesPage.tsx"
+    ]
+  }
+}

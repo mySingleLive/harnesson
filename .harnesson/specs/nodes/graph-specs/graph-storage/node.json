@@ -1,0 +1,41 @@
+{
+  "id": "graph-storage",
+  "name": "图谱存储引擎",
+  "level": 3,
+  "parent": "graph-specs",
+  "children": [],
+  "isLeaf": true,
+  "summary": "图谱数据文件系统持久化层。",
+  "goals": [
+    "存储图谱数据"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "同步完成",
+      "when": "写入",
+      "then": "manifest+specs+architect 持久化"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "graph-storage.ts。管理 manifest.json, specs/, architect/ 目录的读写、归档(至 specs-history/, architect-history/)和历史查询。",
+    "parameters": [
+      "存储位置: project/.harnesson/ 或 ~/.harnesson/<name>/"
+    ]
+  },
+  "constraints": [
+    "同步前自动归档当前数据",
+    "存储位置可选 project 或 user"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.034Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/lib/graph-storage.ts"
+    ]
+  }
+}

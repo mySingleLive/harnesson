@@ -1,0 +1,41 @@
+{
+  "id": "main-layout",
+  "name": "主布局",
+  "level": 3,
+  "parent": "app-infrastructure",
+  "children": [],
+  "isLeaf": true,
+  "summary": "应用主布局框架，编排全局 UI 结构。",
+  "goals": [
+    "全局布局"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "应用启动",
+      "when": "任意页面加载",
+      "then": "显示完整布局"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "MainLayout 组件。flex 布局: Topbar + (Sidebar + 可选 AgentPanel + ResizableDivider + Outlet)。管理面板宽度和折叠。",
+    "parameters": [
+      "布局: flex h-screen",
+      "主内容最小宽度: 300px"
+    ]
+  },
+  "constraints": [
+    "面板最大化时隐藏主内容"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.034Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/layout/MainLayout.tsx"
+    ]
+  }
+}

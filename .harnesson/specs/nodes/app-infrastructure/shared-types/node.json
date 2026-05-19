@@ -1,0 +1,37 @@
+{
+  "id": "shared-types",
+  "name": "共享类型",
+  "level": 3,
+  "parent": "app-infrastructure",
+  "children": [
+    "agent-types",
+    "project-types",
+    "graph-types",
+    "spec-node-types",
+    "task-types"
+  ],
+  "isLeaf": false,
+  "summary": "跨前后端共享 TypeScript 类型。",
+  "goals": [
+    "定义统一业务类型"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "前后端代码",
+      "when": "引用共享类型",
+      "then": "类型兼容"
+    }
+  ],
+  "testCases": {},
+  "status": "draft",
+  "design": null,
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.035Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "packages/shared/src/types/"
+    ]
+  }
+}

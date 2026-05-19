@@ -1,0 +1,24 @@
+{
+  "lastSyncCommit": "73edcc07fa6dea8e397d10422422bb17a9591966",
+  "branch": "feature/specs-page",
+  "stages": {
+    "scan": {
+      "completedAt": "2026-05-19T21:00:00Z",
+      "changedFiles": 204
+    },
+    "architecture": {
+      "completedAt": "2026-05-19T21:10:00Z",
+      "affectedModules": ["server-generated", "server-lib", "server-routes", "shared-types", "web-chat", "web-graph", "web-layout", "web-projects", "web-hooks", "web-lib", "web-pages", "web-stores"]
+    },
+    "concepts": {
+      "completedAt": "2026-05-19T21:20:00Z",
+      "affectedConcepts": ["CONC-001 to CONC-136"]
+    },
+    "specTree": {
+      "completedAt": "2026-05-19T21:40:00Z",
+      "nodesCreated": 91,
+      "nodesUpdated": 0,
+      "nodesDeleted": 0
+    }
+  }
+}

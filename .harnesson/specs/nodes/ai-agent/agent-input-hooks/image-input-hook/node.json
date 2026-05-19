@@ -1,0 +1,41 @@
+{
+  "id": "image-input-hook",
+  "name": "图片输入 Hook",
+  "level": 4,
+  "parent": "agent-input-hooks",
+  "children": [],
+  "isLeaf": true,
+  "summary": "处理粘贴和拖拽图片上传。",
+  "goals": [
+    "图片粘贴和拖拽上传"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "复制图片",
+      "when": "粘贴到输入框",
+      "then": "生成 ImageAttachment"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "useImageInput hook。监听 paste 和 drop 事件，提取图片文件并生成 ImageAttachment。",
+    "parameters": [
+      "支持: 粘贴(Ctrl+V), 拖拽"
+    ]
+  },
+  "constraints": [
+    "仅支持图片格式",
+    "文件大小限制由浏览器处理"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.038Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/hooks/useImageInput.ts"
+    ]
+  }
+}

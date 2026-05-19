@@ -1,0 +1,41 @@
+{
+  "id": "slash-command-store",
+  "name": "命令状态 Store",
+  "level": 4,
+  "parent": "slash-commands",
+  "children": [],
+  "isLeaf": true,
+  "summary": "斜杠命令缓存状态管理。",
+  "goals": [
+    "缓存命令列表"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "需要命令列表",
+      "when": "fetchCommands",
+      "then": "从 API 加载并缓存"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "useSlashCommandStore (Zustand)。管理 commands 数组和 fetchCommands 方法。",
+    "parameters": [
+      "commands: SlashCommand[]"
+    ]
+  },
+  "constraints": [
+    "按需从服务端获取",
+    "命令列表可缓存"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.039Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/stores/slashCommandStore.ts"
+    ]
+  }
+}

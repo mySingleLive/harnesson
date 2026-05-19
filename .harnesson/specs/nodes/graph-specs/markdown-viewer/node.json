@@ -1,0 +1,40 @@
+{
+  "id": "markdown-viewer",
+  "name": "Markdown 渲染",
+  "level": 3,
+  "parent": "graph-specs",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Markdown 内容渲染组件。",
+  "goals": [
+    "渲染 Markdown"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "Markdown 内容",
+      "when": "渲染",
+      "then": "显示格式化文档"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "MarkdownViewer 组件。将 Markdown 文本渲染为 HTML。用于设计文档和规格文档展示。",
+    "parameters": [
+      "Markdown → HTML"
+    ]
+  },
+  "constraints": [
+    "仅支持标准 Markdown 语法"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.033Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/graph/MarkdownViewer.tsx"
+    ]
+  }
+}

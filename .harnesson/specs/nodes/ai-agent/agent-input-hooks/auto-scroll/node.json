@@ -1,0 +1,42 @@
+{
+  "id": "auto-scroll",
+  "name": "自动滚动",
+  "level": 4,
+  "parent": "agent-input-hooks",
+  "children": [],
+  "isLeaf": true,
+  "summary": "消息更新时自动滚动到底部。",
+  "goals": [
+    "自动滚动到最新消息"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "新消息到达",
+      "when": "用户在底部",
+      "then": "自动滚动到底部"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "useAutoScroll hook。消息列表更新时自动滚动到底部，检测用户手动上滚时暂停。",
+    "parameters": [
+      "自动滚到底部",
+      "手动上滚暂停"
+    ]
+  },
+  "constraints": [
+    "用户上滚查看历史时不自动滚动",
+    "新消息到达时恢复自动滚动"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.039Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/hooks/useAutoScroll.ts"
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "id": "cancel-graph-sync",
+  "name": "取消同步",
+  "level": 4,
+  "parent": "graph-data",
+  "children": [],
+  "isLeaf": true,
+  "summary": "POST /api/graph/sync/cancel — 取消正在进行的同步。",
+  "goals": [
+    "取消同步"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "同步进行中",
+      "when": "取消",
+      "then": "同步进程被终止"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "API: POST /api/graph/sync/cancel。body: projectPath。SIGTERM 终止子进程。",
+    "parameters": [
+      "HTTP: POST /api/graph/sync/cancel"
+    ]
+  },
+  "constraints": [
+    "无活跃同步时返回 cancelled:false"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.043Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/graph.ts"
+    ]
+  }
+}

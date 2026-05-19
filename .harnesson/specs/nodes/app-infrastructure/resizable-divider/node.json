@@ -1,0 +1,41 @@
+{
+  "id": "resizable-divider",
+  "name": "可拖动分隔条",
+  "level": 3,
+  "parent": "app-infrastructure",
+  "children": [],
+  "isLeaf": true,
+  "summary": "可拖动面板分隔条。",
+  "goals": [
+    "调整面板宽度"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "面板显示",
+      "when": "拖拽分隔条",
+      "then": "调整面板宽度"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "ResizableDivider 组件。支持鼠标拖拽调整宽度(minWidth: 320px)和折叠/展开。",
+    "parameters": [
+      "最小宽度: 320px",
+      "支持: 拖拽, 折叠, 展开"
+    ]
+  },
+  "constraints": [
+    "折叠时仅显示展开条"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.034Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/layout/ResizableDivider.tsx"
+    ]
+  }
+}

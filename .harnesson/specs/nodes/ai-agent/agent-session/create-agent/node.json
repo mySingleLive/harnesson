@@ -1,0 +1,43 @@
+{
+  "id": "create-agent",
+  "name": "创建 Agent",
+  "level": 4,
+  "parent": "agent-session",
+  "children": [],
+  "isLeaf": true,
+  "summary": "POST /api/agents — 创建新 Agent 会话，关联项目和配置。",
+  "goals": [
+    "创建 AI Agent 会话"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "用户选择项目",
+      "when": "提交创建",
+      "then": "返回 201 含 Agent 信息"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "API: POST /api/agents。必填：cwd(绝对路径), type。可选：model, permissionMode(auto|manual), systemPrompt, maxTurns, prompt。返回 201。",
+    "parameters": [
+      "cwd 必须是绝对路径",
+      "type 为必填字段",
+      "自动关联路径对应的项目"
+    ]
+  },
+  "constraints": [
+    "cwd 不合法时返回 400",
+    "路径不存在对应项目时返回 500"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.036Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/agents.ts"
+    ]
+  }
+}

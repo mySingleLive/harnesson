@@ -1,0 +1,40 @@
+{
+  "id": "spec-node-types",
+  "name": "规格节点类型",
+  "level": 4,
+  "parent": "shared-types",
+  "children": [],
+  "isLeaf": true,
+  "summary": "SpecNode 共享类型定义。",
+  "goals": [
+    "规格节点类型"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "规格树节点",
+      "when": "使用 SpecNode",
+      "then": "确保结构一致"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "类型: SpecNode(id, name, level, parent, children, isLeaf, summary, goals, design, acceptanceCriteria, specDetail, constraints, status, syncMeta)。",
+    "parameters": [
+      "NodeStatus: draft|backlog|todo|in-progress|review|testing|dev-done|released"
+    ]
+  },
+  "constraints": [
+    "status 枚举严格限定"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.044Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "packages/shared/src/types/spec-node.ts"
+    ]
+  }
+}

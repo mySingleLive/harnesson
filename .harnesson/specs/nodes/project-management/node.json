@@ -1,0 +1,45 @@
+{
+  "id": "project-management",
+  "name": "项目管理",
+  "level": 2,
+  "parent": "project",
+  "children": [
+    "project-crud",
+    "project-ui",
+    "git-branches",
+    "project-model",
+    "project-store",
+    "projects-page",
+    "git-page",
+    "files-page",
+    "tasks-page"
+  ],
+  "isLeaf": false,
+  "summary": "项目全生命周期管理，包括创建（本地/克隆）、列表展示、详情查看、删除和 Git 分支操作。",
+  "goals": [
+    "支持本地创建和 Git 克隆两种项目创建方式",
+    "提供卡片和列表两种项目浏览视图",
+    "支持 Git 分支查看和切换"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户在项目管理页",
+      "when": "点击创建项目",
+      "then": "显示创建弹窗"
+    }
+  ],
+  "testCases": {},
+  "status": "draft",
+  "design": null,
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.028Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/projects/",
+      "apps/server/src/routes/projects.ts",
+      "apps/server/src/routes/branches.ts"
+    ]
+  }
+}

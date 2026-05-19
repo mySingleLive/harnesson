@@ -1,0 +1,47 @@
+{
+  "id": "ai-agent",
+  "name": "AI Agent 对话系统",
+  "level": 2,
+  "parent": "project",
+  "children": [
+    "agent-session",
+    "agent-messaging",
+    "chat-interface",
+    "agent-panel",
+    "agent-input-hooks",
+    "agent-todos",
+    "slash-commands",
+    "agent-store",
+    "new-session-page",
+    "agent-model-selection",
+    "agent-service"
+  ],
+  "isLeaf": false,
+  "summary": "AI 驱动的编码助手系统，提供 Agent 会话管理、实时对话交互、流式消息推送、工具调用卡片渲染和斜杠命令。",
+  "goals": [
+    "支持创建、管理多个 AI Agent 会话",
+    "实现实时流式消息收发和 SSE 推送",
+    "渲染 Claude Code 各种工具调用的可视化结果"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户打开应用",
+      "when": "点击新建会话",
+      "then": "创建新 Agent 会话并显示在侧边栏"
+    }
+  ],
+  "testCases": {},
+  "status": "draft",
+  "design": null,
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.028Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/",
+      "apps/server/src/lib/agent-service.ts",
+      "apps/server/src/routes/agents.ts"
+    ]
+  }
+}

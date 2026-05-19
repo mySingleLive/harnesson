@@ -1,0 +1,41 @@
+{
+  "id": "list-branches",
+  "name": "列出分支",
+  "level": 4,
+  "parent": "git-branches",
+  "children": [],
+  "isLeaf": true,
+  "summary": "GET /api/projects/:id/branches — 列出 Git 分支。",
+  "goals": [
+    "列出分支"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "项目是 Git 仓库",
+      "when": "请求分支",
+      "then": "返回分支列表"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "API: GET /api/projects/:id/branches。返回: local[], remote[], current, isGitRepo。",
+    "parameters": [
+      "返回: local, remote, current, isGitRepo"
+    ]
+  },
+  "constraints": [
+    "非 Git 仓库时 isGitRepo=false",
+    "Git 命令超时 10 秒"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.042Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/branches.ts"
+    ]
+  }
+}

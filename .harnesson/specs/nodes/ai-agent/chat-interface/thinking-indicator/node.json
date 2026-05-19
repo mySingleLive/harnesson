@@ -1,0 +1,42 @@
+{
+  "id": "thinking-indicator",
+  "name": "思考指示器",
+  "level": 4,
+  "parent": "chat-interface",
+  "children": [],
+  "isLeaf": true,
+  "summary": "AI 思考时的动画和进度条指示器。",
+  "goals": [
+    "提供 AI 思考视觉反馈"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 收到消息",
+      "when": "开始思考",
+      "then": "显示脉冲动画"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "两种形式：ThinkingBar(进度条) 和 ThinkingIndicator(脉冲动画)。触发: agent.thinking，结束: agent.done/text。",
+    "parameters": [
+      "触发: agent.thinking",
+      "结束: agent.done, agent.text"
+    ]
+  },
+  "constraints": [
+    "仅在 Agent running 时显示",
+    "收到首个 agent.text 后隐藏"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.037Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/ThinkingIndicator.tsx"
+    ]
+  }
+}

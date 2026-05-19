@@ -1,0 +1,41 @@
+{
+  "id": "get-graph-status",
+  "name": "图谱状态",
+  "level": 4,
+  "parent": "graph-data",
+  "children": [],
+  "isLeaf": true,
+  "summary": "GET /api/graph/status — 检查图谱数据存在和同步状态。",
+  "goals": [
+    "检查图谱状态"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "项目有图谱",
+      "when": "检查状态",
+      "then": "返回 hasData 和 needsSync"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "API: GET /api/graph/status?projectPath=xxx。返回: hasData, lastSyncCommit, lastSyncTime, syncStatus, needsSync。",
+    "parameters": [
+      "需要 projectPath 参数",
+      "返回 needsSync 标识"
+    ]
+  },
+  "constraints": [
+    "projectPath 必须绝对路径"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.042Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/graph.ts"
+    ]
+  }
+}

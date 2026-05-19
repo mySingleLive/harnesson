@@ -1,0 +1,40 @@
+{
+  "id": "projects-page",
+  "name": "项目管理页",
+  "level": 3,
+  "parent": "project-management",
+  "children": [],
+  "isLeaf": true,
+  "summary": "项目管理路由页面（/projects）。",
+  "goals": [
+    "项目管理入口"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "导航到 /projects",
+      "when": "页面加载",
+      "then": "显示项目列表"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "路由 /projects 页面。渲染 ProjectList 容器组件。",
+    "parameters": [
+      "路由: /projects"
+    ]
+  },
+  "constraints": [
+    "需先加载项目列表"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.032Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/pages/ProjectsPage.tsx"
+    ]
+  }
+}

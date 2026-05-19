@@ -1,0 +1,45 @@
+{
+  "id": "rich-text-input",
+  "name": "富文本输入",
+  "level": 4,
+  "parent": "chat-interface",
+  "children": [],
+  "isLeaf": true,
+  "summary": "基于 contenteditable 的富文本输入框，支持文本、图片、斜杠命令。",
+  "goals": [
+    "文本和图片输入",
+    "斜杠命令触发"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "输入框可见",
+      "when": "输入文本按 Enter",
+      "then": "消息发送到 Agent"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "contenteditable div 输入。Enter 发送，Shift+Enter 换行。/ 触发 SlashCommandPopup。集成 useSlashCompletion、useImageInput、useEmacsKeybindings。",
+    "parameters": [
+      "Enter 发送",
+      "Shift+Enter 换行",
+      "/ 触发命令补全",
+      "支持粘贴和拖拽图片"
+    ]
+  },
+  "constraints": [
+    "空消息不发送",
+    "输入法组合输入时不触发命令补全"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.036Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/RichTextInput.tsx"
+    ]
+  }
+}

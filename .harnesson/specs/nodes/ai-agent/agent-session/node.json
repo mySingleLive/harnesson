@@ -1,0 +1,34 @@
+{
+  "id": "agent-session",
+  "name": "Agent 会话管理",
+  "level": 3,
+  "parent": "ai-agent",
+  "children": [
+    "create-agent",
+    "destroy-agent"
+  ],
+  "isLeaf": false,
+  "summary": "Agent 会话的全生命周期管理，包括创建、查询、销毁和数据恢复。",
+  "goals": [
+    "创建和销毁 Agent 会话"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户选择项目",
+      "when": "创建新 Agent",
+      "then": "会话创建成功"
+    }
+  ],
+  "testCases": {},
+  "status": "draft",
+  "design": null,
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.029Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/agents.ts"
+    ]
+  }
+}

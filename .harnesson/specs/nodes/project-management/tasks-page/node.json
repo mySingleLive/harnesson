@@ -1,0 +1,40 @@
+{
+  "id": "tasks-page",
+  "name": "任务页面",
+  "level": 3,
+  "parent": "project-management",
+  "children": [],
+  "isLeaf": true,
+  "summary": "任务管理页面（/tasks）。",
+  "goals": [
+    "查看任务"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "AI 创建了任务",
+      "when": "访问 /tasks",
+      "then": "显示任务列表"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "路由 /tasks 页面。展示当前项目 TodoItem 列表。",
+    "parameters": [
+      "路由: /tasks"
+    ]
+  },
+  "constraints": [
+    "需要活跃项目"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.032Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/pages/TasksPage.tsx"
+    ]
+  }
+}

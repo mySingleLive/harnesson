@@ -1,0 +1,42 @@
+{
+  "id": "project-model",
+  "name": "项目数据模型",
+  "level": 3,
+  "parent": "project-management",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Project 数据实体定义。",
+  "goals": [
+    "项目数据结构"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "数据表已创建",
+      "when": "创建项目",
+      "then": "持久化到 SQLite"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "Project: id(UUID), name, path(UNIQUE), description?, source(local|clone|create), createdAt, updatedAt。Prisma ORM → SQLite。",
+    "parameters": [
+      "字段: id, name, path, description, source, createdAt, updatedAt",
+      "path 唯一约束"
+    ]
+  },
+  "constraints": [
+    "name 和 path 必填",
+    "source 仅 local|clone|create"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.031Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "packages/shared/src/types/project.ts"
+    ]
+  }
+}

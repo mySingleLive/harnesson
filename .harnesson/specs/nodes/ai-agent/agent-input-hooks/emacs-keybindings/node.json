@@ -1,0 +1,43 @@
+{
+  "id": "emacs-keybindings",
+  "name": "Emacs 快捷键",
+  "level": 4,
+  "parent": "agent-input-hooks",
+  "children": [],
+  "isLeaf": true,
+  "summary": "文本输入框的 Emacs 风格编辑快捷键。",
+  "goals": [
+    "Emacs 快捷键支持"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "输入框有文本",
+      "when": "按 Ctrl+A",
+      "then": "光标移到行首"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "useEmacsKeybindings hook。支持 Ctrl+A/E/N/P/F/B/D/K 等基本 Emacs 编辑操作。",
+    "parameters": [
+      "Ctrl+A: 行首",
+      "Ctrl+E: 行尾",
+      "Ctrl+K: 删除到行尾",
+      "Ctrl+D: 删除后一个字符"
+    ]
+  },
+  "constraints": [
+    "仅在 contenteditable 输入框中生效"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.039Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/hooks/useEmacsKeybindings.ts"
+    ]
+  }
+}

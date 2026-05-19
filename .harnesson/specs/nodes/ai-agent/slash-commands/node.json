@@ -1,0 +1,34 @@
+{
+  "id": "slash-commands",
+  "name": "斜杠命令",
+  "level": 3,
+  "parent": "ai-agent",
+  "children": [
+    "list-slash-commands",
+    "slash-command-store"
+  ],
+  "isLeaf": false,
+  "summary": "斜杠命令发现和自动补全系统。",
+  "goals": [
+    "发现可用命令和 Skills"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "项目有 Skills",
+      "when": "请求命令",
+      "then": "返回可用命令列表"
+    }
+  ],
+  "testCases": {},
+  "status": "draft",
+  "design": null,
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.030Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/lib/slash-commands.ts"
+    ]
+  }
+}

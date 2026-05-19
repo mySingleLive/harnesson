@@ -1,0 +1,41 @@
+{
+  "id": "health-check",
+  "name": "健康检查",
+  "level": 3,
+  "parent": "app-infrastructure",
+  "children": [],
+  "isLeaf": true,
+  "summary": "GET /api/health — 服务端健康检查。",
+  "goals": [
+    "后端可用性检测"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "服务运行",
+      "when": "GET /api/health",
+      "then": "返回 200"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "API: GET /api/health。前端 health check，超时 2 秒。",
+    "parameters": [
+      "HTTP: GET /api/health",
+      "超时: 2s"
+    ]
+  },
+  "constraints": [
+    "超时或失败返回 false"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.035Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/health.ts"
+    ]
+  }
+}

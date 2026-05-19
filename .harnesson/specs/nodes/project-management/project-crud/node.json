@@ -1,0 +1,35 @@
+{
+  "id": "project-crud",
+  "name": "项目 CRUD",
+  "level": 3,
+  "parent": "project-management",
+  "children": [
+    "list-projects",
+    "create-project",
+    "delete-project"
+  ],
+  "isLeaf": false,
+  "summary": "项目创建、查询和删除。",
+  "goals": [
+    "创建和删除项目"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "进入项目页",
+      "when": "加载",
+      "then": "显示项目列表"
+    }
+  ],
+  "testCases": {},
+  "status": "draft",
+  "design": null,
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.031Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/projects.ts"
+    ]
+  }
+}

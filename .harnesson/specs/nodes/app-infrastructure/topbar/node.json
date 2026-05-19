@@ -1,0 +1,41 @@
+{
+  "id": "topbar",
+  "name": "顶栏",
+  "level": 3,
+  "parent": "app-infrastructure",
+  "children": [],
+  "isLeaf": true,
+  "summary": "应用顶栏，显示运行状态和快捷操作。",
+  "goals": [
+    "顶栏快捷操作"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "应用显示",
+      "when": "渲染顶栏",
+      "then": "显示操作按钮和状态"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "Topbar 组件。显示运行中 Agent 数量、新建项目按钮、打开文件夹按钮。",
+    "parameters": [
+      "显示: runningCount",
+      "按钮: 新建项目, 打开文件夹"
+    ]
+  },
+  "constraints": [
+    "无运行 Agent 时不显示数量"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.034Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/layout/Topbar.tsx"
+    ]
+  }
+}

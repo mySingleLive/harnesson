@@ -1,0 +1,43 @@
+{
+  "id": "send-message",
+  "name": "发送消息",
+  "level": 4,
+  "parent": "agent-messaging",
+  "children": [],
+  "isLeaf": true,
+  "summary": "POST /api/agents/:id/message — 向 Agent 发送消息并触发 AI 处理。",
+  "goals": [
+    "发送用户消息到 Agent"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 空闲",
+      "when": "发送消息",
+      "then": "返回 202，SSE 推送回复"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "API: POST /api/agents/:id/message。请求体：message, model?, contentBlocks?, images?。异步处理，返回 202。",
+    "parameters": [
+      "HTTP: POST /api/agents/:id/message",
+      "成功: 202 accepted",
+      "冲突: 409 already processing"
+    ]
+  },
+  "constraints": [
+    "Agent 正处理时返回 409",
+    "message 为空且无 contentBlocks 返回 400"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.036Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/agents.ts"
+    ]
+  }
+}

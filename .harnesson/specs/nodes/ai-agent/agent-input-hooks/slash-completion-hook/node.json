@@ -1,0 +1,43 @@
+{
+  "id": "slash-completion-hook",
+  "name": "命令补全 Hook",
+  "level": 4,
+  "parent": "agent-input-hooks",
+  "children": [],
+  "isLeaf": true,
+  "summary": "斜杠命令自动补全逻辑，监控输入触发补全。",
+  "goals": [
+    "斜杠命令补全"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "输入 /",
+      "when": "匹配命令",
+      "then": "弹出并支持键盘选择"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "useSlashCompletion hook。监听输入框中 / 字符，解析当前斜杠片段，过滤匹配命令，处理键盘导航和选择。",
+    "parameters": [
+      "监听 / 触发",
+      "filterCommands 过滤",
+      "ArrowUp/Down/Enter/Tab/Escape 键盘操作"
+    ]
+  },
+  "constraints": [
+    "输入法组合输入时跳过",
+    "/ 后跟随空格时不触发"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.038Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/hooks/useSlashCompletion.ts"
+    ]
+  }
+}

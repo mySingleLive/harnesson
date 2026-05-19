@@ -1,0 +1,37 @@
+{
+  "id": "chat-interface",
+  "name": "对话界面",
+  "level": 3,
+  "parent": "ai-agent",
+  "children": [
+    "rich-text-input",
+    "thinking-indicator",
+    "ask-user-question-panel",
+    "tool-cards",
+    "slash-command-popup"
+  ],
+  "isLeaf": false,
+  "summary": "AI 对话前端界面组件，富文本输入、消息渲染、工具卡片和思考指示。",
+  "goals": [
+    "提供富文本输入和工具卡片展示"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "对话面板打开",
+      "when": "输入文本发送",
+      "then": "消息出现在对话流中"
+    }
+  ],
+  "testCases": {},
+  "status": "draft",
+  "design": null,
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.029Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/"
+    ]
+  }
+}

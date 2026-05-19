@@ -1,0 +1,33 @@
+{
+  "id": "agent-todos",
+  "name": "任务管理",
+  "level": 3,
+  "parent": "ai-agent",
+  "children": [
+    "todo-item-model"
+  ],
+  "isLeaf": false,
+  "summary": "Agent 待办任务管理。",
+  "goals": [
+    "展示 AI 任务列表和进度"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "AI 调用 TodoWrite",
+      "when": "更新任务",
+      "then": "前端实时更新"
+    }
+  ],
+  "testCases": {},
+  "status": "draft",
+  "design": null,
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.030Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/TodoBar.tsx"
+    ]
+  }
+}

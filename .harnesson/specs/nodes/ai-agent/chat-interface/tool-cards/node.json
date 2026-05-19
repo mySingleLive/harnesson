@@ -1,0 +1,43 @@
+{
+  "id": "tool-cards",
+  "name": "工具卡片",
+  "level": 4,
+  "parent": "chat-interface",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Claude Code 工具调用结果的可视化卡片组件集合。",
+  "goals": [
+    "展示工具调用结果"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "AI 调用工具",
+      "when": "返回结果",
+      "then": "渲染对应工具卡片"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "工具卡片注册表 (index.ts): toolName → CardComponent 映射。ToolEventCard 根据 tool name 路由到对应卡片。支持: Bash, Read, Write, Edit, Glob, Grep, LSP, Todo, AskUserQuestion, Generic, StreamingAgent。",
+    "parameters": [
+      "15+ 工具卡片组件",
+      "CollapsibleCard 提供折叠功能",
+      "CodeLine 提供语法高亮"
+    ]
+  },
+  "constraints": [
+    "未知工具回退到 GenericCard",
+    "事件配对和分段由 buildEventTree/pairEvents/segmentEvents 处理"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.037Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/chat/tool-cards/"
+    ]
+  }
+}

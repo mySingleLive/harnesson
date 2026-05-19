@@ -1,0 +1,40 @@
+{
+  "id": "graph-types",
+  "name": "图谱类型",
+  "level": 4,
+  "parent": "shared-types",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Graph 共享类型定义。",
+  "goals": [
+    "图谱类型"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "前后端代码",
+      "when": "使用 Graph 类型",
+      "then": "数据结构一致"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "类型: Manifest, GraphData, SpecsData, ArchitectData, GraphFullData, HistoryEntry, SyncOptions, SpecsListItem, GraphTab, SyncStatus。",
+    "parameters": [
+      "10+ 图谱相关类型"
+    ]
+  },
+  "constraints": [
+    "SyncStatus: idle|syncing|completed|error"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.044Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "packages/shared/src/types/graph.ts"
+    ]
+  }
+}

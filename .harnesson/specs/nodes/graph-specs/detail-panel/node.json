@@ -1,0 +1,40 @@
+{
+  "id": "detail-panel",
+  "name": "详情面板",
+  "level": 3,
+  "parent": "graph-specs",
+  "children": [],
+  "isLeaf": true,
+  "summary": "节点详情侧边面板。",
+  "goals": [
+    "展示节点详情"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "点击图谱节点",
+      "when": "选中",
+      "then": "侧边面板展示详情"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "DetailPanel 组件。展示选中节点的 name, summary, goals, acceptanceCriteria, specDetail, constraints。",
+    "parameters": [
+      "展示: name, summary, goals, acceptanceCriteria, specDetail, constraints"
+    ]
+  },
+  "constraints": [
+    "无选中节点时不显示"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.033Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/graph/DetailPanel.tsx"
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "id": "agent-adapter-interface",
+  "name": "适配器接口",
+  "level": 4,
+  "parent": "agent-service",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Agent 适配器抽象接口，定义可插拔 AI 后端契约。",
+  "goals": [
+    "定义适配器标准接口"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "新 AI 后端",
+      "when": "实现 AgentAdapter",
+      "then": "可无缝替换"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "AgentAdapter 接口: createSession, sendMessage, abort, destroySession, restoreSession, getSupportedModels, updateSessionModel, getSessionData。",
+    "parameters": [
+      "标准方法: createSession, sendMessage, abort, destroySession"
+    ]
+  },
+  "constraints": [
+    "所有适配器必须实现完整接口",
+    "支持不同 AI 后端可插拔"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.040Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/lib/agent-adapter.ts"
+    ]
+  }
+}

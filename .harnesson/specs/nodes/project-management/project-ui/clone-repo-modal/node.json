@@ -1,0 +1,41 @@
+{
+  "id": "clone-repo-modal",
+  "name": "克隆仓库弹窗",
+  "level": 4,
+  "parent": "project-ui",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Git 仓库克隆表单弹窗。",
+  "goals": [
+    "克隆 Git 仓库"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "选择克隆",
+      "when": "填写 URL 和路径",
+      "then": "提交克隆请求"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "CloneRepoModal 组件。输入远程 URL 和本地目标路径。",
+    "parameters": [
+      "输入: 仓库 URL, 本地路径"
+    ]
+  },
+  "constraints": [
+    "URL 格式验证",
+    "路径不能为空"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.041Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/projects/CloneRepoModal.tsx"
+    ]
+  }
+}

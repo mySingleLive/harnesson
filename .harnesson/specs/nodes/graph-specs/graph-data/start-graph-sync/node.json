@@ -1,0 +1,41 @@
+{
+  "id": "start-graph-sync",
+  "name": "启动同步",
+  "level": 4,
+  "parent": "graph-data",
+  "children": [],
+  "isLeaf": true,
+  "summary": "POST /api/graph/sync — 启动图谱同步，SSE 流式进度。",
+  "goals": [
+    "触发图谱同步"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "项目有新提交",
+      "when": "触发同步",
+      "then": "SSE 流式推送进度"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "API: POST /api/graph/sync。body: projectPath, storageLocation, syncType。SSE 事件: progress(phase/progress/message), node-generated, complete, error。",
+    "parameters": [
+      "同步阶段: initializing → scanning → completing",
+      "syncType: full|incremental"
+    ]
+  },
+  "constraints": [
+    "同步进行中不允许重复触发"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.042Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/graph.ts"
+    ]
+  }
+}

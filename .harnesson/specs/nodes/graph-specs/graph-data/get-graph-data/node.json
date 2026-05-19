@@ -1,0 +1,40 @@
+{
+  "id": "get-graph-data",
+  "name": "图谱数据",
+  "level": 4,
+  "parent": "graph-data",
+  "children": [],
+  "isLeaf": true,
+  "summary": "GET /api/graph/data — 获取全量图谱数据。",
+  "goals": [
+    "获取完整图谱"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "项目有图谱",
+      "when": "请求数据",
+      "then": "返回完整数据"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "API: GET /api/graph/data?projectPath=xxx。返回: manifest + specs + architect。",
+    "parameters": [
+      "返回: manifest, specs, architect"
+    ]
+  },
+  "constraints": [
+    "无数据时返回空字段"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.042Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/graph.ts"
+    ]
+  }
+}

@@ -1,706 +1,1501 @@
-# All Concepts
+# Concepts: Harnesson
 
-**Total concepts:** 100
-**Last updated:** 2026-05-19
+> Total concepts: 136
+> Last synced: 2026-05-19T21:00:00Z | Commit: 73edcc0
+> Modules: server-generated, server-lib, server-routes, shared-types, web-chat, web-graph, web-layout, web-projects, web-hooks, web-lib, web-pages, web-stores
 
 ---
 
-## CONC-001 — Server Infrastructure
+## CONC-001: Prisma Generated Database Layer
+
 - **Type:** domain
-- **Module:** server-core
-- **Summary:** Core server infrastructure including the Hono HTTP server setup, health check endpoint, and port auto-detection to ensure reliable server startup.
-- **References:**
-- **Source files:** apps/server/src/index.ts, apps/server/src/routes/health.ts, apps/server/src/lib/find-port.ts
+- **Module:** server-generated (→ [summaries/server-generated.md](architecture/summaries/server-generated.md))
+- **Summary:** Prisma ORM 自动生成的数据库访问层，提供类型安全的数据模型和 CRUD 操作能力。
+- **References:** [CONC-044 Agent Types], [CONC-045 Project Types]
+- **Source files:** apps/server/src/generated/**/*.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-002 — Health Check API
-- **Type:** operation
-- **Module:** server-core
-- **Summary:** Returns server status and timestamp via GET /api/health. Used by the frontend to verify backend connectivity.
-- **References:** CONC-001
-- **Source files:** apps/server/src/routes/health.ts
+---
 
-## CONC-003 — Port Auto-Detection
-- **Type:** operation
-- **Module:** server-core
-- **Summary:** Automatically finds an available TCP port if the preferred port is occupied, ensuring the server can start without manual configuration.
-- **References:** CONC-001
-- **Source files:** apps/server/src/lib/find-port.ts
+## CONC-002: Project Model
 
-## CONC-004 — Agent Session Restore on Startup
-- **Type:** operation
-- **Module:** server-core
-- **Summary:** Restores all persisted agent sessions from the database on server startup, reconnecting their runtime state and adapters.
-- **References:** CONC-001, CONC-015
-- **Source files:** apps/server/src/index.ts
-
-## CONC-005 — Project Management
-- **Type:** domain
-- **Module:** project-management
-- **Summary:** Complete project lifecycle management including creation from local folders, cloning repos, fresh creation with git init, project listing, and deletion. Persisted in SQLite via Prisma.
-- **References:**
-- **Source files:** apps/server/src/routes/projects.ts, apps/server/src/routes/branches.ts, apps/server/src/routes/open-folder.ts, apps/server/src/lib/native-dialog.ts
-
-## CONC-006 — List Projects API
-- **Type:** operation
-- **Module:** project-management
-- **Summary:** Returns all projects ordered by last updated via GET /api/projects.
-- **References:** CONC-005
-- **Source files:** apps/server/src/routes/projects.ts
-
-## CONC-007 — Get Single Project API
-- **Type:** operation
-- **Module:** project-management
-- **Summary:** Returns a single project by ID via GET /api/projects/:id. Returns 404 if not found.
-- **References:** CONC-005
-- **Source files:** apps/server/src/routes/projects.ts
-
-## CONC-008 — Create Project API
-- **Type:** operation
-- **Module:** project-management
-- **Summary:** Creates a new project via POST /api/projects. Supports local, clone, and create sources with optional git init. Deduplicates by path.
-- **References:** CONC-005
-- **Source files:** apps/server/src/routes/projects.ts
-
-## CONC-009 — Delete Project API
-- **Type:** operation
-- **Module:** project-management
-- **Summary:** Deletes a project by ID via DELETE /api/projects/:id. Returns 404 if not found.
-- **References:** CONC-005
-- **Source files:** apps/server/src/routes/projects.ts
-
-## CONC-010 — List Branches API
-- **Type:** operation
-- **Module:** project-management
-- **Summary:** Lists local and remote git branches for a project via GET /api/projects/:id/branches, identifying the current branch.
-- **References:** CONC-005
-- **Source files:** apps/server/src/routes/branches.ts
-
-## CONC-011 — Checkout Branch API
-- **Type:** operation
-- **Module:** project-management
-- **Summary:** Switches to a specified git branch via POST /api/projects/:id/checkout. Supports both local and remote branches (creates local tracking branch).
-- **References:** CONC-005
-- **Source files:** apps/server/src/routes/branches.ts
-
-## CONC-012 — Open Folder Dialog API
-- **Type:** operation
-- **Module:** project-management
-- **Summary:** Opens a native OS folder selection dialog via POST /api/open-folder. Supports macOS, Linux, and Windows platforms.
-- **References:** CONC-005
-- **Source files:** apps/server/src/routes/open-folder.ts, apps/server/src/lib/native-dialog.ts
-
-## CONC-013 — Project List UI
-- **Type:** component
-- **Module:** project-management
-- **Summary:** Displays projects in card or list view with search filtering, empty state, and modals for cloning/creating projects.
-- **References:** CONC-005
-- **Source files:** apps/web/src/pages/ProjectsPage.tsx, apps/web/src/components/projects/ProjectList.tsx
-
-## CONC-014 — Project Actions
-- **Type:** feature
-- **Module:** project-management
-- **Summary:** Frontend actions for opening folders, cloning repos, creating projects, and activating projects with loading state management.
-- **References:** CONC-005
-- **Source files:** apps/web/src/hooks/useProjectActions.ts
-
-## CONC-015 — AI Agent System
-- **Type:** domain
-- **Module:** ai-agent
-- **Summary:** Core AI agent management system with Claude Code integration. Supports creating sessions, streaming messages, handling interactive questions, managing todos, and persisting all state to SQLite.
-- **References:**
-- **Source files:** apps/server/src/lib/agent-service.ts, apps/server/src/lib/agent-adapter.ts, apps/server/src/lib/claude-code-adapter.ts, apps/server/src/routes/agents.ts
-
-## CONC-016 — Agent Adapter Interface
-- **Type:** interface
-- **Module:** ai-agent
-- **Summary:** Defines the contract for agent backends including sendMessage, createSession, destroySession, abort, model switching, and session persistence.
-- **References:** CONC-015
-- **Source files:** apps/server/src/lib/agent-adapter.ts
-
-## CONC-017 — Claude Code Adapter
-- **Type:** component
-- **Module:** ai-agent
-- **Summary:** Implements the AgentAdapter interface using the Claude Agent SDK. Manages sessions with SDK session resumption, tracks nested Agent tool calls, and handles streaming events including text, tool_use, and tool_result.
-- **References:** CONC-015, CONC-016
-- **Source files:** apps/server/src/lib/claude-code-adapter.ts
-
-## CONC-018 — Agent Service
-- **Type:** component
-- **Module:** ai-agent
-- **Summary:** Central service managing agent lifecycle: creation, message sending with question interception, SSE broadcasting, todo persistence, and database state management.
-- **References:** CONC-015
-- **Source files:** apps/server/src/lib/agent-service.ts
-
-## CONC-019 — List Supported Models API
-- **Type:** operation
-- **Module:** ai-agent
-- **Summary:** Returns available AI models via GET /api/models, fetched from the Claude Agent SDK.
-- **References:** CONC-015
-- **Source files:** apps/server/src/routes/agents.ts
-
-## CONC-020 — Create Agent API
-- **Type:** operation
-- **Module:** ai-agent
-- **Summary:** Creates a new agent session via POST /api/agents with specified type, model, working directory, and permission mode.
-- **References:** CONC-015
-- **Source files:** apps/server/src/routes/agents.ts
-
-## CONC-021 — List Agents API
-- **Type:** operation
-- **Module:** ai-agent
-- **Summary:** Lists all non-destroyed agent sessions via GET /api/agents, including pending question state for waiting sessions.
-- **References:** CONC-015
-- **Source files:** apps/server/src/routes/agents.ts
-
-## CONC-022 — Get Single Agent API
-- **Type:** operation
-- **Module:** ai-agent
-- **Summary:** Returns a single agent's info by ID via GET /api/agents/:id.
-- **References:** CONC-015
-- **Source files:** apps/server/src/routes/agents.ts
-
-## CONC-023 — Get Agent Messages API
-- **Type:** operation
-- **Module:** ai-agent
-- **Summary:** Returns paginated message history for an agent via GET /api/agents/:id/messages, with limit and cursor-based pagination.
-- **References:** CONC-015
-- **Source files:** apps/server/src/routes/agents.ts
-
-## CONC-024 — Get Agent Todos API
-- **Type:** operation
-- **Module:** ai-agent
-- **Summary:** Returns todo items for an agent session via GET /api/agents/:id/todos.
-- **References:** CONC-015
-- **Source files:** apps/server/src/routes/agents.ts
-
-## CONC-025 — Send Message to Agent API
-- **Type:** operation
-- **Module:** ai-agent
-- **Summary:** Sends a user message to an agent via POST /api/agents/:id/message. Supports text, content blocks, and image attachments.
-- **References:** CONC-015
-- **Source files:** apps/server/src/routes/agents.ts
-
-## CONC-026 — Submit Tool Result API
-- **Type:** operation
-- **Module:** ai-agent
-- **Summary:** Submits a user's answer to a pending AskUserQuestion prompt via POST /api/agents/:id/tool-result.
-- **References:** CONC-015
-- **Source files:** apps/server/src/routes/agents.ts
-
-## CONC-027 — Agent SSE Stream API
-- **Type:** operation
-- **Module:** ai-agent
-- **Summary:** Opens an SSE connection for real-time agent events via GET /api/agents/:id/stream, including thinking, text, tool_use, tool_result, question, and done events.
-- **References:** CONC-015
-- **Source files:** apps/server/src/routes/agents.ts
-
-## CONC-028 — Abort Agent API
-- **Type:** operation
-- **Module:** ai-agent
-- **Summary:** Aborts the current agent processing via POST /api/agents/:id/abort.
-- **References:** CONC-015
-- **Source files:** apps/server/src/routes/agents.ts
-
-## CONC-029 — List Slash Commands API
-- **Type:** operation
-- **Module:** ai-agent
-- **Summary:** Returns available slash commands via GET /api/slash-commands, including built-in, plugin, and project skills.
-- **References:** CONC-015
-- **Source files:** apps/server/src/routes/agents.ts
-
-## CONC-030 — Execute Agent Command API
-- **Type:** operation
-- **Module:** ai-agent
-- **Summary:** Executes a slash command on an agent session via POST /api/agents/:id/command. Supports /clear, /compact, /model, /help.
-- **References:** CONC-015
-- **Source files:** apps/server/src/routes/agents.ts
-
-## CONC-031 — Destroy Agent API
-- **Type:** operation
-- **Module:** ai-agent
-- **Summary:** Destroys an agent session via DELETE /api/agents/:id, cleaning up runtime state and marking as destroyed in DB.
-- **References:** CONC-015
-- **Source files:** apps/server/src/routes/agents.ts
-
-## CONC-032 — Graph Specs System
-- **Type:** domain
-- **Module:** graph-specs
-- **Summary:** Project specification visualization storage and synchronization system. Manages graph data (specs, architect), document storage, history archiving, and sync engine with external CLI process spawning and SSE streaming.
-- **References:**
-- **Source files:** apps/server/src/lib/graph-storage.ts, apps/server/src/lib/sync-engine.ts, apps/server/src/routes/graph.ts
-
-## CONC-033 — Graph Status API
-- **Type:** operation
-- **Module:** graph-specs
-- **Summary:** Checks if graph data exists and whether a re-sync is needed via GET /api/graph/status.
-- **References:** CONC-032
-- **Source files:** apps/server/src/routes/graph.ts
-
-## CONC-034 — Graph Manifest API
-- **Type:** operation
-- **Module:** graph-specs
-- **Summary:** Returns the graph manifest (project name, sync status, timestamps) via GET /api/graph/manifest.
-- **References:** CONC-032
-- **Source files:** apps/server/src/routes/graph.ts
-
-## CONC-035 — Graph Data API
-- **Type:** operation
-- **Module:** graph-specs
-- **Summary:** Returns all graph data (manifest, specs, architect) via GET /api/graph/data.
-- **References:** CONC-032
-- **Source files:** apps/server/src/routes/graph.ts
-
-## CONC-036 — Graph History List API
-- **Type:** operation
-- **Module:** graph-specs
-- **Summary:** Lists historical graph data entries via GET /api/graph/history.
-- **References:** CONC-032
-- **Source files:** apps/server/src/routes/graph.ts
-
-## CONC-037 — Graph History Data API
-- **Type:** operation
-- **Module:** graph-specs
-- **Summary:** Returns specific historical graph data by timestamp via GET /api/graph/history/:timestamp.
-- **References:** CONC-032
-- **Source files:** apps/server/src/routes/graph.ts
-
-## CONC-038 — Graph Sync API
-- **Type:** operation
-- **Module:** graph-specs
-- **Summary:** Starts a full or incremental sync with SSE progress streaming via POST /api/graph/sync. Archives current data before sync.
-- **References:** CONC-032
-- **Source files:** apps/server/src/routes/graph.ts
-
-## CONC-039 — Cancel Graph Sync API
-- **Type:** operation
-- **Module:** graph-specs
-- **Summary:** Cancels an active sync process via POST /api/graph/sync/cancel.
-- **References:** CONC-032
-- **Source files:** apps/server/src/routes/graph.ts
-
-## CONC-040 — Slash Commands
-- **Type:** domain
-- **Module:** slash-commands
-- **Summary:** Slash command system providing built-in commands (/clear, /compact, /model, /help) plus auto-discovery of plugin and project skills.
-- **References:**
-- **Source files:** apps/server/src/lib/slash-commands.ts, apps/web/src/lib/slashCommandUtils.ts, apps/web/src/stores/slashCommandStore.ts
-
-## CONC-041 — Slash Command Scanning
-- **Type:** operation
-- **Module:** slash-commands
-- **Summary:** Scans plugin cache directories and project .claude/skills directories to discover available slash commands with descriptions.
-- **References:** CONC-040
-- **Source files:** apps/server/src/lib/slash-commands.ts
-
-## CONC-042 — Slash Command Autocomplete
-- **Type:** component
-- **Module:** slash-commands
-- **Summary:** Frontend autocomplete for slash commands with keyboard navigation, filtering, and selection in the chat input.
-- **References:** CONC-040
-- **Source files:** apps/web/src/hooks/useSlashCompletion.ts, apps/web/src/components/chat/SlashCommandPopup.tsx
-
-## CONC-043 — Database Layer
-- **Type:** domain
-- **Module:** database
-- **Summary:** Prisma ORM with Better-SQLite3 adapter providing data persistence for projects, agent sessions, messages, and todo items.
-- **References:**
-- **Source files:** apps/server/src/lib/prisma.ts, apps/server/prisma.config.ts
-
-## CONC-044 — Project Entity
 - **Type:** entity
-- **Module:** database
-- **Summary:** Database model for projects with id, name, path, description, source, and timestamps.
-- **References:** CONC-043
+- **Module:** server-generated (→ [summaries/server-generated.md](architecture/summaries/server-generated.md))
+- **Summary:** 项目数据实体，存储项目名称、路径、描述、来源（local/clone/create）等信息。
+- **References:**
 - **Source files:** apps/server/src/generated/models/Project.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-045 — Agent Session Entity
+---
+
+## CONC-003: AgentSession Model
+
 - **Type:** entity
-- **Module:** database
-- **Summary:** Database model for agent sessions with id, name, type, status, cwd, branch, model, permission mode, config, session data, and error tracking.
-- **References:** CONC-043
+- **Module:** server-generated (→ [summaries/server-generated.md](architecture/summaries/server-generated.md))
+- **Summary:** Agent 会话数据实体，记录会话状态、工作目录、模型选择、权限模式、配置和错误信息。
+- **References:** [CONC-044 Agent Types]
 - **Source files:** apps/server/src/generated/models/AgentSession.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-046 — Message Entity
+---
+
+## CONC-004: Message Model
+
 - **Type:** entity
-- **Module:** database
-- **Summary:** Database model for chat messages with id, agentId, role, content, images, content blocks, events, and timestamps.
-- **References:** CONC-043
+- **Module:** server-generated (→ [summaries/server-generated.md](architecture/summaries/server-generated.md))
+- **Summary:** 消息数据实体，记录对话中的用户/AI 消息，包含文本内容、图片、内容块和流式事件。
+- **References:** [CONC-003 AgentSession Model]
 - **Source files:** apps/server/src/generated/models/Message.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-047 — Todo Item Entity
+---
+
+## CONC-005: TodoItem Model
+
 - **Type:** entity
-- **Module:** database
-- **Summary:** Database model for todo items with id, agentId, subject, status, activeForm, and timestamps.
-- **References:** CONC-043
+- **Module:** server-generated (→ [summaries/server-generated.md](architecture/summaries/server-generated.md))
+- **Summary:** 待办任务数据实体，记录 AI Agent 执行过程中的任务项、状态和活跃表单。
+- **References:** [CONC-003 AgentSession Model]
 - **Source files:** apps/server/src/generated/models/TodoItem.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-048 — Shared Types
+---
+
+## CONC-006: Server Core Logic
+
 - **Type:** domain
-- **Module:** shared-types
-- **Summary:** TypeScript type definitions shared across server and web packages, defining data contracts for agents, projects, tasks, specs, and graphs.
-- **References:**
-- **Source files:** packages/shared/src/index.ts, packages/shared/src/types/agent.ts, packages/shared/src/types/project.ts, packages/shared/src/types/task.ts, packages/shared/src/types/spec-node.ts, packages/shared/src/types/graph.ts
+- **Module:** server-lib (→ [summaries/server-lib.md](architecture/summaries/server-lib.md))
+- **Summary:** 服务端核心业务逻辑层，封装 Agent 生命周期管理、Graph 数据存储、同步引擎和数据库连接。
+- **References:** [CONC-001 Prisma Generated Database Layer]
+- **Source files:** apps/server/src/lib/*.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-049 — Application Shell
+---
+
+## CONC-007: Agent Service
+
+- **Type:** feature
+- **Module:** server-lib (→ [summaries/server-lib.md](architecture/summaries/server-lib.md))
+- **Summary:** Agent 会话生命周期管理的核心服务。负责创建/销毁会话、收发消息、SSE 广播、AskUserQuestion 拦截处理、TodoWrite 持久化和服务重启时的会话恢复。
+- **References:** [CONC-010 Claude Code Adapter], [CONC-003 AgentSession Model], [CONC-004 Message Model], [CONC-005 TodoItem Model]
+- **Source files:** apps/server/src/lib/agent-service.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-008: Graph Storage
+
+- **Type:** feature
+- **Module:** server-lib (→ [summaries/server-lib.md](architecture/summaries/server-lib.md))
+- **Summary:** Graph 规格数据的持久化存储层，管理 manifest、specs 和 architect 数据的读写、归档和历史版本查询。支持项目级和用户级两种存储位置。
+- **References:** [CONC-046 Graph Types]
+- **Source files:** apps/server/src/lib/graph-storage.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-009: Sync Engine
+
+- **Type:** feature
+- **Module:** server-lib (→ [summaries/server-lib.md](architecture/summaries/server-lib.md))
+- **Summary:** 规格同步引擎。通过子进程运行 sync-specs CLI，支持 SSE 流式推送同步进度，管理活跃同步进程的启停和取消。
+- **References:** [CONC-008 Graph Storage], [CONC-046 Graph Types]
+- **Source files:** apps/server/src/lib/sync-engine.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-010: Claude Code Adapter
+
+- **Type:** feature
+- **Module:** server-lib (→ [summaries/server-lib.md](architecture/summaries/server-lib.md))
+- **Summary:** Claude Code CLI 的适配器实现。通过子进程与 claude CLI 通信，管理会话创建、消息发送、流式输出和会话恢复。
+- **References:** [CONC-011 Agent Adapter Interface]
+- **Source files:** apps/server/src/lib/claude-code-adapter.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-011: Agent Adapter Interface
+
+- **Type:** interface
+- **Module:** server-lib (→ [summaries/server-lib.md](architecture/summaries/server-lib.md))
+- **Summary:** Agent 适配器的抽象接口契约。定义 createSession、sendMessage、abort、destroySession、restoreSession 等标准方法，支持不同 AI 后端的可插拔替换。
+- **References:**
+- **Source files:** apps/server/src/lib/agent-adapter.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-012: Slash Commands Discovery
+
+- **Type:** operation
+- **Module:** server-lib (→ [summaries/server-lib.md](architecture/summaries/server-lib.md))
+- **Summary:** 从项目工作目录扫描可用的斜杠命令和 Skills，供前端自动补全使用。
+- **References:** [CONC-007 Agent Service]
+- **Source files:** apps/server/src/lib/slash-commands.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-013: Port Finder
+
+- **Type:** operation
+- **Module:** server-lib (→ [summaries/server-lib.md](architecture/summaries/server-lib.md))
+- **Summary:** 端口可用性检测工具，在首选端口被占用时自动选择备用端口。
+- **References:**
+- **Source files:** apps/server/src/lib/find-port.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-014: Server API Routes
+
 - **Type:** domain
-- **Module:** app-shell
-- **Summary:** Main application framework providing layout, routing, navigation sidebar, topbar, and resizable agent panel integration.
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** 基于 Hono 框架的 REST API 路由层，提供项目管理、Agent 管理、Graph 同步、Git 分支操作等全部 HTTP 端点。
+- **References:** [CONC-006 Server Core Logic]
+- **Source files:** apps/server/src/routes/*.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-015: List Projects API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** GET /api/projects — 获取所有项目列表，按更新时间倒序排列。
+- **References:** [CONC-002 Project Model]
+- **Source files:** apps/server/src/routes/projects.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-016: Get Project API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** GET /api/projects/:id — 根据 ID 获取单个项目详情。
+- **References:** [CONC-002 Project Model]
+- **Source files:** apps/server/src/routes/projects.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-017: Create Project API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** POST /api/projects — 创建新项目，支持本地路径和可选 git init。如路径已存在则返回已有项目。
+- **References:** [CONC-002 Project Model]
+- **Source files:** apps/server/src/routes/projects.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-018: Delete Project API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** DELETE /api/projects/:id — 删除指定项目。
+- **References:** [CONC-002 Project Model]
+- **Source files:** apps/server/src/routes/projects.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-019: List Models API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** GET /api/models — 获取可用 AI 模型列表及其描述信息。
+- **References:** [CONC-007 Agent Service]
+- **Source files:** apps/server/src/routes/agents.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-020: Create Agent API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** POST /api/agents — 创建新的 Agent 会话，指定工作目录、类型、模型和权限模式。自动关联到项目。
+- **References:** [CONC-007 Agent Service], [CONC-003 AgentSession Model]
+- **Source files:** apps/server/src/routes/agents.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-021: List Agents API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** GET /api/agents — 列出所有未销毁的 Agent 会话。
+- **References:** [CONC-007 Agent Service], [CONC-003 AgentSession Model]
+- **Source files:** apps/server/src/routes/agents.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-022: Get Agent API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** GET /api/agents/:id — 获取单个 Agent 会话详情，包含待回答的提问信息。
+- **References:** [CONC-007 Agent Service], [CONC-003 AgentSession Model]
+- **Source files:** apps/server/src/routes/agents.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-023: Get Agent Messages API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** GET /api/agents/:id/messages — 获取 Agent 会话的消息历史，支持分页限制和游标查询。
+- **References:** [CONC-007 Agent Service], [CONC-004 Message Model]
+- **Source files:** apps/server/src/routes/agents.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-024: Get Agent Todos API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** GET /api/agents/:id/todos — 获取 Agent 会话的当前待办任务列表。
+- **References:** [CONC-007 Agent Service], [CONC-005 TodoItem Model]
+- **Source files:** apps/server/src/routes/agents.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-025: Send Agent Message API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** POST /api/agents/:id/message — 向 Agent 发送用户消息并触发 AI 处理，支持文本、内容块和图片。
+- **References:** [CONC-007 Agent Service], [CONC-004 Message Model]
+- **Source files:** apps/server/src/routes/agents.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-026: Submit Agent Tool Result API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** POST /api/agents/:id/tool-result — 提交 AskUserQuestion 的用户回答，恢复 Agent 处理。
+- **References:** [CONC-007 Agent Service]
+- **Source files:** apps/server/src/routes/agents.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-027: Agent SSE Stream API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** GET /api/agents/:id/stream — 建立 SSE 长连接，实时推送 Agent 的 thinking、text、tool_use、tool_result 等流式事件。
+- **References:** [CONC-007 Agent Service]
+- **Source files:** apps/server/src/routes/agents.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-028: Abort Agent API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** POST /api/agents/:id/abort — 中止 Agent 当前正在进行的处理。
+- **References:** [CONC-007 Agent Service]
+- **Source files:** apps/server/src/routes/agents.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-029: List Slash Commands API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** GET /api/slash-commands — 获取当前工作目录下可用的斜杠命令和 Skills 列表。
+- **References:** [CONC-012 Slash Commands Discovery]
+- **Source files:** apps/server/src/routes/agents.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-030: Execute Command API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** POST /api/agents/:id/command — 执行斜杠命令（如 /clear、/compact、/model、/help），支持参数传递。
+- **References:** [CONC-007 Agent Service]
+- **Source files:** apps/server/src/routes/agents.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-031: Destroy Agent API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** DELETE /api/agents/:id — 销毁 Agent 会话，关闭 SSE 连接并标记为 destroyed。
+- **References:** [CONC-007 Agent Service]
+- **Source files:** apps/server/src/routes/agents.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-032: Get Graph Status API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** GET /api/graph/status — 检查项目是否已有图谱数据，以及是否需要重新同步。
+- **References:** [CONC-008 Graph Storage]
+- **Source files:** apps/server/src/routes/graph.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-033: Get Graph Manifest API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** GET /api/graph/manifest — 获取图谱 manifest，包含项目名、最后同步时间和提交哈希。
+- **References:** [CONC-008 Graph Storage]
+- **Source files:** apps/server/src/routes/graph.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-034: Get Graph Data API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** GET /api/graph/data — 获取项目的全量图谱数据（manifest + specs + architect）。
+- **References:** [CONC-008 Graph Storage]
+- **Source files:** apps/server/src/routes/graph.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-035: Get Graph History API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** GET /api/graph/history — 获取图谱的同步历史记录列表。
+- **References:** [CONC-008 Graph Storage]
+- **Source files:** apps/server/src/routes/graph.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-036: Get Graph History Entry API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** GET /api/graph/history/:timestamp — 获取指定时间戳的历史图谱数据快照。
+- **References:** [CONC-008 Graph Storage]
+- **Source files:** apps/server/src/routes/graph.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-037: Start Graph Sync API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** POST /api/graph/sync — 启动图谱同步，通过 SSE 流式返回同步进度和阶段信息。
+- **References:** [CONC-009 Sync Engine]
+- **Source files:** apps/server/src/routes/graph.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-038: Cancel Graph Sync API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** POST /api/graph/sync/cancel — 取消正在进行的图谱同步。
+- **References:** [CONC-009 Sync Engine]
+- **Source files:** apps/server/src/routes/graph.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-039: List Branches API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** GET /api/projects/:id/branches — 列出项目的本地和远程 Git 分支，识别当前分支。
+- **References:** [CONC-002 Project Model]
+- **Source files:** apps/server/src/routes/branches.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-040: Checkout Branch API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** POST /api/projects/:id/checkout — 切换 Git 分支，支持本地分支和远程分支。
+- **References:** [CONC-002 Project Model]
+- **Source files:** apps/server/src/routes/branches.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-041: Health Check API
+
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** GET /api/health — 服务端健康检查端点，用于前端检测后端可用性。
 - **References:**
-- **Source files:** apps/web/src/App.tsx, apps/web/src/components/layout/MainLayout.tsx
+- **Source files:** apps/server/src/routes/health.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-050 — Navigation Sidebar
-- **Type:** component
-- **Module:** app-shell
-- **Summary:** Left sidebar with navigation links (New Session, Projects, Graph, Tasks, Files, Git) and agent session list grouped by project with expand/collapse.
-- **References:** CONC-049
-- **Source files:** apps/web/src/components/layout/Sidebar.tsx
+---
 
-## CONC-051 — Topbar
-- **Type:** component
-- **Module:** app-shell
-- **Summary:** Top navigation bar with project dropdown, branch dropdown, running agent count badge, and settings button.
-- **References:** CONC-049
-- **Source files:** apps/web/src/components/layout/Topbar.tsx
+## CONC-042: Open Folder Dialog API
 
-## CONC-052 — Agent Status Dot
-- **Type:** component
-- **Module:** app-shell
-- **Summary:** Visual indicator showing agent status with color coding: pulsing for running, green for completed, amber for waiting, gray for idle, red icon for error.
-- **References:** CONC-049
-- **Source files:** apps/web/src/components/layout/AgentStatusDot.tsx
+- **Type:** operation
+- **Module:** server-routes (→ [summaries/server-routes.md](architecture/summaries/server-routes.md))
+- **Summary:** POST /api/open-folder — 调用操作系统原生文件夹选择对话框。
+- **References:**
+- **Source files:** apps/server/src/routes/open-folder.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-053 — Resizable Divider
-- **Type:** component
-- **Module:** app-shell
-- **Summary:** Draggable divider for resizing the agent panel width with collapse/expand support.
-- **References:** CONC-049
-- **Source files:** apps/web/src/components/layout/ResizableDivider.tsx
+---
 
-## CONC-054 — Agent Chat Panel
+## CONC-043: Shared Type Definitions
+
 - **Type:** domain
-- **Module:** agent-ui
-- **Summary:** Agent chat interface providing message display, streaming indicators, todo tracking, question handling, and rich text input for sending messages.
+- **Module:** shared-types (→ [summaries/shared-types.md](architecture/summaries/shared-types.md))
+- **Summary:** 跨包共享的 TypeScript 类型定义，定义前后端共用的核心数据模型接口，确保类型安全。
 - **References:**
-- **Source files:** apps/web/src/components/layout/AgentPanel.tsx, apps/web/src/stores/agentStore.ts
+- **Source files:** packages/shared/src/**/*.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-055 — Agent State Management
-- **Type:** component
-- **Module:** agent-ui
-- **Summary:** Zustand store managing all agent state: CRUD operations, SSE connections, message streaming, todo tracking, question handling, and panel sizing persistence.
-- **References:** CONC-054
-- **Source files:** apps/web/src/stores/agentStore.ts
+---
 
-## CONC-056 — Agent Context Header
-- **Type:** component
-- **Module:** agent-ui
-- **Summary:** Header bar for the agent panel showing agent name, status, model, and providing maximize/close controls.
-- **References:** CONC-054
-- **Source files:** apps/web/src/components/layout/AgentContextHeader.tsx
+## CONC-044: Agent Types
 
-## CONC-057 — Agent Context Menu
-- **Type:** component
-- **Module:** agent-ui
-- **Summary:** Right-click context menu for agent sessions in the sidebar, providing quick actions.
-- **References:** CONC-054
-- **Source files:** apps/web/src/components/layout/AgentContextMenu.tsx
+- **Type:** entity
+- **Module:** shared-types (→ [summaries/shared-types.md](architecture/summaries/shared-types.md))
+- **Summary:** Agent 相关的共享类型定义，包括 Agent、AgentInfo、AgentStreamEvent、AgentMessage、TodoItem、CreateAgentRequest、SendMessageRequest、QuestionData、SlashCommand 等。
+- **References:**
+- **Source files:** packages/shared/src/types/agent.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-058 — Chat UI Components
+---
+
+## CONC-045: Project Types
+
+- **Type:** entity
+- **Module:** shared-types (→ [summaries/shared-types.md](architecture/summaries/shared-types.md))
+- **Summary:** Project 相关的共享类型定义，包括 Project 实体和 ProjectSource 枚举。
+- **References:**
+- **Source files:** packages/shared/src/types/project.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-046: Graph Types
+
+- **Type:** entity
+- **Module:** shared-types (→ [summaries/shared-types.md](architecture/summaries/shared-types.md))
+- **Summary:** Graph 规格图谱相关的共享类型定义，包括 Manifest、GraphData、SpecsData、ArchitectData、GraphFullData、HistoryEntry、SyncOptions 等。
+- **References:**
+- **Source files:** packages/shared/src/types/graph.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-047: Spec Node Types
+
+- **Type:** entity
+- **Module:** shared-types (→ [summaries/shared-types.md](architecture/summaries/shared-types.md))
+- **Summary:** 规格树节点的共享类型定义，包括 SpecNode 结构和 NodeStatus 枚举（draft/review/stable/deprecated）。
+- **References:**
+- **Source files:** packages/shared/src/types/spec-node.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-048: Task Types
+
+- **Type:** entity
+- **Module:** shared-types (→ [summaries/shared-types.md](architecture/summaries/shared-types.md))
+- **Summary:** 任务管理相关的共享类型定义，包括 Task 实体和 TaskStatus 枚举。
+- **References:**
+- **Source files:** packages/shared/src/types/task.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-049: AI Chat Interface
+
 - **Type:** domain
-- **Module:** chat-ui
-- **Summary:** Chat interface components including rich text input with Emacs keybindings and image support, message rendering with markdown, and specialized tool cards for visualizing agent tool outputs.
-- **References:**
-- **Source files:** apps/web/src/components/chat/RichTextInput.tsx, apps/web/src/components/chat/MessageRenderer.tsx
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** AI 对话界面的核心组件集合，提供富文本输入、消息流渲染、工具调用卡片、思考状态展示等完整对话交互体验。
+- **References:** [CONC-044 Agent Types]
+- **Source files:** apps/web/src/components/chat/**/*.{ts,tsx}
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-059 — Rich Text Input
+---
+
+## CONC-050: Rich Text Input
+
 - **Type:** component
-- **Module:** chat-ui
-- **Summary:** ContentEditable rich text input with inline image support, slash command autocomplete, Emacs keybindings, model selector, drag-and-drop images, and IME composition handling.
-- **References:** CONC-058
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** 富文本输入框组件，支持文本输入、图片粘贴和拖拽上传、斜杠命令触发、Enter 发送，使用 contenteditable div 实现。
+- **References:** [CONC-053 Slash Command Popup], [CONC-055 Image Preview]
 - **Source files:** apps/web/src/components/chat/RichTextInput.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-060 — Message Renderer
+---
+
+## CONC-051: Message Renderer
+
 - **Type:** component
-- **Module:** chat-ui
-- **Summary:** Renders chat messages with event tree building, markdown support, user messages with images, and agent messages with tool cards.
-- **References:** CONC-058
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** 消息渲染组件，将 Agent 的流式事件列表渲染为可视化消息，分发展示文本、工具调用、工具结果等不同事件类型。
+- **References:** [CONC-057 Tool Event Card Router]
 - **Source files:** apps/web/src/components/chat/MessageRenderer.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-061 — Bash Tool Card
-- **Type:** component
-- **Module:** chat-ui
-- **Summary:** Renders bash command execution output with collapsible sections for command and output.
-- **References:** CONC-058
-- **Source files:** apps/web/src/components/chat/tool-cards/BashCard.tsx
+---
 
-## CONC-062 — Read Tool Card
-- **Type:** component
-- **Module:** chat-ui
-- **Summary:** Renders file content display with syntax highlighting and line numbers for the Read tool output.
-- **References:** CONC-058
-- **Source files:** apps/web/src/components/chat/tool-cards/ReadCard.tsx
+## CONC-052: Thinking Indicator
 
-## CONC-063 — Write Tool Card
 - **Type:** component
-- **Module:** chat-ui
-- **Summary:** Renders file write operation feedback for the Write tool output.
-- **References:** CONC-058
-- **Source files:** apps/web/src/components/chat/tool-cards/WriteCard.tsx
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** AI 思考状态动画指示器，在 Agent 处理消息时显示动态反馈。包含脉冲动画和进度条两种形式。
+- **References:**
+- **Source files:** apps/web/src/components/chat/ThinkingIndicator.tsx, apps/web/src/components/chat/ThinkingBar.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-064 — Edit Tool Card
-- **Type:** component
-- **Module:** chat-ui
-- **Summary:** Renders file edit operations with visual diff display showing old and new content for the Edit tool output.
-- **References:** CONC-058
-- **Source files:** apps/web/src/components/chat/tool-cards/EditCard.tsx
+---
 
-## CONC-065 — Glob Tool Card
-- **Type:** component
-- **Module:** chat-ui
-- **Summary:** Renders file search results from the Glob tool with file path listing.
-- **References:** CONC-058
-- **Source files:** apps/web/src/components/chat/tool-cards/GlobCard.tsx
+## CONC-053: Slash Command Popup
 
-## CONC-066 — Grep Tool Card
 - **Type:** component
-- **Module:** chat-ui
-- **Summary:** Renders content search results from the Grep tool with matched lines and context.
-- **References:** CONC-058
-- **Source files:** apps/web/src/components/chat/tool-cards/GrepCard.tsx
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** 斜杠命令自动完成弹出面板，显示匹配的命令列表，支持键盘上下导航和 Enter/Tab 选择。
+- **References:** [CONC-111 Slash Completion Hook]
+- **Source files:** apps/web/src/components/chat/SlashCommandPopup.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-067 — LSP Tool Card
-- **Type:** component
-- **Module:** chat-ui
-- **Summary:** Renders LSP diagnostics results including errors, warnings, and code intelligence information.
-- **References:** CONC-058
-- **Source files:** apps/web/src/components/chat/tool-cards/LSPCard.tsx
+---
 
-## CONC-068 — Generic Tool Card
-- **Type:** component
-- **Module:** chat-ui
-- **Summary:** Fallback tool card for rendering any unrecognized tool output in a generic format.
-- **References:** CONC-058
-- **Source files:** apps/web/src/components/chat/tool-cards/GenericCard.tsx
+## CONC-054: Ask User Question Panel
 
-## CONC-069 — Ask User Question Card
 - **Type:** component
-- **Module:** chat-ui
-- **Summary:** Renders the question display within chat message history after a user has answered an interactive question.
-- **References:** CONC-058
-- **Source files:** apps/web/src/components/chat/tool-cards/AskUserQuestionCard.tsx
-
-## CONC-070 — Streaming Agent Card
-- **Type:** component
-- **Module:** chat-ui
-- **Summary:** Renders nested Agent tool calls in the message stream, showing sub-agent activity with depth tracking.
-- **References:** CONC-058
-- **Source files:** apps/web/src/components/chat/tool-cards/StreamingAgentCard.tsx
-
-## CONC-071 — Todo Card
-- **Type:** component
-- **Module:** chat-ui
-- **Summary:** Renders a snapshot of todo items in the chat message flow, showing task progress.
-- **References:** CONC-058
-- **Source files:** apps/web/src/components/chat/tool-cards/TodoCard.tsx
-
-## CONC-072 — QA Result Card
-- **Type:** component
-- **Module:** chat-ui
-- **Summary:** Renders the question and answer result pair in the message flow after an interactive question is resolved.
-- **References:** CONC-058
-- **Source files:** apps/web/src/components/chat/tool-cards/QAResultCard.tsx
-
-## CONC-073 — Collapsible Card
-- **Type:** component
-- **Module:** chat-ui
-- **Summary:** Reusable collapsible wrapper component for tool cards with expand/collapse toggle.
-- **References:** CONC-058
-- **Source files:** apps/web/src/components/chat/tool-cards/CollapsibleCard.tsx
-
-## CONC-074 — Thinking Indicator
-- **Type:** component
-- **Module:** chat-ui
-- **Summary:** Animated thinking indicator shown while the AI agent is processing a request.
-- **References:** CONC-058
-- **Source files:** apps/web/src/components/chat/ThinkingBar.tsx, apps/web/src/components/chat/ThinkingIndicator.tsx
-
-## CONC-075 — Todo Bar
-- **Type:** component
-- **Module:** chat-ui
-- **Summary:** Sticky progress bar at the bottom of the chat showing active todo items during agent processing.
-- **References:** CONC-058
-- **Source files:** apps/web/src/components/chat/TodoBar.tsx
-
-## CONC-076 — Ask User Question Panel
-- **Type:** component
-- **Module:** chat-ui
-- **Summary:** Interactive question panel displayed when the agent asks a question, supporting single/multi-select options and free text input.
-- **References:** CONC-058
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** AskUserQuestion 交互面板，渲染 Agent 提问的问题选项（支持多选和预览），收集并提交用户回答。
+- **References:** [CONC-026 Submit Agent Tool Result API]
 - **Source files:** apps/web/src/components/chat/AskUserQuestionPanel.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-077 — Image Preview
+---
+
+## CONC-055: Image Preview
+
 - **Type:** component
-- **Module:** chat-ui
-- **Summary:** Full-screen image preview overlay for viewing inline images and pasted screenshots.
-- **References:** CONC-058
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** 图片预览组件，显示已上传图片的缩略图，支持查看放大和删除操作。
+- **References:**
 - **Source files:** apps/web/src/components/chat/ImagePreview.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-078 — Graph Visualization
-- **Type:** domain
-- **Module:** graph-ui
-- **Summary:** Project specification graph visualization with multiple views (graph, list, document, architect, technical document), sync progress display, and detail panel for node inspection.
+---
+
+## CONC-056: Todo Bar
+
+- **Type:** component
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** 待办任务进度条，显示 AI Agent 当前的 TodoWrite 任务列表及其完成状态。
+- **References:** [CONC-005 TodoItem Model]
+- **Source files:** apps/web/src/components/chat/TodoBar.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-057: Tool Event Card Router
+
+- **Type:** component
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** 工具事件卡片路由组件，根据 tool name 查找注册表并分发到对应的具体卡片组件，维护 toolName→CardComponent 的映射。
+- **References:** [CONC-058 Bash Card], [CONC-059 Read Card], [CONC-060 Write Card], [CONC-061 Edit Card]
+- **Source files:** apps/web/src/components/chat/tool-cards/ToolEventCard.tsx, apps/web/src/components/chat/tool-cards/index.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-058: Bash Card
+
+- **Type:** component
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** Bash 命令执行结果的展示卡片，支持输出内容折叠/展开和 ANSI 颜色代码渲染。
 - **References:**
-- **Source files:** apps/web/src/pages/GraphPage.tsx, apps/web/src/stores/graphStore.ts
+- **Source files:** apps/web/src/components/chat/tool-cards/BashCard.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-079 — Graph Page
-- **Type:** component
-- **Module:** graph-ui
-- **Summary:** Main graph page with tab bar for switching views, auto-loading graph data, and auto-sync check.
-- **References:** CONC-078
-- **Source files:** apps/web/src/pages/GraphPage.tsx
+---
 
-## CONC-080 — Specs Graph View
-- **Type:** component
-- **Module:** graph-ui
-- **Summary:** Interactive graph visualization of project specifications using React Flow with custom nodes.
-- **References:** CONC-078
-- **Source files:** apps/web/src/components/graph/SpecsGraph.tsx, apps/web/src/components/graph/FlowGraph.tsx, apps/web/src/components/graph/GraphNodes.tsx
+## CONC-059: Read Card
 
-## CONC-081 — Specs List View
 - **Type:** component
-- **Module:** graph-ui
-- **Summary:** List view of project specifications showing specs in a flat, browsable format.
-- **References:** CONC-078
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** 文件读取结果展示卡片，显示文件路径和读取内容，支持代码语法高亮。
+- **References:**
+- **Source files:** apps/web/src/components/chat/tool-cards/ReadCard.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-060: Write Card
+
+- **Type:** component
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** 文件写入结果展示卡片，显示写入的文件路径和内容变更（diff）。
+- **References:**
+- **Source files:** apps/web/src/components/chat/tool-cards/WriteCard.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-061: Edit Card
+
+- **Type:** component
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** 文件编辑结果展示卡片，显示编辑前后的 diff 对比，支持代码语法高亮。
+- **References:**
+- **Source files:** apps/web/src/components/chat/tool-cards/EditCard.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-062: Glob Card
+
+- **Type:** component
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** 文件模式搜索结果显示卡片，展示匹配的文件路径列表。
+- **References:**
+- **Source files:** apps/web/src/components/chat/tool-cards/GlobCard.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-063: Grep Card
+
+- **Type:** component
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** 代码内容搜索结果显示卡片，展示匹配行和上下文，支持代码高亮。
+- **References:**
+- **Source files:** apps/web/src/components/chat/tool-cards/GrepCard.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-064: LSP Card
+
+- **Type:** component
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** LSP 语言服务器诊断结果展示卡片，显示代码检查的问题和警告列表。
+- **References:**
+- **Source files:** apps/web/src/components/chat/tool-cards/LSPCard.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-065: Todo Card
+
+- **Type:** component
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** TodoWrite 任务更新卡片，展示 AI Agent 创建或更新的任务列表变更。
+- **References:** [CONC-005 TodoItem Model]
+- **Source files:** apps/web/src/components/chat/tool-cards/TodoCard.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-066: Ask User Question Card
+
+- **Type:** component
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** AskUserQuestion 工具调用的消息卡片，在消息流中展示 Agent 提问和用户回答。
+- **References:** [CONC-054 Ask User Question Panel]
+- **Source files:** apps/web/src/components/chat/tool-cards/AskUserQuestionCard.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-067: Generic Card
+
+- **Type:** component
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** 通用工具结果回退卡片，当工具没有专用卡片时使用，显示基本的工具名和输出内容。
+- **References:**
+- **Source files:** apps/web/src/components/chat/tool-cards/GenericCard.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-068: Streaming Agent Card
+
+- **Type:** component
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** 流式子 Agent 卡片，实时显示子 Agent 任务的输出和进度。
+- **References:**
+- **Source files:** apps/web/src/components/chat/tool-cards/StreamingAgentCard.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-069: Collapsible Card
+
+- **Type:** component
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** 可折叠卡片容器组件，提供展开/收起交互，用于包裹需要节省空间的工具卡片内容。
+- **References:**
+- **Source files:** apps/web/src/components/chat/tool-cards/CollapsibleCard.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-070: QA Result Card
+
+- **Type:** component
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** AskUserQuestion 回答结果展示卡片，在消息流中显示用户对 Agent 提问的回答内容。
+- **References:** [CONC-066 Ask User Question Card]
+- **Source files:** apps/web/src/components/chat/tool-cards/QAResultCard.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-071: Code Line
+
+- **Type:** component
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** 单行代码渲染组件，支持根据文件扩展名或语言标识进行语法高亮。
+- **References:**
+- **Source files:** apps/web/src/components/chat/tool-cards/CodeLine.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-072: Event Tree Builder
+
+- **Type:** operation
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** 事件树构建工具函数，将扁平的 Agent 流式事件列表组织为层级树结构，便于渲染嵌套的工具调用。
+- **References:**
+- **Source files:** apps/web/src/components/chat/tool-cards/buildEventTree.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-073: Event Pairer
+
+- **Type:** operation
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** 事件配对工具函数，将 tool_use 和对应的 tool_result 事件配对，形成完整的工具调用记录。
+- **References:**
+- **Source files:** apps/web/src/components/chat/tool-cards/pairEvents.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-074: Event Segmenter
+
+- **Type:** operation
+- **Module:** web-chat (→ [summaries/web-chat.md](architecture/summaries/web-chat.md))
+- **Summary:** 事件分段工具函数，将连续的 Agent 流式事件按回合（turn）进行划分。
+- **References:**
+- **Source files:** apps/web/src/components/chat/tool-cards/segmentEvents.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-075: Graph Visualization
+
+- **Type:** domain
+- **Module:** web-graph (→ [summaries/web-graph.md](architecture/summaries/web-graph.md))
+- **Summary:** 项目规格图谱可视化模块，提供多种视图展示项目架构和规格数据，支持同步进度展示和节点详情面板。
+- **References:** [CONC-046 Graph Types]
+- **Source files:** apps/web/src/components/graph/**/*.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-076: Specs Graph View
+
+- **Type:** component
+- **Module:** web-graph (→ [summaries/web-graph.md](architecture/summaries/web-graph.md))
+- **Summary:** 规格树力导向图谱可视化，以节点和连线展示项目规格的层级结构和关联关系。
+- **References:** [CONC-047 Spec Node Types], [CONC-087 Graph Nodes]
+- **Source files:** apps/web/src/components/graph/SpecsGraph.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-077: Specs List View
+
+- **Type:** component
+- **Module:** web-graph (→ [summaries/web-graph.md](architecture/summaries/web-graph.md))
+- **Summary:** 规格树形列表视图，以可折叠树形列表展示所有规格节点及其层级关系。
+- **References:** [CONC-047 Spec Node Types]
 - **Source files:** apps/web/src/components/graph/SpecsList.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-082 — Specs Document View
+---
+
+## CONC-078: Specs Document View
+
 - **Type:** component
-- **Module:** graph-ui
-- **Summary:** Document view of project specifications showing specs as rendered markdown documents.
-- **References:** CONC-078
+- **Module:** web-graph (→ [summaries/web-graph.md](architecture/summaries/web-graph.md))
+- **Summary:** 规格文档视图，展示选中规格节点的详细文档内容，包括描述、验收标准、设计文档等。
+- **References:** [CONC-085 Markdown Viewer]
 - **Source files:** apps/web/src/components/graph/SpecsDocument.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-083 — Architect Graph View
+---
+
+## CONC-079: Flow Graph View
+
 - **Type:** component
-- **Module:** graph-ui
-- **Summary:** Architecture graph visualization showing project structure and dependencies.
-- **References:** CONC-078
+- **Module:** web-graph (→ [summaries/web-graph.md](architecture/summaries/web-graph.md))
+- **Summary:** 流程图视图，展示项目架构中模块间的数据流和依赖关系。
+- **References:**
+- **Source files:** apps/web/src/components/graph/FlowGraph.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-080: Architect Graph View
+
+- **Type:** component
+- **Module:** web-graph (→ [summaries/web-graph.md](architecture/summaries/web-graph.md))
+- **Summary:** 架构图视图，展示项目代码架构的组件层级和模块关系。
+- **References:**
 - **Source files:** apps/web/src/components/graph/ArchitectGraph.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-084 — Technical Document View
-- **Type:** component
-- **Module:** graph-ui
-- **Summary:** Technical documentation view showing detailed technical specifications.
-- **References:** CONC-078
-- **Source files:** apps/web/src/components/graph/TechnicalDocument.tsx
+---
 
-## CONC-085 — Graph Sync View
-- **Type:** component
-- **Module:** graph-ui
-- **Summary:** Sync trigger view shown when no graph data exists, allowing users to start a full sync.
-- **References:** CONC-078
-- **Source files:** apps/web/src/components/graph/SyncView.tsx
+## CONC-081: Graph Tab Bar
 
-## CONC-086 — Graph Sync Progress
 - **Type:** component
-- **Module:** graph-ui
-- **Summary:** Progress indicator overlay shown during active sync with phase and progress percentage.
-- **References:** CONC-078
-- **Source files:** apps/web/src/components/graph/SyncProgress.tsx
+- **Module:** web-graph (→ [summaries/web-graph.md](architecture/summaries/web-graph.md))
+- **Summary:** 图谱页签切换栏，提供多个视图（specs-graph、specs-list、specs-document、architect-graph、flow-graph）之间的切换。
+- **References:**
+- **Source files:** apps/web/src/components/graph/GraphTabBar.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-087 — Graph Detail Panel
+---
+
+## CONC-082: Detail Panel
+
 - **Type:** component
-- **Module:** graph-ui
-- **Summary:** Side panel showing detailed information about a selected graph node.
-- **References:** CONC-078
+- **Module:** web-graph (→ [summaries/web-graph.md](architecture/summaries/web-graph.md))
+- **Summary:** 节点详情面板，展示选中图谱节点的完整信息，包括属性、描述、目标、约束和验收标准。
+- **References:** [CONC-047 Spec Node Types]
 - **Source files:** apps/web/src/components/graph/DetailPanel.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-088 — Graph State Management
+---
+
+## CONC-083: Sync Progress
+
 - **Type:** component
-- **Module:** graph-ui
-- **Summary:** Zustand store managing graph data loading, sync state, SSE progress parsing, node selection, and auto-sync checking.
-- **References:** CONC-078
-- **Source files:** apps/web/src/stores/graphStore.ts
+- **Module:** web-graph (→ [summaries/web-graph.md](architecture/summaries/web-graph.md))
+- **Summary:** 同步进度展示组件，显示图谱同步的当前阶段、进度百分比和日志输出。
+- **References:** [CONC-009 Sync Engine]
+- **Source files:** apps/web/src/components/graph/SyncProgress.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-089 — New Session Page
+---
+
+## CONC-084: Sync View
+
+- **Type:** component
+- **Module:** web-graph (→ [summaries/web-graph.md](architecture/summaries/web-graph.md))
+- **Summary:** 同步触发视图，提供同步按钮、自动同步检测和同步类型选择。
+- **References:** [CONC-037 Start Graph Sync API]
+- **Source files:** apps/web/src/components/graph/SyncView.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-085: Markdown Viewer
+
+- **Type:** component
+- **Module:** web-graph (→ [summaries/web-graph.md](architecture/summaries/web-graph.md))
+- **Summary:** Markdown 渲染组件，将 Markdown 格式的文档内容渲染为富文本 HTML。
+- **References:**
+- **Source files:** apps/web/src/components/graph/MarkdownViewer.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-086: Technical Document View
+
+- **Type:** component
+- **Module:** web-graph (→ [summaries/web-graph.md](architecture/summaries/web-graph.md))
+- **Summary:** 技术文档视图，展示项目架构设计文档的完整内容。
+- **References:** [CONC-085 Markdown Viewer]
+- **Source files:** apps/web/src/components/graph/TechnicalDocument.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-087: Graph Nodes
+
+- **Type:** component
+- **Module:** web-graph (→ [summaries/web-graph.md](architecture/summaries/web-graph.md))
+- **Summary:** 图谱节点渲染组件，根据节点类型和状态渲染对应的可视化节点元素。
+- **References:** [CONC-047 Spec Node Types]
+- **Source files:** apps/web/src/components/graph/GraphNodes.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-088: App Layout Framework
+
 - **Type:** domain
-- **Module:** new-session
-- **Summary:** Landing page for creating new AI agent sessions with rich text input, model selection, branch display, and quick action buttons.
+- **Module:** web-layout (→ [summaries/web-layout.md](architecture/summaries/web-layout.md))
+- **Summary:** 应用布局框架，提供全局 UI 结构组件，包括主布局、侧边栏、顶栏、面板和通用交互控件。
 - **References:**
-- **Source files:** apps/web/src/pages/NewSessionPage.tsx
+- **Source files:** apps/web/src/components/layout/**/*.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-090 — Quick Actions
-- **Type:** component
-- **Module:** new-session
-- **Summary:** Pre-defined quick action buttons (Create Feature, Fix Bug, Code Review, Write Tests) that pre-fill the chat input with common prompts.
-- **References:** CONC-089
-- **Source files:** apps/web/src/pages/NewSessionPage.tsx
+---
 
-## CONC-091 — Emacs Keybindings Hook
+## CONC-089: Main Layout
+
 - **Type:** component
-- **Module:** app-hooks
-- **Summary:** Readline-compatible Emacs-style inline editing shortcuts (Ctrl+A/E/B/F/P/N/D/H/W/K/U/Y) with a shared kill ring across all instances.
+- **Module:** web-layout (→ [summaries/web-layout.md](architecture/summaries/web-layout.md))
+- **Summary:** 应用主布局组件，编排 Topbar、Sidebar、AgentPanel、ResizableDivider 和主内容区（Outlet），管理面板显示/隐藏/最大化状态。
+- **References:** [CONC-091 Topbar], [CONC-090 Sidebar], [CONC-092 Agent Panel], [CONC-096 Resizable Divider]
+- **Source files:** apps/web/src/components/layout/MainLayout.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-090: Sidebar
+
+- **Type:** component
+- **Module:** web-layout (→ [summaries/web-layout.md](architecture/summaries/web-layout.md))
+- **Summary:** 侧边栏组件，显示 Agent 会话历史列表和项目列表，支持点击切换活跃会话和项目。
+- **References:** [CONC-095 Agent Status Dot]
+- **Source files:** apps/web/src/components/layout/Sidebar.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-091: Topbar
+
+- **Type:** component
+- **Module:** web-layout (→ [summaries/web-layout.md](architecture/summaries/web-layout.md))
+- **Summary:** 顶栏组件，显示运行中的 Agent 数量和快捷操作按钮（新建项目、打开文件夹）。
 - **References:**
-- **Source files:** apps/web/src/hooks/useEmacsKeybindings.ts
+- **Source files:** apps/web/src/components/layout/Topbar.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-092 — Image Input Hook
+---
+
+## CONC-092: Agent Panel
+
 - **Type:** component
-- **Module:** app-hooks
-- **Summary:** Hook for image upload via file picker or clipboard paste, handling base64 conversion, preview URLs, and image management.
+- **Module:** web-layout (→ [summaries/web-layout.md](architecture/summaries/web-layout.md))
+- **Summary:** Agent 对话面板，作为消息列表、RichTextInput、AgentContextHeader 的容器，是用户与 AI 交互的主界面。
+- **References:** [CONC-051 Message Renderer], [CONC-050 Rich Text Input], [CONC-093 Agent Context Header]
+- **Source files:** apps/web/src/components/layout/AgentPanel.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-093: Agent Context Header
+
+- **Type:** component
+- **Module:** web-layout (→ [summaries/web-layout.md](architecture/summaries/web-layout.md))
+- **Summary:** Agent 上下文头部，显示当前项目名称、Git 分支、AI 模型信息和快捷操作入口。
+- **References:** [CONC-097 Project Dropdown], [CONC-098 Branch Dropdown], [CONC-099 Model Dropdown]
+- **Source files:** apps/web/src/components/layout/AgentContextHeader.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-094: Agent Context Menu
+
+- **Type:** component
+- **Module:** web-layout (→ [summaries/web-layout.md](architecture/summaries/web-layout.md))
+- **Summary:** Agent 上下文菜单，提供新建会话、清除对话、压缩上下文等操作选项。
+- **References:** [CONC-007 Agent Service]
+- **Source files:** apps/web/src/components/layout/AgentContextMenu.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-095: Agent Status Dot
+
+- **Type:** component
+- **Module:** web-layout (→ [summaries/web-layout.md](architecture/summaries/web-layout.md))
+- **Summary:** Agent 状态指示器，用颜色圆点（绿色/idle、蓝色/running、红色/error）直观表示 Agent 运行状态。
+- **References:**
+- **Source files:** apps/web/src/components/layout/AgentStatusDot.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-096: Resizable Divider
+
+- **Type:** component
+- **Module:** web-layout (→ [summaries/web-layout.md](architecture/summaries/web-layout.md))
+- **Summary:** 可拖动分隔条，支持鼠标拖拽调整 Agent 面板宽度，以及面板的折叠/展开操作。
+- **References:**
+- **Source files:** apps/web/src/components/layout/ResizableDivider.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-097: Project Dropdown
+
+- **Type:** component
+- **Module:** web-layout (→ [summaries/web-layout.md](architecture/summaries/web-layout.md))
+- **Summary:** 项目选择器下拉菜单，列出所有已注册项目，支持切换活跃项目上下文。
+- **References:** [CONC-045 Project Types]
+- **Source files:** apps/web/src/components/layout/ProjectDropdown.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-098: Branch Dropdown
+
+- **Type:** component
+- **Module:** web-layout (→ [summaries/web-layout.md](architecture/summaries/web-layout.md))
+- **Summary:** 分支选择器下拉菜单，显示当前 Git 分支，列出本地/远程分支并支持切换。
+- **References:** [CONC-039 List Branches API]
+- **Source files:** apps/web/src/components/layout/BranchDropdown.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-099: Model Dropdown
+
+- **Type:** component
+- **Module:** web-layout (→ [summaries/web-layout.md](architecture/summaries/web-layout.md))
+- **Summary:** AI 模型选择器下拉菜单，列出可用模型及其描述，支持切换当前会话使用的模型。
+- **References:** [CONC-019 List Models API]
+- **Source files:** apps/web/src/components/layout/ModelDropdown.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-100: Confirm Dialog
+
+- **Type:** component
+- **Module:** web-layout (→ [summaries/web-layout.md](architecture/summaries/web-layout.md))
+- **Summary:** 通用确认对话框组件，用于删除确认、操作确认等需要用户二次确认的场景。
+- **References:**
+- **Source files:** apps/web/src/components/layout/ConfirmDialog.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-101: Project Management UI
+
+- **Type:** domain
+- **Module:** web-projects (→ [summaries/web-projects.md](architecture/summaries/web-projects.md))
+- **Summary:** 项目管理界面组件集合，提供项目的创建、列表展示、详情查看和删除等完整 UI 操作流程。
+- **References:** [CONC-045 Project Types]
+- **Source files:** apps/web/src/components/projects/**/*.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-102: Project List Container
+
+- **Type:** component
+- **Module:** web-projects (→ [summaries/web-projects.md](architecture/summaries/web-projects.md))
+- **Summary:** 项目列表容器组件，管理视图模式切换（卡片/列表）、搜索过滤和空状态条件渲染。
+- **References:** [CONC-103 Project Card], [CONC-104 Project Row], [CONC-109 Empty State]
+- **Source files:** apps/web/src/components/projects/ProjectList.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-103: Project Card
+
+- **Type:** component
+- **Module:** web-projects (→ [summaries/web-projects.md](architecture/summaries/web-projects.md))
+- **Summary:** 项目卡片组件，以卡片形式展示项目名称、路径摘要、来源类型等信息。
+- **References:** [CONC-045 Project Types]
+- **Source files:** apps/web/src/components/projects/ProjectCard.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-104: Project Row
+
+- **Type:** component
+- **Module:** web-projects (→ [summaries/web-projects.md](architecture/summaries/web-projects.md))
+- **Summary:** 项目列表行组件，以表格行形式在列表视图中展示项目详细信息。
+- **References:** [CONC-045 Project Types]
+- **Source files:** apps/web/src/components/projects/ProjectRow.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-105: Create Project Modal
+
+- **Type:** component
+- **Module:** web-projects (→ [summaries/web-projects.md](architecture/summaries/web-projects.md))
+- **Summary:** 创建项目弹窗，提供多步骤表单：选择创建方式（本地路径/仓库克隆）、输入项目名称和路径、配置 Git 初始化。
+- **References:** [CONC-017 Create Project API], [CONC-106 Clone Repo Modal]
+- **Source files:** apps/web/src/components/projects/CreateProjectModal.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-106: Clone Repo Modal
+
+- **Type:** component
+- **Module:** web-projects (→ [summaries/web-projects.md](architecture/summaries/web-projects.md))
+- **Summary:** Git 仓库克隆弹窗，输入远程仓库 URL 和本地目标路径进行克隆。
+- **References:** [CONC-017 Create Project API]
+- **Source files:** apps/web/src/components/projects/CloneRepoModal.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-107: Project Detail Modal
+
+- **Type:** component
+- **Module:** web-projects (→ [summaries/web-projects.md](architecture/summaries/web-projects.md))
+- **Summary:** 项目详情弹窗，展示项目完整属性信息和操作选项（打开、删除等）。
+- **References:** [CONC-045 Project Types]
+- **Source files:** apps/web/src/components/projects/ProjectDetailModal.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-108: Action Card
+
+- **Type:** component
+- **Module:** web-projects (→ [summaries/web-projects.md](architecture/summaries/web-projects.md))
+- **Summary:** 操作卡片组件，在首页提供快速操作入口（新建项目、打开已有项目等）。
+- **References:**
+- **Source files:** apps/web/src/components/projects/ActionCard.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-109: Empty State
+
+- **Type:** component
+- **Module:** web-projects (→ [summaries/web-projects.md](architecture/summaries/web-projects.md))
+- **Summary:** 空状态引导组件，在无项目时展示引导信息和快速创建入口。
+- **References:**
+- **Source files:** apps/web/src/components/projects/EmptyState.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-110: React Hooks
+
+- **Type:** domain
+- **Module:** web-hooks (→ [summaries/web-hooks.md](architecture/summaries/web-hooks.md))
+- **Summary:** React 自定义 Hooks 集合，封装可复用的 UI 交互逻辑和状态管理。
+- **References:**
+- **Source files:** apps/web/src/hooks/*.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-111: Slash Completion Hook
+
+- **Type:** component
+- **Module:** web-hooks (→ [summaries/web-hooks.md](architecture/summaries/web-hooks.md))
+- **Summary:** 斜杠命令自动补全逻辑 Hook，监控输入框 `/` 触发命令搜索和过滤，支持键盘导航（ArrowUp/Down/Enter/Tab/Escape），选择后替换输入文本。
+- **References:** [CONC-029 List Slash Commands API]
+- **Source files:** apps/web/src/hooks/useSlashCompletion.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-112: Image Input Hook
+
+- **Type:** component
+- **Module:** web-hooks (→ [summaries/web-hooks.md](architecture/summaries/web-hooks.md))
+- **Summary:** 图片输入 Hook，处理粘贴和拖拽图片到输入框，生成 ImageAttachment 数据用于发送给 Agent。
 - **References:**
 - **Source files:** apps/web/src/hooks/useImageInput.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-093 — Keyboard Navigation Hook
+---
+
+## CONC-113: Emacs Keybindings Hook
+
 - **Type:** component
-- **Module:** app-hooks
-- **Summary:** Generic keyboard navigation hook for lists with arrow key navigation, enter/space selection, escape to clear, and optional wrapping.
+- **Module:** web-hooks (→ [summaries/web-hooks.md](architecture/summaries/web-hooks.md))
+- **Summary:** Emacs 风格快捷键 Hook，在文本输入框中支持 Ctrl+A/E/N/P/F/B/D/K 等基本编辑操作。
 - **References:**
-- **Source files:** apps/web/src/hooks/useKeyboardNavigation.ts
+- **Source files:** apps/web/src/hooks/useEmacsKeybindings.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-094 — Auto Scroll Hook
+---
+
+## CONC-114: Chat Panel Hook
+
 - **Type:** component
-- **Module:** app-hooks
-- **Summary:** Hook that tracks scroll position and provides scroll-to-bottom functionality for chat message lists.
+- **Module:** web-hooks (→ [summaries/web-hooks.md](architecture/summaries/web-hooks.md))
+- **Summary:** 聊天面板控制 Hook，管理 Agent 对话面板的打开/关闭/最大化状态切换。
+- **References:** [CONC-092 Agent Panel]
+- **Source files:** apps/web/src/hooks/useChatPanel.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-115: Auto Scroll Hook
+
+- **Type:** component
+- **Module:** web-hooks (→ [summaries/web-hooks.md](architecture/summaries/web-hooks.md))
+- **Summary:** 自动滚动 Hook，在聊天消息更新时自动滚动到底部，检测用户手动上滚时暂停自动滚动。
 - **References:**
 - **Source files:** apps/web/src/hooks/useAutoScroll.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-095 — Elapsed Time Hook
+---
+
+## CONC-116: Keyboard Navigation Hook
+
 - **Type:** component
-- **Module:** app-hooks
-- **Summary:** Hook for displaying elapsed time since a given timestamp, used for agent session timing.
+- **Module:** web-hooks (→ [summaries/web-hooks.md](architecture/summaries/web-hooks.md))
+- **Summary:** 键盘导航 Hook，支持在列表中使用上下键导航选择项。
+- **References:**
+- **Source files:** apps/web/src/hooks/useKeyboardNavigation.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-117: Project Actions Hook
+
+- **Type:** component
+- **Module:** web-hooks (→ [summaries/web-hooks.md](architecture/summaries/web-hooks.md))
+- **Summary:** 项目操作 Hook，封装创建项目（含本地文件夹选择对话框）和删除项目的完整异步操作流程。
+- **References:** [CONC-017 Create Project API], [CONC-018 Delete Project API], [CONC-042 Open Folder Dialog API]
+- **Source files:** apps/web/src/hooks/useProjectActions.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-118: Elapsed Time Hook
+
+- **Type:** component
+- **Module:** web-hooks (→ [summaries/web-hooks.md](architecture/summaries/web-hooks.md))
+- **Summary:** 运行时间追踪 Hook，计算并显示从指定起始时间到当前的耗时（用于 Agent 运行时长等场景）。
 - **References:**
 - **Source files:** apps/web/src/hooks/useElapsedTime.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-096 — Project Dropdown
-- **Type:** component
-- **Module:** app-shell
-- **Summary:** Dropdown component in the topbar for selecting the active project.
-- **References:** CONC-049
-- **Source files:** apps/web/src/components/layout/ProjectDropdown.tsx
+---
 
-## CONC-097 — Branch Dropdown
-- **Type:** component
-- **Module:** app-shell
-- **Summary:** Dropdown component in the topbar for selecting and switching Git branches.
-- **References:** CONC-049
-- **Source files:** apps/web/src/components/layout/BranchDropdown.tsx
+## CONC-119: Frontend Utility Library
 
-## CONC-098 — Model Dropdown
-- **Type:** component
-- **Module:** app-shell
-- **Summary:** Dropdown component for selecting the AI model to use in agent sessions.
-- **References:** CONC-049
-- **Source files:** apps/web/src/components/layout/ModelDropdown.tsx
+- **Type:** domain
+- **Module:** web-lib (→ [summaries/web-lib.md](architecture/summaries/web-lib.md))
+- **Summary:** 前端工具库，封装后端 API 调用、斜杠命令过滤和通用工具函数，是前端与后端通信的统一接口层。
+- **References:**
+- **Source files:** apps/web/src/lib/*.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
 
-## CONC-099 — Confirm Dialog
-- **Type:** component
-- **Module:** app-shell
-- **Summary:** Reusable confirmation dialog component for user action confirmations.
-- **References:** CONC-049
-- **Source files:** apps/web/src/components/layout/ConfirmDialog.tsx
+---
 
-## CONC-100 — Project State Management
+## CONC-120: Server API Client
+
+- **Type:** feature
+- **Module:** web-lib (→ [summaries/web-lib.md](architecture/summaries/web-lib.md))
+- **Summary:** 服务端 API 调用封装，涵盖所有后端接口（项目 CRUD、Agent 管理、Graph 数据、Git 分支、Slash Commands），每个函数对应一个 REST 端点。
+- **References:** [CONC-014 Server API Routes]
+- **Source files:** apps/web/src/lib/serverApi.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-121: Slash Command Utilities
+
+- **Type:** operation
+- **Module:** web-lib (→ [summaries/web-lib.md](architecture/summaries/web-lib.md))
+- **Summary:** 斜杠命令工具函数，解析输入文本中的当前斜杠片段并执行命令过滤匹配。
+- **References:** [CONC-111 Slash Completion Hook]
+- **Source files:** apps/web/src/lib/slashCommandUtils.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-122: Time Utilities
+
+- **Type:** operation
+- **Module:** web-lib (→ [summaries/web-lib.md](architecture/summaries/web-lib.md))
+- **Summary:** 时间工具函数，格式化相对时间和持续时间的显示。
+- **References:**
+- **Source files:** apps/web/src/lib/time.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-123: General Utilities
+
+- **Type:** operation
+- **Module:** web-lib (→ [summaries/web-lib.md](architecture/summaries/web-lib.md))
+- **Summary:** 通用客户端工具函数，如 className 条件合并等。
+- **References:**
+- **Source files:** apps/web/src/lib/utils.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-124: Application Pages
+
+- **Type:** domain
+- **Module:** web-pages (→ [summaries/web-pages.md](architecture/summaries/web-pages.md))
+- **Summary:** 应用路由页面集合，每个页面对应一个前端路由，通过 React Router 在 MainLayout 中渲染。
+- **References:**
+- **Source files:** apps/web/src/pages/*.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-125: New Session Page
+
 - **Type:** component
-- **Module:** project-management
-- **Summary:** Zustand store managing project list, active project, branch state, view mode, and search query with localStorage persistence.
-- **References:** CONC-005
+- **Module:** web-pages (→ [summaries/web-pages.md](architecture/summaries/web-pages.md))
+- **Summary:** AI 新会话首页（路由 `/`），展示快速操作卡片和 Agent 创建入口，是用户启动 AI 对话的起点。
+- **References:** [CONC-020 Create Agent API], [CONC-108 Action Card]
+- **Source files:** apps/web/src/pages/NewSessionPage.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-126: Projects Page
+
+- **Type:** component
+- **Module:** web-pages (→ [summaries/web-pages.md](architecture/summaries/web-pages.md))
+- **Summary:** 项目管理页面（路由 `/projects`），渲染项目列表和管理操作界面。
+- **References:** [CONC-102 Project List Container]
+- **Source files:** apps/web/src/pages/ProjectsPage.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-127: Graph Page
+
+- **Type:** component
+- **Module:** web-pages (→ [summaries/web-pages.md](architecture/summaries/web-pages.md))
+- **Summary:** 图谱浏览页面（路由 `/graph`），渲染项目规格图谱的各视图组件和同步控件。
+- **References:** [CONC-076 Specs Graph View], [CONC-081 Graph Tab Bar], [CONC-082 Detail Panel], [CONC-084 Sync View]
+- **Source files:** apps/web/src/pages/GraphPage.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-128: Tasks Page
+
+- **Type:** component
+- **Module:** web-pages (→ [summaries/web-pages.md](architecture/summaries/web-pages.md))
+- **Summary:** 任务管理页面（路由 `/tasks`），展示当前项目的待办任务列表和状态。
+- **References:** [CONC-005 TodoItem Model]
+- **Source files:** apps/web/src/pages/TasksPage.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-129: Files Page
+
+- **Type:** component
+- **Module:** web-pages (→ [summaries/web-pages.md](architecture/summaries/web-pages.md))
+- **Summary:** 文件浏览页面（路由 `/files`），展示项目文件树结构。
+- **References:**
+- **Source files:** apps/web/src/pages/FilesPage.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-130: Git Page
+
+- **Type:** component
+- **Module:** web-pages (→ [summaries/web-pages.md](architecture/summaries/web-pages.md))
+- **Summary:** Git 操作页面（路由 `/git`），展示分支信息、提交历史和 Git 相关操作。
+- **References:** [CONC-039 List Branches API], [CONC-040 Checkout Branch API]
+- **Source files:** apps/web/src/pages/GitPage.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-131: Not Found Page
+
+- **Type:** component
+- **Module:** web-pages (→ [summaries/web-pages.md](architecture/summaries/web-pages.md))
+- **Summary:** 404 错误页面（路由 `*`），路由未匹配时的回退页面。
+- **References:**
+- **Source files:** apps/web/src/pages/NotFoundPage.tsx
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-132: State Management
+
+- **Type:** domain
+- **Module:** web-stores (→ [summaries/web-stores.md](architecture/summaries/web-stores.md))
+- **Summary:** 基于 Zustand 的前端全局状态管理，管理 Agent 会话、Graph 数据、项目和斜杠命令等核心领域状态。
+- **References:**
+- **Source files:** apps/web/src/stores/*.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-133: Agent Store
+
+- **Type:** feature
+- **Module:** web-stores (→ [summaries/web-stores.md](architecture/summaries/web-stores.md))
+- **Summary:** Agent 会话状态管理 Store，管理 Agent 列表、活跃会话、消息历史、SSE 实时连接、流式事件处理、Todo 列表和用户提问答案提交。
+- **References:** [CONC-044 Agent Types], [CONC-025 Send Agent Message API], [CONC-027 Agent SSE Stream API]
+- **Source files:** apps/web/src/stores/agentStore.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-134: Graph Store
+
+- **Type:** feature
+- **Module:** web-stores (→ [summaries/web-stores.md](architecture/summaries/web-stores.md))
+- **Summary:** Graph 数据状态管理 Store，管理图谱数据加载、同步触发（SSE 流式进度）、视图切换、节点选择和详情面板状态。
+- **References:** [CONC-046 Graph Types], [CONC-034 Get Graph Data API], [CONC-037 Start Graph Sync API]
+- **Source files:** apps/web/src/stores/graphStore.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-135: Project Store
+
+- **Type:** feature
+- **Module:** web-stores (→ [summaries/web-stores.md](architecture/summaries/web-stores.md))
+- **Summary:** 项目状态管理 Store，管理项目列表、活跃项目/分支、视图模式（卡片/列表）、搜索过滤和 Git 分支操作。
+- **References:** [CONC-045 Project Types], [CONC-015 List Projects API], [CONC-039 List Branches API]
 - **Source files:** apps/web/src/stores/projectStore.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0
+
+---
+
+## CONC-136: Slash Command Store
+
+- **Type:** feature
+- **Module:** web-stores (→ [summaries/web-stores.md](architecture/summaries/web-stores.md))
+- **Summary:** 斜杠命令状态管理 Store，管理可用斜杠命令和 Skills 列表的获取与缓存。
+- **References:** [CONC-029 List Slash Commands API]
+- **Source files:** apps/web/src/stores/slashCommandStore.ts
+- **Last synced:** 2026-05-19T21:00:00Z | Commit: 73edcc0

@@ -1,0 +1,42 @@
+{
+  "id": "claude-code-adapter",
+  "name": "Claude Code 适配器",
+  "level": 4,
+  "parent": "agent-service",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Claude Code CLI 的具体适配器实现。",
+  "goals": [
+    "通过 CLI 与 Claude 通信"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 创建",
+      "when": "初始化适配器",
+      "then": "通过子进程启动 Claude CLI"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "ClaudeCodeAdapter 实现 AgentAdapter 接口。通过子进程管理 Claude Code CLI，处理 session 创建、消息发送和流式输出。",
+    "parameters": [
+      "通过子进程通信",
+      "支持会话创建和恢复"
+    ]
+  },
+  "constraints": [
+    "依赖 Claude Code CLI 已安装",
+    "子进程异常时抛出错误"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.040Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/lib/claude-code-adapter.ts"
+    ]
+  }
+}

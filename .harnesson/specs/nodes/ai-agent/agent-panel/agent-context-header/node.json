@@ -1,0 +1,40 @@
+{
+  "id": "agent-context-header",
+  "name": "上下文头部",
+  "level": 4,
+  "parent": "agent-panel",
+  "children": [],
+  "isLeaf": true,
+  "summary": "显示当前项目名、分支、模型信息和快捷操作。",
+  "goals": [
+    "展示会话上下文"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 面板显示",
+      "when": "会话激活",
+      "then": "显示上下文头部"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "Agent 上下文信息栏: 项目名称、Git 分支、AI 模型名称、快捷操作按钮。",
+    "parameters": [
+      "显示: 项目、分支、模型"
+    ]
+  },
+  "constraints": [
+    "信息随项目/分支/模型切换更新"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.038Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/layout/AgentContextHeader.tsx"
+    ]
+  }
+}

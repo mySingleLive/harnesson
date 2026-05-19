@@ -1,0 +1,43 @@
+{
+  "id": "agent-store",
+  "name": "Agent 状态 Store",
+  "level": 3,
+  "parent": "ai-agent",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Agent 会话全局状态管理 (Zustand)。",
+  "goals": [
+    "管理 Agent 所有状态"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 创建",
+      "when": "SSE 推送事件",
+      "then": "实时更新消息和状态"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "useAgentStore: agents, activeAgentId, messages, eventSources, isStreaming, todos, pendingQuestion。面板配置持久化到 localStorage。",
+    "parameters": [
+      "面板默认宽度: 440px",
+      "最多 1 个 SSE 连接",
+      "事件缓冲: 200 条上限"
+    ]
+  },
+  "constraints": [
+    "SSE 同时保持 1 个(浏览器连接池限制)",
+    "事件缓冲 200 条后裁剪"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.030Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/stores/agentStore.ts"
+    ]
+  }
+}

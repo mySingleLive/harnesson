@@ -1,0 +1,40 @@
+{
+  "id": "empty-state",
+  "name": "空状态",
+  "level": 4,
+  "parent": "project-ui",
+  "children": [],
+  "isLeaf": true,
+  "summary": "无项目时的引导页面。",
+  "goals": [
+    "无项目时引导"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "无任何项目",
+      "when": "查看项目列表",
+      "then": "显示引导创建页面"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "EmptyState 组件。无项目时展示引导信息和快速创建入口。",
+    "parameters": [
+      "显示: 引导文本 + 创建按钮"
+    ]
+  },
+  "constraints": [
+    "仅无项目时显示"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.041Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/projects/EmptyState.tsx"
+    ]
+  }
+}

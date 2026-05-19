@@ -1,0 +1,41 @@
+{
+  "id": "delete-project",
+  "name": "删除项目",
+  "level": 4,
+  "parent": "project-crud",
+  "children": [],
+  "isLeaf": true,
+  "summary": "DELETE /api/projects/:id — 删除指定项目。",
+  "goals": [
+    "删除项目"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "项目存在",
+      "when": "DELETE /api/projects/:id",
+      "then": "项目被删除"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "API: DELETE /api/projects/:id。删除数据库记录。",
+    "parameters": [
+      "HTTP: DELETE /api/projects/:id"
+    ]
+  },
+  "constraints": [
+    "项目不存在返回 404",
+    "不级联删除 Agent 会话"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.040Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/projects.ts"
+    ]
+  }
+}

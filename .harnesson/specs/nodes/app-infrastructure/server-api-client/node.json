@@ -1,0 +1,43 @@
+{
+  "id": "server-api-client",
+  "name": "API 客户端",
+  "level": 3,
+  "parent": "app-infrastructure",
+  "children": [],
+  "isLeaf": true,
+  "summary": "前端 API 调用封装 (serverApi.ts)。",
+  "goals": [
+    "统一 API 调用"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "后端运行",
+      "when": "调用任意 API",
+      "then": "返回类型安全数据"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "serverApi.ts 导出覆盖所有后端接口的函数: 项目 CRUD, Agent 管理, Graph 数据, Git 分支, Slash Commands。每个函数对应一个 REST 端点。",
+    "parameters": [
+      "所有请求使用 fetch",
+      "Base URL: /api/",
+      "错误解析 JSON error 字段"
+    ]
+  },
+  "constraints": [
+    "健康检查超时 2s",
+    "API 失败抛出 Error"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.035Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/lib/serverApi.ts"
+    ]
+  }
+}

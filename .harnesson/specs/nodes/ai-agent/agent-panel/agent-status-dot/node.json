@@ -1,0 +1,42 @@
+{
+  "id": "agent-status-dot",
+  "name": "状态指示器",
+  "level": 4,
+  "parent": "agent-panel",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Agent 状态颜色圆点指示器。",
+  "goals": [
+    "显示 Agent 状态"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 状态变更",
+      "when": "收到事件",
+      "then": "颜色圆点更新"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "颜色圆点: 绿色=idle, 蓝色=running, 红色=error。用于侧边栏和面板头部。",
+    "parameters": [
+      "idle: 绿色",
+      "running: 蓝色",
+      "error: 红色"
+    ]
+  },
+  "constraints": [
+    "状态根据 SSE 事件实时更新"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.038Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/layout/AgentStatusDot.tsx"
+    ]
+  }
+}

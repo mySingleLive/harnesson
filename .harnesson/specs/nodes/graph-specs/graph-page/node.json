@@ -1,0 +1,40 @@
+{
+  "id": "graph-page",
+  "name": "图谱页面",
+  "level": 3,
+  "parent": "graph-specs",
+  "children": [],
+  "isLeaf": true,
+  "summary": "图谱浏览路由页面（/graph）。",
+  "goals": [
+    "图谱浏览入口"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "导航到 /graph",
+      "when": "页面加载",
+      "then": "显示图谱视图"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "路由 /graph 页面。组合 SpecsGraph, GraphTabBar, DetailPanel, SyncView 等。",
+    "parameters": [
+      "路由: /graph"
+    ]
+  },
+  "constraints": [
+    "需要图谱数据"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.034Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/pages/GraphPage.tsx"
+    ]
+  }
+}

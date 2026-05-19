@@ -1,0 +1,40 @@
+{
+  "id": "specs-document-view",
+  "name": "规格文档视图",
+  "level": 4,
+  "parent": "graph-views",
+  "children": [],
+  "isLeaf": true,
+  "summary": "展示选中节点的详细文档。",
+  "goals": [
+    "查看节点文档"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "选中节点",
+      "when": "查看文档",
+      "then": "渲染 Markdown 文档"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "SpecsDocument 组件。使用 MarkdownViewer 渲染节点设计文档和详情。",
+    "parameters": [
+      "Markdown 渲染"
+    ]
+  },
+  "constraints": [
+    "无选中节点时显示提示"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.043Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/graph/SpecsDocument.tsx"
+    ]
+  }
+}

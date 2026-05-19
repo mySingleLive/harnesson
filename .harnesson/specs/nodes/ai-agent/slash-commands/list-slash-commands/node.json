@@ -1,0 +1,41 @@
+{
+  "id": "list-slash-commands",
+  "name": "列出命令 API",
+  "level": 4,
+  "parent": "slash-commands",
+  "children": [],
+  "isLeaf": true,
+  "summary": "GET /api/slash-commands — 获取可用斜杠命令和 Skills。",
+  "goals": [
+    "获取可用命令"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "项目有 Skills",
+      "when": "查询命令",
+      "then": "返回命令列表"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "API: GET /api/slash-commands?cwd=xxx。扫描工作目录返回可用命令列表。",
+    "parameters": [
+      "HTTP: GET /api/slash-commands",
+      "可选 cwd 查询参数"
+    ]
+  },
+  "constraints": [
+    "cwd 不合法时返回空"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.039Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/agents.ts"
+    ]
+  }
+}

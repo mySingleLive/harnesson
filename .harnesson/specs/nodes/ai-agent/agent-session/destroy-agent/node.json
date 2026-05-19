@@ -1,0 +1,42 @@
+{
+  "id": "destroy-agent",
+  "name": "销毁 Agent",
+  "level": 4,
+  "parent": "agent-session",
+  "children": [],
+  "isLeaf": true,
+  "summary": "DELETE /api/agents/:id — 销毁 Agent 会话，关闭 SSE 连接。",
+  "goals": [
+    "安全销毁 Agent"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 存在",
+      "when": "销毁",
+      "then": "标记 destroyed，SSE 断开"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "API: DELETE /api/agents/:id。停止适配器、关闭 SSE 客户端、清理运行时、标记 destroyed。",
+    "parameters": [
+      "HTTP 方法: DELETE",
+      "路径: /api/agents/:id"
+    ]
+  },
+  "constraints": [
+    "已销毁的 Agent 不可恢复",
+    "运行时不存在时仅标记数据库"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.036Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/agents.ts"
+    ]
+  }
+}

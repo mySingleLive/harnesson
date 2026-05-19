@@ -1,0 +1,41 @@
+{
+  "id": "sync-view",
+  "name": "同步视图",
+  "level": 3,
+  "parent": "graph-specs",
+  "children": [],
+  "isLeaf": true,
+  "summary": "同步触发和进度展示视图。",
+  "goals": [
+    "触发和查看同步"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "项目有新提交",
+      "when": "点击同步",
+      "then": "开始同步并显示进度"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "SyncView 组件。同步按钮、自动检测 needsSync、进度条和日志展示。",
+    "parameters": [
+      "同步触发按钮",
+      "进度条和日志"
+    ]
+  },
+  "constraints": [
+    "同步中禁用触发按钮"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.033Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/graph/SyncView.tsx"
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "id": "specs-list-view",
+  "name": "规格列表视图",
+  "level": 4,
+  "parent": "graph-views",
+  "children": [],
+  "isLeaf": true,
+  "summary": "树形列表展示规格节点层级。",
+  "goals": [
+    "列表展示节点"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "图谱数据加载",
+      "when": "切换到列表",
+      "then": "树形列表展示"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "SpecsList 组件。可折叠树形列表，展示节点名称、层级和状态。",
+    "parameters": [
+      "可折叠树形列表"
+    ]
+  },
+  "constraints": [
+    "节点数量多时需滚动"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.043Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/graph/SpecsList.tsx"
+    ]
+  }
+}

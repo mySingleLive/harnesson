@@ -1,0 +1,34 @@
+{
+  "id": "agent-messaging",
+  "name": "消息收发",
+  "level": 3,
+  "parent": "ai-agent",
+  "children": [
+    "send-message",
+    "agent-sse-stream"
+  ],
+  "isLeaf": false,
+  "summary": "Agent 消息的实时收发系统，支持 SSE 流式推送和过程控制。",
+  "goals": [
+    "实现消息发送和流式回复接收"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "用户输入消息",
+      "when": "发送",
+      "then": "SSE 开始推送 AI 回复"
+    }
+  ],
+  "testCases": {},
+  "status": "draft",
+  "design": null,
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.029Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/agents.ts"
+    ]
+  }
+}

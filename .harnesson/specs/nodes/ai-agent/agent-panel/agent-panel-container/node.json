@@ -1,0 +1,41 @@
+{
+  "id": "agent-panel-container",
+  "name": "面板容器",
+  "level": 4,
+  "parent": "agent-panel",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Agent 对话面板容器，包含消息列表、输入框和上下文头部。",
+  "goals": [
+    "对话主界面容器"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 激活",
+      "when": "面板显示",
+      "then": "包含消息、输入框、上下文头部"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "组合 MessageRenderer, RichTextInput, AgentContextHeader 的容器组件。支持面板宽度调整和折叠。",
+    "parameters": [
+      "面板宽度可调",
+      "支持折叠/展开"
+    ]
+  },
+  "constraints": [
+    "最大化时隐藏主内容区"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.038Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/layout/AgentPanel.tsx"
+    ]
+  }
+}

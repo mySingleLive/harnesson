@@ -1,0 +1,41 @@
+{
+  "id": "branch-dropdown",
+  "name": "分支选择器",
+  "level": 4,
+  "parent": "git-branches",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Git 分支下拉选择器 UI。",
+  "goals": [
+    "选择分支 UI"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "项目有分支",
+      "when": "打开下拉",
+      "then": "列出本地和远程分支"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "BranchDropdown 组件。显示当前分支，下拉列出本地/远程分支，支持切换。",
+    "parameters": [
+      "显示: 当前分支",
+      "列表: 本地 + 远程分支"
+    ]
+  },
+  "constraints": [
+    "非 Git 仓库时显示提示"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.042Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/layout/BranchDropdown.tsx"
+    ]
+  }
+}

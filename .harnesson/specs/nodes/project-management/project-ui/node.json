@@ -1,0 +1,38 @@
+{
+  "id": "project-ui",
+  "name": "项目界面",
+  "level": 3,
+  "parent": "project-management",
+  "children": [
+    "project-list-container",
+    "project-card",
+    "create-project-modal",
+    "clone-repo-modal",
+    "empty-state"
+  ],
+  "isLeaf": false,
+  "summary": "项目管理 UI 组件。",
+  "goals": [
+    "提供卡片/列表视图",
+    "支持创建项目弹窗"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "查看项目",
+      "when": "切换视图",
+      "then": "切换卡片/列表模式"
+    }
+  ],
+  "testCases": {},
+  "status": "draft",
+  "design": null,
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.031Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/projects/"
+    ]
+  }
+}

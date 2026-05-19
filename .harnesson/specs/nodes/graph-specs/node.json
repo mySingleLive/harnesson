@@ -1,0 +1,47 @@
+{
+  "id": "graph-specs",
+  "name": "规格图谱",
+  "level": 2,
+  "parent": "project",
+  "children": [
+    "graph-data",
+    "graph-sync",
+    "graph-views",
+    "detail-panel",
+    "graph-nodes",
+    "markdown-viewer",
+    "sync-view",
+    "graph-store",
+    "graph-page",
+    "graph-storage"
+  ],
+  "isLeaf": false,
+  "summary": "项目规格和架构的可视化图谱系统，支持多种视图、数据同步和节点详情。",
+  "goals": [
+    "可视化展示项目规格树的层级结构",
+    "支持图谱、列表、文档、流程图等多种视图",
+    "提供全量和增量两种规格同步方式"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "项目已有图谱数据",
+      "when": "进入图谱页",
+      "then": "默认以力导向图展示规格节点"
+    }
+  ],
+  "testCases": {},
+  "status": "draft",
+  "design": null,
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.028Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/graph/",
+      "apps/server/src/routes/graph.ts",
+      "apps/server/src/lib/graph-storage.ts",
+      "apps/server/src/lib/sync-engine.ts"
+    ]
+  }
+}

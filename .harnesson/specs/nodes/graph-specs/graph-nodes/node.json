@@ -1,0 +1,41 @@
+{
+  "id": "graph-nodes",
+  "name": "图谱节点",
+  "level": 3,
+  "parent": "graph-specs",
+  "children": [],
+  "isLeaf": true,
+  "summary": "图谱可视化节点渲染组件。",
+  "goals": [
+    "渲染图谱节点"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "有节点数据",
+      "when": "渲染图谱",
+      "then": "节点按类型显示"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "GraphNodes 组件。根据节点类型(domain/feature/entity/component/operation)和状态(draft/review/stable)渲染不同视觉样式。",
+    "parameters": [
+      "节点类型: domain|feature|entity|component|operation",
+      "状态: draft|review|stable|deprecated"
+    ]
+  },
+  "constraints": [
+    "位置由布局算法计算"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.033Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/graph/GraphNodes.tsx"
+    ]
+  }
+}

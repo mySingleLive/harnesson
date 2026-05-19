@@ -1,0 +1,40 @@
+{
+  "id": "graph-tab-bar",
+  "name": "图谱页签栏",
+  "level": 4,
+  "parent": "graph-views",
+  "children": [],
+  "isLeaf": true,
+  "summary": "图谱视图切换页签栏。",
+  "goals": [
+    "切换视图"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "图谱页显示",
+      "when": "点击页签",
+      "then": "切换视图"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "GraphTabBar 组件。页签: specs-graph, specs-list, specs-document, architect-graph, flow-graph。",
+    "parameters": [
+      "页签: specs-graph|specs-list|specs-document|architect-graph|flow-graph"
+    ]
+  },
+  "constraints": [
+    "记住上次选择"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.043Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/graph/GraphTabBar.tsx"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "id": "agent-service",
+  "name": "Agent 服务",
+  "level": 3,
+  "parent": "ai-agent",
+  "children": [
+    "agent-adapter-interface",
+    "claude-code-adapter"
+  ],
+  "isLeaf": false,
+  "summary": "后端 Agent 服务核心实现。",
+  "goals": [
+    "管理 Agent 运行时状态"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "服务启动",
+      "when": "有未销毁 Agent",
+      "then": "自动恢复会话"
+    }
+  ],
+  "testCases": {},
+  "status": "draft",
+  "design": null,
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.031Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/lib/agent-service.ts"
+    ]
+  }
+}

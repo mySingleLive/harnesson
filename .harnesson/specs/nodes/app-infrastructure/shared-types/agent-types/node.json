@@ -1,0 +1,40 @@
+{
+  "id": "agent-types",
+  "name": "Agent 类型",
+  "level": 4,
+  "parent": "shared-types",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Agent 相关共享类型定义。",
+  "goals": [
+    "Agent 类型契约"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "前后端代码",
+      "when": "使用 Agent 类型",
+      "then": "TypeScript 确保类型安全"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "类型: Agent, AgentInfo, AgentStreamEvent, AgentMessage, TodoItem, CreateAgentRequest, SendMessageRequest, QuestionData, SlashCommand, ImageAttachment, ContentBlock。",
+    "parameters": [
+      "15+ Agent 相关类型"
+    ]
+  },
+  "constraints": [
+    "前后端必须使用相同类型版本"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.043Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "packages/shared/src/types/agent.ts"
+    ]
+  }
+}

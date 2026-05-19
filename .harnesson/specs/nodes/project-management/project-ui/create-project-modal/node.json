@@ -1,0 +1,41 @@
+{
+  "id": "create-project-modal",
+  "name": "创建项目弹窗",
+  "level": 4,
+  "parent": "project-ui",
+  "children": [],
+  "isLeaf": true,
+  "summary": "多步骤创建项目表单弹窗。",
+  "goals": [
+    "创建项目表单"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "点击创建",
+      "when": "弹窗显示",
+      "then": "展示多步骤表单"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "CreateProjectModal 组件。步骤: 选择创建方式(本地/克隆) → 输入名称路径 → 配置 Git。",
+    "parameters": [
+      "创建方式: 本地路径 | 仓库克隆"
+    ]
+  },
+  "constraints": [
+    "路径必须合法",
+    "名称不能为空"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.041Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/projects/CreateProjectModal.tsx"
+    ]
+  }
+}

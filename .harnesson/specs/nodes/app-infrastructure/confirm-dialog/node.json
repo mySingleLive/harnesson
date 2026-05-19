@@ -1,0 +1,40 @@
+{
+  "id": "confirm-dialog",
+  "name": "确认对话框",
+  "level": 3,
+  "parent": "app-infrastructure",
+  "children": [],
+  "isLeaf": true,
+  "summary": "通用确认对话框组件。",
+  "goals": [
+    "确认操作"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "危险操作",
+      "when": "弹出确认",
+      "then": "点击确认后执行"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "ConfirmDialog 组件。标题、描述文本、确认/取消按钮。用于删除确认等场景。",
+    "parameters": [
+      "按钮: 确认, 取消"
+    ]
+  },
+  "constraints": [
+    "确认按钮可自定义文案"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.035Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/layout/ConfirmDialog.tsx"
+    ]
+  }
+}

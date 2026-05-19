@@ -1,0 +1,36 @@
+{
+  "id": "graph-views",
+  "name": "视图组件",
+  "level": 3,
+  "parent": "graph-specs",
+  "children": [
+    "specs-graph-view",
+    "specs-list-view",
+    "specs-document-view",
+    "graph-tab-bar"
+  ],
+  "isLeaf": false,
+  "summary": "图谱多视图展示。",
+  "goals": [
+    "提供多种可视化视图"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "切换页签",
+      "when": "选择不同视图",
+      "then": "展示对应图谱"
+    }
+  ],
+  "testCases": {},
+  "status": "draft",
+  "design": null,
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.032Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/graph/"
+    ]
+  }
+}

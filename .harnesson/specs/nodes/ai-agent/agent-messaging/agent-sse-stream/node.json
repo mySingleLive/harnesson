@@ -1,0 +1,42 @@
+{
+  "id": "agent-sse-stream",
+  "name": "SSE 流",
+  "level": 4,
+  "parent": "agent-messaging",
+  "children": [],
+  "isLeaf": true,
+  "summary": "GET /api/agents/:id/stream — SSE 长连接实时推送 Agent 事件。",
+  "goals": [
+    "实时推送 Agent 事件"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "Agent 处理中",
+      "when": "连接 SSE",
+      "then": "实时接收事件流"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "SSE 事件类型: agent.thinking, agent.text, agent.tool_use, agent.tool_result, agent.error, agent.done, agent.question。心跳 30 秒。",
+    "parameters": [
+      "心跳间隔: 30s",
+      "事件: thinking|text|tool_use|tool_result|error|done|question"
+    ]
+  },
+  "constraints": [
+    "每个客户端独立 SSE 连接",
+    "客户端断开自动清理"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.036Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/agents.ts"
+    ]
+  }
+}

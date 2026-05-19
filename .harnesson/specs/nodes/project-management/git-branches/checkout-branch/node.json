@@ -1,0 +1,42 @@
+{
+  "id": "checkout-branch",
+  "name": "切换分支",
+  "level": 4,
+  "parent": "git-branches",
+  "children": [],
+  "isLeaf": true,
+  "summary": "POST /api/projects/:id/checkout — 切换 Git 分支。",
+  "goals": [
+    "切换分支"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "有效分支名",
+      "when": "POST checkout",
+      "then": "切换成功返回 {success:true}"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "API: POST /api/projects/:id/checkout。body: branch。支持本地和远程分支(origin/xxx 格式)。",
+    "parameters": [
+      "body: {branch: string}",
+      "支持 origin/xxx 远程分支"
+    ]
+  },
+  "constraints": [
+    "branch 含特殊字符返回 400",
+    "checkout 失败返回 400"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.042Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/branches.ts"
+    ]
+  }
+}

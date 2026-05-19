@@ -1,0 +1,41 @@
+{
+  "id": "graph-store",
+  "name": "图谱状态 Store",
+  "level": 3,
+  "parent": "graph-specs",
+  "children": [],
+  "isLeaf": true,
+  "summary": "图谱数据全局状态管理 (Zustand)。",
+  "goals": [
+    "管理图谱状态"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "进入图谱页",
+      "when": "loadGraph",
+      "then": "加载并渲染图谱"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "useGraphStore: projectPath, manifest, specsData, architectData, syncStatus/progress/phase/logs, activeTab, selectedNodeId, isDetailPanelOpen。",
+    "parameters": [
+      "默认页签: specs-graph",
+      "同步 SSE 解析: ReadableStream"
+    ]
+  },
+  "constraints": [
+    "同步进行中不重复触发"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.033Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/stores/graphStore.ts"
+    ]
+  }
+}

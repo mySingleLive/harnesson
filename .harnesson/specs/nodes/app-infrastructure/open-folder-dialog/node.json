@@ -1,0 +1,41 @@
+{
+  "id": "open-folder-dialog",
+  "name": "打开文件夹",
+  "level": 3,
+  "parent": "app-infrastructure",
+  "children": [],
+  "isLeaf": true,
+  "summary": "POST /api/open-folder — 调用操作系统文件夹选择对话框。",
+  "goals": [
+    "选择文件夹"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "需要选择文件夹",
+      "when": "POST /api/open-folder",
+      "then": "弹出原生对话框"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "API: POST /api/open-folder。调用原生对话框，返回所选路径或 cancelled。",
+    "parameters": [
+      "HTTP: POST /api/open-folder",
+      "返回: path | cancelled"
+    ]
+  },
+  "constraints": [
+    "用户取消时返回 cancelled"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.035Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/open-folder.ts"
+    ]
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "graph-data",
+  "name": "图谱数据",
+  "level": 3,
+  "parent": "graph-specs",
+  "children": [
+    "get-graph-status",
+    "get-graph-data",
+    "start-graph-sync",
+    "cancel-graph-sync"
+  ],
+  "isLeaf": false,
+  "summary": "图谱数据查询和同步。",
+  "goals": [
+    "查询图谱数据和触发同步"
+  ],
+  "acceptanceCriteria": [
+    {
+      "given": "项目已同步",
+      "when": "请求数据",
+      "then": "返回完整图谱"
+    }
+  ],
+  "testCases": {},
+  "status": "draft",
+  "design": null,
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.032Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/routes/graph.ts"
+    ]
+  }
+}

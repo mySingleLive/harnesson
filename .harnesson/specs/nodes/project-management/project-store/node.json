@@ -1,0 +1,42 @@
+{
+  "id": "project-store",
+  "name": "项目状态 Store",
+  "level": 3,
+  "parent": "project-management",
+  "children": [],
+  "isLeaf": true,
+  "summary": "项目全局状态管理 (Zustand)。",
+  "goals": [
+    "管理项目状态"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "进入项目页",
+      "when": "loadProjects",
+      "then": "加载并显示项目"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "useProjectStore: activeProjectId, activeBranch, projects, viewMode, searchQuery, branches。视图模式持久化 localStorage。",
+    "parameters": [
+      "viewMode 默认: card",
+      "持久化键: harnesson_view_mode"
+    ]
+  },
+  "constraints": [
+    "切换项目时自动加载分支",
+    "checkout 成功后刷新分支"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.031Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/stores/projectStore.ts"
+    ]
+  }
+}

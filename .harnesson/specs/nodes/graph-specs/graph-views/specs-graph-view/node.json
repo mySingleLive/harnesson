@@ -1,0 +1,41 @@
+{
+  "id": "specs-graph-view",
+  "name": "规格图谱视图",
+  "level": 4,
+  "parent": "graph-views",
+  "children": [],
+  "isLeaf": true,
+  "summary": "力导向图展示规格树层级结构。",
+  "goals": [
+    "可视化规格树"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "图谱数据加载",
+      "when": "渲染",
+      "then": "力导向图展示节点"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "SpecsGraph 组件。使用力导向布局展示节点和连线。节点颜色/形状按类型区分。",
+    "parameters": [
+      "力导向布局",
+      "节点按类型着色"
+    ]
+  },
+  "constraints": [
+    "大量节点时需性能优化"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.043Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/components/graph/SpecsGraph.tsx"
+    ]
+  }
+}

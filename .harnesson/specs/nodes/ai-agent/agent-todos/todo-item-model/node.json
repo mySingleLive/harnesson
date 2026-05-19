@@ -1,0 +1,41 @@
+{
+  "id": "todo-item-model",
+  "name": "任务数据模型",
+  "level": 4,
+  "parent": "agent-todos",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Agent 待办任务数据实体。",
+  "goals": [
+    "任务数据结构"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "AI 调用 TodoWrite",
+      "when": "更新任务",
+      "then": "数据库全量替换"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "TodoItem: id, agentId, subject, status(pending|in_progress|completed), activeForm。存储于 SQLite。",
+    "parameters": [
+      "status: pending|in_progress|completed",
+      "关联 Agent 会话"
+    ]
+  },
+  "constraints": [
+    "TodoWrite 调用时全量替换任务列表"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.039Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/server/src/generated/models/TodoItem.ts"
+    ]
+  }
+}

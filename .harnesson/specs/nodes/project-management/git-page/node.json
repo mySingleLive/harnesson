@@ -1,0 +1,40 @@
+{
+  "id": "git-page",
+  "name": "Git 页面",
+  "level": 3,
+  "parent": "project-management",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Git 操作页面（/git）。",
+  "goals": [
+    "Git 操作"
+  ],
+  "design": null,
+  "acceptanceCriteria": [
+    {
+      "given": "导航到 /git",
+      "when": "页面加载",
+      "then": "显示分支信息"
+    }
+  ],
+  "testCases": {},
+  "specDetail": {
+    "description": "路由 /git 页面。展示分支信息和 Git 操作。",
+    "parameters": [
+      "路由: /git"
+    ]
+  },
+  "constraints": [
+    "需要活跃 Git 项目"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T14:37:10.032Z",
+    "baseCommit": "73edcc0",
+    "baseCommitMessage": "refactor(specs)",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/pages/GitPage.tsx"
+    ]
+  }
+}
