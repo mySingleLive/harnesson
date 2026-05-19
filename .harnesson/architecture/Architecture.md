@@ -1,74 +1,47 @@
-# Architecture: Harnesson
+# Harnesson Architecture Overview
 
-> Last synced: 2026-05-19T00:00:00Z | Commit: 1d90ec4
+**Last synced:** 2026-05-19
+**Commit:** def814158a41b4d6ab719d48ab07d39b2bc62aa1
+
+## Project Overview
+Harnesson is a monorepo AI coding assistant platform with a React web frontend (`@harnesson/web`) and a Hono Node.js backend (`@harnesson/server`), sharing types through `@harnesson/shared`. It provides project management, AI agent sessions (Claude Code), spec/graph visualization, and Git integration.
 
 ## Module Map
 
-| Module | Path | Key Files | Summary |
-|--------|------|-----------|---------|
-| api-routes | apps/server/src/routes/ | agents.ts, projects.ts, graph.ts, branches.ts | Hono REST API endpoints for agents, projects, graph, branches |
-| agent-service | apps/server/src/lib/ | agent-service.ts, claude-code-adapter.ts, graph-storage.ts, sync-engine.ts | Agent management, Claude SDK integration, graph storage, sync engine |
-| chat-ui | apps/web/src/components/chat/ | MessageRenderer.tsx, RichTextInput.tsx, tool-cards/* | Chat interface with message rendering, rich input, and tool event cards |
-| graph-ui | apps/web/src/components/graph/ | FlowGraph.tsx, SpecsGraph.tsx, SpecsList.tsx, SyncView.tsx | Graph visualization with React Flow, specs views, and sync workflow |
-| layout | apps/web/src/components/layout/ | MainLayout.tsx, AgentPanel.tsx, Sidebar.tsx, Topbar.tsx | App shell with navigation, agent panel, and dropdown selectors |
-| projects-ui | apps/web/src/components/projects/ | ProjectList.tsx, CreateProjectModal.tsx, EmptyState.tsx | Project management with card/list views and CRUD modals |
-| pages | apps/web/src/pages/ | NewSessionPage.tsx, GraphPage.tsx, ProjectsPage.tsx | Route-level page components composing feature modules |
-| stores | apps/web/src/stores/ | agentStore.ts, graphStore.ts, projectStore.ts | Zustand state management for agents, graph, projects |
-| hooks | apps/web/src/hooks/ | useSlashCompletion.ts, useImageInput.ts, useEmacsKeybindings.ts | Shared React hooks for UI behavior patterns |
-| web-lib | apps/web/src/lib/ | serverApi.ts, slashCommandUtils.ts | Centralized API client and utility functions |
-| shared-types | packages/shared/src/types/ | agent.ts, graph.ts, project.ts, task.ts | Shared TypeScript type definitions across workspaces |
+| Module | Description | Key Files |
+|--------|-------------|-----------|
+| server-core | Server entry, health check, port detection | `apps/server/src/index.ts`, `routes/health.ts`, `lib/find-port.ts` |
+| project-management | Project CRUD, Git branches, folder dialog | `routes/projects.ts`, `routes/branches.ts`, `routes/open-folder.ts` |
+| ai-agent | Agent service, Claude Code adapter, streaming | `lib/agent-service.ts`, `lib/claude-code-adapter.ts`, `routes/agents.ts` |
+| graph-specs | Graph storage, sync engine, visualization APIs | `lib/graph-storage.ts`, `lib/sync-engine.ts`, `routes/graph.ts` |
+| slash-commands | Command scanning, parsing, autocomplete | `lib/slash-commands.ts`, `slashCommandUtils.ts`, `slashCommandStore.ts` |
+| database | Prisma + SQLite, generated models | `lib/prisma.ts`, `prisma.config.ts`, `generated/` |
+| shared-types | TypeScript type contracts | `packages/shared/src/types/` |
+| app-shell | Layout, routing, sidebar, topbar | `App.tsx`, `MainLayout.tsx`, `Sidebar.tsx`, `Topbar.tsx` |
+| agent-ui | Agent chat panel, state management, SSE | `AgentPanel.tsx`, `agentStore.ts`, `useChatPanel.ts` |
+| chat-ui | Rich input, message rendering, tool cards | `chat/RichTextInput.tsx`, `chat/tool-cards/*.tsx` |
+| graph-ui | Graph/spec views, sync UI, detail panel | `GraphPage.tsx`, `graphStore.ts`, `graph/*.tsx` |
+| app-hooks | Shared React hooks (Emacs, images, completion) | `hooks/useEmacsKeybindings.ts`, `hooks/useImageInput.ts` |
+| new-session | New AI session landing page | `pages/NewSessionPage.tsx` |
 
 ## Dependency Graph
 
-```mermaid
-graph TD
-    shared-types["shared-types"]
-
-    subgraph Server
-        api-routes["api-routes"]
-        agent-service["agent-service"]
-    end
-
-    subgraph Web
-        web-lib["web-lib"]
-        stores["stores"]
-        hooks["hooks"]
-        layout["layout"]
-        chat-ui["chat-ui"]
-        graph-ui["graph-ui"]
-        projects-ui["projects-ui"]
-        pages["pages"]
-    end
-
-    api-routes --> agent-service
-    api-routes --> shared-types
-    agent-service --> shared-types
-
-    web-lib --> shared-types
-    stores --> web-lib
-    hooks --> stores
-    hooks --> web-lib
-
-    layout --> stores
-    layout --> chat-ui
-    layout --> hooks
-    layout --> web-lib
-    layout --> projects-ui
-
-    chat-ui --> stores
-    chat-ui --> hooks
-    chat-ui --> web-lib
-
-    graph-ui --> stores
-    graph-ui --> web-lib
-
-    projects-ui --> stores
-    projects-ui --> hooks
-    projects-ui --> web-lib
-
-    pages --> chat-ui
-    pages --> graph-ui
-    pages --> projects-ui
-    pages --> stores
-    pages --> hooks
 ```
+shared-types ← server-core ← project-management
+             ←              ← ai-agent
+             ←              ← graph-specs
+             ←              ← slash-commands
+             ←              ← database
+
+shared-types ← app-shell ← agent-ui ← chat-ui
+             ←           ← graph-ui
+             ←           ← project-management (UI)
+             ←           ← new-session
+             ←           ← app-hooks
+```
+
+## Tech Stack
+- **Backend:** Hono, Prisma, Better-SQLite3, Claude Agent SDK
+- **Frontend:** React 19, Zustand, React Router 7, Tailwind CSS 4
+- **Graph:** React Flow (XYFlow), Dagre layout
+- **Build:** pnpm workspaces, Vite, TypeScript

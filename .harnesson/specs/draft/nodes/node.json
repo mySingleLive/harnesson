@@ -1,0 +1,28 @@
+{
+  "id": "project-state",
+  "name": "Project State Management",
+  "level": 3,
+  "parent": "project-management",
+  "children": [],
+  "isLeaf": true,
+  "summary": "Zustand store managing project list, active project, branch state, view mode, and search query with localStorage persistence.",
+  "specDetail": {
+    "description": "Central state store for project-related UI state including active project selection, branch info, and view preferences.",
+    "parameters": [
+      "View mode persisted in localStorage",
+      "Branch info includes local/remote lists and current branch"
+    ]
+  },
+  "constraints": [
+    "Must persist view mode across sessions"
+  ],
+  "status": "draft",
+  "syncMeta": {
+    "lastSyncAt": "2026-05-19T12:00:00Z",
+    "baseCommit": "def8141",
+    "branch": "feature/specs-page",
+    "sourceFiles": [
+      "apps/web/src/stores/projectStore.ts"
+    ]
+  }
+}

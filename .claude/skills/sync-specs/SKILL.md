@@ -108,12 +108,26 @@ Stage 1: 代码扫描 → Stage 2: 架构文档 → Stage 3: 概念提取 → St
    - Source files（对应的源文件列表）
 5. 写入 `.harnesson/All-Concepts.md`
 
-**展开规则（步骤 3d 执行时必须遵守）：**
+**展开规则（Stage 3 所有步骤必须遵守，不仅是步骤 3d）：**
 
-- **组件目录展开**：当 sourceFiles 包含一个组件目录（如 `components/chat/tool-cards/`）时，必须扫描目录下每个独立组件文件（如 `BashCard.tsx`、`ReadCard.tsx`），为每个用户可感知的组件提取独立的 `component` 概念。**禁止**将多个独立组件文件合并为一个概念。
-- **API 操作展开**：当 sourceFiles 包含一个 API 路由文件（如 `routes/projects.ts`）时，必须为该文件中的每个独立 HTTP 端点（GET/POST/PUT/DELETE）提取独立的 `operation` 概念。**禁止**将多个 API 端点合并为一个概念。
-- **UI 页面展开**：当 sourceFiles 包含一个页面级目录（如 `components/graph/`）且目录下有多个独立视图组件时，为每个用户可独立使用的视图提取独立的 `component` 概念。
+以下规则适用于概念提取的全过程（步骤 3a-3d）。违反任何一条规则都意味着概念提取不完整，必须补充提取。
+
+- **组件目录展开**：当 sourceFiles 包含一个组件目录（如 `components/chat/tool-cards/`）或目录级通配符（如 `tool-cards/*.tsx`）时，必须使用 Glob 工具扫描目录下每个独立组件文件（如 `BashCard.tsx`、`ReadCard.tsx`），为每个用户可感知的组件提取独立的 `component` 概念。**禁止**将多个独立组件文件合并为一个概念。
+
+- **API 操作展开**：当 sourceFiles 包含一个 API 路由文件（如 `routes/projects.ts`、`routes/agents.ts`、`routes/graph.ts`）时，必须使用 Read 工具读取该文件，为该文件中的每个独立 HTTP 端点（GET/POST/PUT/DELETE）提取独立的 `operation` 概念。**禁止**将多个 API 端点合并为一个概念。一个典型的 API 路由文件通常包含 5-10 个端点，每个端点必须对应一个独立概念。
+
+- **UI 页面展开**：当 sourceFiles 包含一个页面级目录（如 `components/graph/`）且目录下有多个独立视图组件时，必须为每个用户可独立使用的视图提取独立的 `component` 概念。
+
 - **多功能组件展开**：当一个组件的 sourceFiles 包含多个独立 hook/辅助文件（如 `useSlashCompletion.ts`、`useImageInput.ts`、`useEmacsKeybindings.ts`），且这些 hook 各自对应一个独立的用户功能（斜杠命令补全、图片上传、快捷键），必须为每个 hook 对应的用户功能提取独立的 `component` 概念。父组件作为中间概念（`feature` 或 `component`），各 hook 对应的功能作为子概念。
+
+**展开验证（步骤 3d 完成后必须执行）：**
+
+在写入 `.harnesson/All-Concepts.md` 之前，执行以下检查：
+
+1. 遍历所有提取的概念，检查每个概念的 `sourceFiles`
+2. 如果任何概念的 sourceFiles 包含目录级通配符（如 `*.tsx`、`*.ts`）或目录路径（以 `/` 结尾），使用 Glob 工具展开该通配符，统计匹配的文件数量
+3. 如果匹配数量 >= 3 个独立文件，且该概念将它们合并为一个概念，则**违反了展开规则**，必须拆分为独立概念
+4. 如果任何 API 路由文件被合并为一个概念，读取该文件确认端点数量，为每个端点创建独立概念
 
 **增量更新：** 只重新提取受影响模块的概念。新概念追加到列表末尾，删除的概念移除，已有概念更新内容。更新引用关系和文件头部元数据。
 
@@ -141,6 +155,27 @@ Stage 1: 代码扫描 → Stage 2: 架构文档 → Stage 3: 概念提取 → St
 3. `component`/`operation`/`interface` 概念根据 References 归属到对应 feature/entity 下
 4. 引用关系不明确时，根据 Module 归属推断位置
 5. 一个概念恰好对应一个节点（1:1 映射）
+
+**业务导向组织原则（组织决策时必须遵守）：**
+
+6. **禁止按技术类型归类**：不允许创建以技术/代码结构命名的中间节点（如 `pages`、`routes`、`components`、`hooks`、`api-routes`）来聚合来自不同业务域的子节点。例如，不允许创建 `pages` 节点同时包含 `projects-page`（属于项目管理）和 `graph-page`（属于图谱可视化）。
+
+7. **业务域优先归类**：每个有业务含义的节点必须根据其业务功能归入对应的业务域。判断标准：该节点服务什么用户场景？属于什么功能领域？
+   - 例：`projects-page` 服务项目管理场景 → 归入 `project-management`
+   - 例：`graph-page` 服务图谱浏览场景 → 归入 `graph-specs`
+   - 例：`new-session-page` 服务 AI 对话场景 → 归入 `ai-agent`
+   - 例：`git-page` 服务 Git 操作场景 → 归入 `project-management`
+   - 例：`agent-panel`（Agent 聊天面板）→ 归入 `ai-agent`
+   - 例：`agent-status-dot`（Agent 状态指示器）→ 归入 `ai-agent`
+
+8. **纯技术节点约束**：可以将纯技术组件（布局框架、通用 UI 组件、工具类、共享类型、状态管理等）归类到技术基础设施节点下（如 `app-infrastructure`、`shared-framework`）。但**严禁**在纯技术节点下放置有业务含义的子节点。
+   - 允许的纯技术子节点：`main-layout`、`confirm-dialog`、`resizable-divider`、`404-page`、`error-page`、`sidebar`、`topbar`
+   - 禁止出现在纯技术节点下的有业务含义节点：`git-page`、`tasks-page`、`projects-page`、`agent-status-dot`、`agent-panel`
+
+9. **业务含义判定标准**：
+   - 如果一个节点的功能描述中明确关联到特定业务域（如"显示 Agent 状态"、"管理项目"、"浏览图谱"），则该节点有业务含义
+   - 如果一个节点的功能描述仅涉及通用 UI 行为（如"可拖动分割器"、"确认对话框"、"布局编排"），则该节点是纯技术组件
+   - 页面级组件（XxxPage）如果包含特定业务功能，则属于该业务域；如果是通用页面（404、error），则属于纯技术
 
 **叶子节点判定**（映射完成后对每个候选叶子验证）：
 
