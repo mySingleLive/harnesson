@@ -6,6 +6,7 @@ import { healthRoute } from './routes/health.js';
 import { projectsRoute } from './routes/projects.js';
 import { branchesRoute } from './routes/branches.js';
 import { graphRoute } from './routes/graph.js';
+import { specsRoute } from './routes/specs.js';
 import { agentsRoute } from './routes/agents.js';
 import { agentService } from './lib/agent-service.js';
 import { findAvailablePort } from './lib/find-port.js';
@@ -19,6 +20,7 @@ app.route('/', openFolderRoute);
 app.route('/', projectsRoute);
 app.route('/', branchesRoute);
 app.route('/', graphRoute);
+app.route('/', specsRoute);
 app.route('/', agentsRoute);
 
 const preferredPort = Number(process.env.PORT ?? 3456);
