@@ -6,6 +6,7 @@ import type {
   ArchitectData,
   SyncOptions,
   SyncStatus,
+  SpecTreeNode,
 } from '@harnesson/shared';
 import * as serverApi from '@/lib/serverApi';
 
@@ -41,6 +42,8 @@ interface GraphState {
   projectPath: string | null;
   manifest: Manifest | null;
   specsData: SpecsData | null;
+  specsTree: SpecTreeNode | null;
+  specsNodeMap: Record<string, SpecTreeNode> | null;
   architectData: ArchitectData | null;
 
   syncStatus: SyncStatus;
@@ -54,6 +57,7 @@ interface GraphState {
 
   setProjectPath: (path: string | null) => void;
   loadGraph: (projectPath: string) => Promise<void>;
+  loadSpecsTree: (projectPath: string) => Promise<void>;
   startSync: (options: SyncOptions) => Promise<void>;
   cancelSync: () => Promise<void>;
   selectNode: (nodeId: string) => void;
@@ -66,6 +70,8 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   projectPath: null,
   manifest: null,
   specsData: null,
+  specsTree: null,
+  specsNodeMap: null,
   architectData: null,
 
   syncStatus: 'idle',
@@ -90,6 +96,19 @@ export const useGraphStore = create<GraphState>((set, get) => ({
       });
     } catch {
       set({ projectPath, manifest: null, specsData: null, architectData: null });
+    }
+  },
+
+  loadSpecsTree: async (projectPath: string) => {
+    try {
+      const data = await serverApi.getSpecsTree(projectPath);
+      set({
+        projectPath,
+        specsTree: data.root,
+        specsNodeMap: data.nodes,
+      });
+    } catch {
+      set({ projectPath, specsTree: null, specsNodeMap: null });
     }
   },
 
