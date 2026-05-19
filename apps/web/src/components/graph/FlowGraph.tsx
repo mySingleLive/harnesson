@@ -33,7 +33,7 @@ function getLayoutedElements(graphData: GraphData): { nodes: Node[]; edges: Edge
       id: node.id,
       type: node.type,
       position: { x: pos.x - NODE_WIDTH / 2, y: pos.y - height / 2 },
-      data: { label: node.title, content: node.content, level: node.level },
+      data: { label: node.title, content: node.content, level: node.level, status: node.status },
     };
   });
 
