@@ -1,10 +1,13 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import type { NodeMouseHandler } from '@xyflow/react';
 import { FlowGraph } from './FlowGraph';
+import { buildGraphFromTree } from './buildGraphFromTree';
 import { useGraphStore } from '@/stores/graphStore';
+import type { GraphData } from '@harnesson/shared';
 
 export function SpecsGraph() {
-  const specsData = useGraphStore((s) => s.specsData);
+  const specsTree = useGraphStore((s) => s.specsTree);
+  const specsNodeMap = useGraphStore((s) => s.specsNodeMap);
   const selectNode = useGraphStore((s) => s.selectNode);
 
   const handleNodeClick: NodeMouseHandler = useCallback(
@@ -14,13 +17,18 @@ export function SpecsGraph() {
     [selectNode],
   );
 
-  if (!specsData?.graph || specsData.graph.nodes.length === 0) {
+  const graphData: GraphData | null = useMemo(() => {
+    if (!specsTree || !specsNodeMap) return null;
+    return buildGraphFromTree(specsTree, specsNodeMap);
+  }, [specsTree, specsNodeMap]);
+
+  if (!graphData || graphData.nodes.length === 0) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p className="text-sm text-gray-500">No specs graph data available</p>
+        <p className="text-sm text-gray-500">No specs tree data available. Run sync-specs to generate.</p>
       </div>
     );
   }
 
-  return <FlowGraph graphData={specsData.graph} onNodeClick={handleNodeClick} />;
+  return <FlowGraph graphData={graphData} onNodeClick={handleNodeClick} />;
 }
