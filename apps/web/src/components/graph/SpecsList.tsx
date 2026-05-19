@@ -1,62 +1,37 @@
-import { useState, useMemo } from 'react';
-import { ChevronRight, ChevronDown, Folder, FolderOpen, FileText } from 'lucide-react';
+import { useState } from 'react';
+import { ChevronRight, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useGraphStore } from '@/stores/graphStore';
-import type { SpecsListItem } from '@harnesson/shared';
+import type { SpecTreeNode } from '@harnesson/shared';
 
-interface TreeNode {
-  id: string;
-  type: 'project' | 'domain' | 'feature';
-  level: number;
-  title: string;
-  content?: string;
-  children: TreeNode[];
-}
-
-function buildTree(items: SpecsListItem[]): TreeNode[] {
-  const map = new Map<string, TreeNode>();
-  const roots: TreeNode[] = [];
-
-  for (const item of items) {
-    map.set(item.id, { ...item, children: [] });
-  }
-
-  for (const item of items) {
-    const node = map.get(item.id)!;
-    if (item.parentId && map.has(item.parentId)) {
-      map.get(item.parentId)!.children.push(node);
-    } else if (item.level === 0) {
-      roots.push(node);
-    }
-  }
-
-  return roots;
-}
-
-const typeIconMap = {
-  project: Folder,
-  domain: FolderOpen,
-  feature: FileText,
+const statusColors: Record<string, string> = {
+  draft: 'text-yellow-400',
+  review: 'text-blue-400',
+  done: 'text-green-400',
 };
 
-const typeColorMap = {
-  project: 'text-harness-accent',
-  domain: 'text-blue-400',
-  feature: 'text-green-400',
-};
+function StatusDot({ status }: { status?: string }) {
+  if (!status) return null;
+  const color = statusColors[status] ?? 'text-gray-500';
+  return (
+    <span className={cn('flex items-center gap-1 text-[10px] font-medium', color)}>
+      <span className="inline-block h-1.5 w-1.5 rounded-full bg-current" />
+      {status}
+    </span>
+  );
+}
 
 function TreeNodeRow({
   node,
   depth,
   onSelect,
 }: {
-  node: TreeNode;
+  node: SpecTreeNode;
   depth: number;
   onSelect: (id: string) => void;
 }) {
   const [expanded, setExpanded] = useState(depth < 1);
   const hasChildren = node.children.length > 0;
-  const Icon = typeIconMap[node.type];
 
   return (
     <div>
@@ -65,10 +40,7 @@ function TreeNodeRow({
           if (hasChildren) setExpanded(!expanded);
           onSelect(node.id);
         }}
-        className={cn(
-          'flex w-full items-center gap-2 px-4 py-2 text-left transition-colors hover:bg-white/[0.03]',
-          node.type === 'project' && 'border-b border-harness-border',
-        )}
+        className="flex w-full items-center gap-2 px-4 py-2 text-left transition-colors hover:bg-white/[0.03]"
         style={{ paddingLeft: `${depth * 24 + 16}px` }}
       >
         {hasChildren ? (
@@ -80,39 +52,40 @@ function TreeNodeRow({
         ) : (
           <span className="w-3.5" />
         )}
-        <Icon className={cn('h-3.5 w-3.5 flex-shrink-0', typeColorMap[node.type])} />
-        <span className="text-[12px] font-medium text-gray-300">{node.title}</span>
+        <span className="text-[12px] font-medium text-gray-300">{node.name}</span>
+        <StatusDot status={node.status} />
+        <span className="ml-auto truncate text-[11px] text-gray-600 max-w-[200px]">
+          {node.summary?.slice(0, 80)}{(node.summary?.length ?? 0) > 80 ? '…' : ''}
+        </span>
       </button>
       {expanded &&
-        node.children.map((child) => (
-          <TreeNodeRow key={child.id} node={child} depth={depth + 1} onSelect={onSelect} />
-        ))}
+        node.children.map((childId) => {
+          const { specsNodeMap } = useGraphStore.getState();
+          const child = specsNodeMap?.[childId];
+          if (!child) return null;
+          return (
+            <TreeNodeRow key={childId} node={child} depth={depth + 1} onSelect={onSelect} />
+          );
+        })}
     </div>
   );
 }
 
 export function SpecsList() {
-  const specsData = useGraphStore((s) => s.specsData);
+  const specsTree = useGraphStore((s) => s.specsTree);
   const selectNode = useGraphStore((s) => s.selectNode);
 
-  const tree = useMemo(() => {
-    if (!specsData?.list || specsData.list.length === 0) return [];
-    return buildTree(specsData.list);
-  }, [specsData?.list]);
-
-  if (tree.length === 0) {
+  if (!specsTree) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p className="text-sm text-gray-500">No specs list data available</p>
+        <p className="text-sm text-gray-500">No specs tree data available</p>
       </div>
     );
   }
 
   return (
     <div className="py-2">
-      {tree.map((node) => (
-        <TreeNodeRow key={node.id} node={node} depth={0} onSelect={selectNode} />
-      ))}
+      <TreeNodeRow node={specsTree} depth={0} onSelect={selectNode} />
     </div>
   );
 }
