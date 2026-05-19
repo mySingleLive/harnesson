@@ -1,0 +1,646 @@
+# skill-e2e-testing Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Create a project-level skill that end-to-end tests other skills via a 6-stage pipeline (user input → clarification → test case generation → execution → self-healing loop → summary report).
+
+**Architecture:** A single SKILL.md with embedded workflow stages, plus a `references/test-case-format.md` template. The skill dispatches isolated subagents for each test case execution and implements smart self-healing (auto-fix simple issues, escalate complex ones).
+
+**Tech Stack:** Claude Code Skill (SKILL.md + references), Agent tool for subagent dispatch.
+
+---
+
+### Task 1: Create skill directory and reference file
+
+**Files:**
+- Create: `.claude/skills/skill-e2e-testing/references/test-case-format.md`
+
+- [ ] **Step 1: Create the references directory**
+
+Run: `mkdir -p .claude/skills/skill-e2e-testing/references`
+
+- [ ] **Step 2: Create the test case format reference file**
+
+Create `.claude/skills/skill-e2e-testing/references/test-case-format.md`:
+
+```markdown
+# 测试用例文档格式
+
+测试用例文档保存到 `docs/skill-e2e-testing/YYYY-MM-DD-<skill-name>.md`。
+
+## 文档结构
+
+```markdown
+# 测试用例: {skill-name}
+
+## 测试摘要
+一段话概括本次测试的目标和范围。
+
+## 测试的 Skill
+- **名称**: {skill-name}
+- **位置**: {skill-path}
+- **描述**: {从 SKILL.md 的 description 字段提取}
+
+## 测试目标
+1. {目标 1}
+2. {目标 2}
+...
+
+## 测试数据
+根据目标 skill 的特征、测试目标、以及项目上下文生成的测试数据。
+例如：输入文件路径、模拟数据、命令参数等。
+
+## 测试用例
+
+### TC-001: {用例标题}
+- **目标**: 对应测试目标 N
+- **优先级**: P0 / P1 / P2
+- **Given**: {前置条件描述}
+- **When**: {执行操作描述}
+- **Then**: {预期结果描述}
+
+### TC-002: {用例标题}
+- **目标**: 对应测试目标 N
+- **优先级**: P0 / P1 / P2
+- **Given**: {前置条件描述}
+- **When**: {执行操作描述}
+- **Then**: {预期结果描述}
+
+---
+
+## 测试总结
+
+### 统计
+- 通过: {X}
+- 失败: {Y} (其中 {Z} 已修复)
+- 跳过: {W}
+
+### 修改记录
+| 文件 | 修改内容 | 原因 |
+|------|----------|------|
+| {path} | {change description} | {root cause} |
+
+### 失败用例详情
+- TC-{NNN}: [{状态}] {描述}
+
+### 遗留问题与建议
+1. {问题描述}
+```
+
+## 优先级定义
+
+- **P0**: 覆盖 skill 核心流程的主路径，必须通过
+- **P1**: 覆盖 skill 的主要分支或常见变体
+- **P2**: 覆盖边界情况或罕见场景
+
+## Given/When/Then 编写原则
+
+- **Given**: 描述前置状态，不描述操作。例："目标 skill 已安装且可访问"
+- **When**: 描述触发 skill 的操作。例："调用 sync-specs skill 并传入 --full 参数"
+- **Then**: 描述可观察的预期结果。例："在 docs/skill-e2e-testing/ 目录下生成了测试用例文档"
+```
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add .claude/skills/skill-e2e-testing/references/test-case-format.md
+git commit -m "feat(skill-e2e-testing): add test case format reference template"
+```
+
+---
+
+### Task 2: Create SKILL.md — frontmatter, iron rules, and Stage 1-2
+
+**Files:**
+- Create: `.claude/skills/skill-e2e-testing/SKILL.md`
+
+- [ ] **Step 1: Create SKILL.md with frontmatter, overview, iron rules, Stage 1 and Stage 2**
+
+Create `.claude/skills/skill-e2e-testing/SKILL.md` with the following content. This is the first half of the skill file (through Stage 2):
+
+```markdown
+---
+name: skill-e2e-testing
+description: Skill 端到端测试框架。通过 6 阶段流水线（用户说明→问题澄清→生成测试用例→执行测试→自愈循环→总结报告）对目标 skill 进行自动化测试。当用户输入 /skill-e2e-testing 或要求测试某个 skill 时触发。
+---
+
+# Skill E2E 测试
+
+对其他 skill 进行端到端测试。通过 6 阶段流水线自动完成测试用例生成、执行、问题修复和总结报告。
+
+## 铁律
+
+1. **不准跳过阶段** — 必须按 1→2→3→4→5→6 顺序执行，不可跳过测试用例生成直接测试
+2. **测试用例先文档后执行** — 所有测试用例必须先写入文档并获得确认（至少用户不反对），才可执行
+3. **Subagent 隔离** — 每条测试用例在独立 subagent 中执行，主 agent 负责编排和判断
+4. **修改有据** — 每次修改目标 skill 的文件，必须在测试用例文档中记录修改内容和原因
+5. **升级不猜测** — 同一问题 5 次未解决时，必须升级用户，禁止无限制循环
+
+## 触发条件
+
+用户要求对某个 skill 进行端到端测试、验证 skill 功能、或测试 skill 行为时。
+
+---
+
+## 阶段一：用户说明
+
+**输入格式**: `/skill-e2e-testing <skill-name> [测试目标] [测试要求]`
+
+最少只需提供 skill 名称。用户也可以附加测试目标和测试要求。
+
+**解析规则**：
+1. 第一个参数作为 skill 名称（必需）
+2. 后续内容作为测试目标和要求（可选）
+3. 如果未提供测试目标，阶段二会自动探索目标 skill 并提取候选目标
+
+**输出**：初始参数集合：
+- `skill_name`: 目标 skill 名称
+- `test_objectives`: 测试目标（可能为空）
+- `test_requirements`: 测试要求（可能为空）
+
+---
+
+## 阶段二：问题澄清
+
+```
+自动探索目标 skill → 评估信息充分性 → 循环问答（每次一个问题）→ 信息充分后进入阶段三
+```
+
+### Step 1: 自动探索目标 Skill
+
+读取并分析目标 skill 的全部相关信息：
+
+1. **读取 SKILL.md**：提取核心流程、触发条件、输出产物
+2. **检查目录结构**：查看 `references/`、`scripts/` 目录中的辅助文件
+3. **检查项目代码**：如果 skill 涉及项目代码（如 sync-specs 涉及规格文件），检查相关代码
+
+**识别关键信息清单**：
+- [ ] Skill 的触发条件和使用场景
+- [ ] Skill 的核心工作流程（分几个阶段/步骤）
+- [ ] Skill 的输出产物（文件、命令输出等）
+- [ ] Skill 依赖的工具、脚本或外部服务
+- [ ] Skill 的前置条件（需要哪些文件存在、环境配置等）
+
+### Step 2: 评估信息充分性
+
+对比已收集的信息和测试需求，判断是否可以生成有效的测试用例。
+
+**充分性标准**：能回答以下所有问题时即为充分：
+- 目标 skill 做什么？
+- 怎么触发它？
+- 它的输出是什么？
+- 怎么判断它工作正常？
+
+### Step 3: 循环问答
+
+如果信息不充分，通过问答补充。规则：
+- **每次只问一个问题**，使用 AskUserQuestion 工具
+- **优先使用多选题**，选项基于自动探索的结果生成
+- **可问答轮次不设上限**，直到所有信息充分
+- 问答过程中持续更新对目标 skill 的理解
+
+### Step 4: 确认测试范围
+
+信息充分后，向用户简要复述测试范围并确认：
+
+```
+测试目标 skill: {name}
+测试范围: {简要描述}
+测试目标:
+  1. {目标1}
+  2. {目标2}
+  ...
+确认无误？如有需要调整的地方请告诉我。
+```
+
+用户确认后进入阶段三。
+```
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add .claude/skills/skill-e2e-testing/SKILL.md
+git commit -m "feat(skill-e2e-testing): add SKILL.md with frontmatter, iron rules, Stage 1-2"
+```
+
+---
+
+### Task 3: Add Stage 3 (Test Case Generation) to SKILL.md
+
+**Files:**
+- Modify: `.claude/skills/skill-e2e-testing/SKILL.md` (append after Stage 2)
+
+- [ ] **Step 1: Append Stage 3 content to SKILL.md**
+
+Append the following after the Stage 2 content (after "用户确认后进入阶段三。"):
+
+```markdown
+
+---
+
+## 阶段三：生成测试用例
+
+根据阶段一和阶段二收集的信息，生成 Given/When/Then 格式的测试用例文档。
+
+### Step 1: 读取测试用例格式
+
+读取 `references/test-case-format.md`（相对于 skill 目录），了解文档格式要求。
+
+### Step 2: 参考历史测试文档
+
+如果 `docs/skill-e2e-testing/` 目录下有历史测试文档，扫描并参考：
+- 相似 skill 的测试用例结构
+- 已验证的 Given/When/Then 模式
+- 已知的问题和边界情况
+
+### Step 3: 生成测试用例文档
+
+根据目标 skill 的特征，生成测试用例文档到 `docs/skill-e2e-testing/YYYY-MM-DD-<skill-name>.md`。
+
+**测试用例设计原则**：
+1. 每个测试目标至少有一个 P0 用例覆盖主路径
+2. 关键分支路径需要独立用例
+3. 边界情况根据 skill 特征酌情添加
+4. 用例之间尽量独立，不依赖执行顺序
+5. Then 部分必须是可观察、可验证的结果
+
+**测试数据生成**：
+- 根据目标 skill 的输入要求生成合适的测试数据
+- 如果 skill 需要特定文件，说明文件路径和内容要求
+- 如果 skill 需要特定命令参数，列出具体参数
+- 测试数据应尽量使用项目真实数据或合理模拟数据
+
+### Step 4: 用户确认
+
+向用户展示测试用例摘要：
+- 测试目标数量
+- 测试用例数量和覆盖范围
+- 关键的 P0 用例
+
+等待用户确认后才进入阶段四。用户可以要求修改测试用例，修改后重新确认。
+```
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add .claude/skills/skill-e2e-testing/SKILL.md
+git commit -m "feat(skill-e2e-testing): add Stage 3 test case generation"
+```
+
+---
+
+### Task 4: Add Stage 4 (Test Execution) to SKILL.md
+
+**Files:**
+- Modify: `.claude/skills/skill-e2e-testing/SKILL.md` (append after Stage 3)
+
+- [ ] **Step 1: Append Stage 4 content to SKILL.md**
+
+Append the following after Stage 3 (after "用户可以要求修改测试用例，修改后重新确认。"):
+
+```markdown
+
+---
+
+## 阶段四：执行测试
+
+按测试用例文档，逐条执行测试。每条用例起一个独立 subagent。
+
+### Step 1: 读取测试用例文档
+
+读取阶段三生成的测试用例文档，按优先级排序执行顺序：P0 → P1 → P2。
+
+### Step 2: 逐条执行测试用例
+
+对每条测试用例：
+
+1. **构造 subagent prompt**，包含：
+   - 目标 skill 的关键信息（名称、位置、核心流程摘要）
+   - 当前测试用例的 Given/When/Then
+   - 执行指令和输出格式要求
+
+2. **通过 Agent 工具启动 subagent**，使用以下参数：
+   - `description`: `测试 {skill-name} - TC-{NNN}`
+   - `prompt`: 填充后的 subagent prompt 模板（见下方）
+   - 不指定 `subagent_type`，使用默认的 general-purpose
+
+3. **等待 subagent 完成**，解析返回结果
+
+4. **记录测试结果**到测试用例文档中对应用例下方
+
+### Subagent Prompt 模板
+
+```
+你是一个测试执行者。请执行以下测试用例：
+
+## 目标 Skill 信息
+- 名称: {skill-name}
+- 位置: {skill-path}
+- 关键说明: {从 SKILL.md 提取的核心流程，不超过 500 字}
+
+## 测试用例
+- 编号: TC-{NNN}
+- 描述: {用例标题和描述}
+- Given: {前置条件}
+- When: {执行操作}
+- Then: {预期结果}
+
+## 执行步骤
+1. 先验证 Given 前置条件是否满足（如检查文件是否存在、环境是否就绪）
+2. 使用 Skill 工具调用 {skill-name}，执行 When 部分描述的操作
+3. 观察 skill 的实际输出和行为
+4. 将实际结果与 Then 部分的每一条预期结果对比
+5. 根据对比结果判断 pass 或 fail
+
+## 输出格式
+请严格按照以下 JSON 格式返回结果（不要包含其他内容）：
+{
+  "test_case_id": "TC-{NNN}",
+  "status": "pass 或 fail",
+  "actual_output": "skill 的实际输出描述",
+  "then_results": [
+    {"expected": "预期结果1", "actual": "实际结果1", "passed": true/false},
+    {"expected": "预期结果2", "actual": "实际结果2", "passed": true/false}
+  ],
+  "error": "如有错误，描述错误信息。无错误则为空字符串",
+  "evidence": "支持判断的证据摘要（如文件内容片段、命令输出等）"
+}
+```
+
+### 测试结果处理
+
+| subagent 返回状态 | 处理方式 |
+|---|---|
+| pass | 记录结果，继续下一条用例 |
+| fail | 记录结果，进入阶段五（自愈循环） |
+| subagent 异常/超时 | 标记为 fail，附带异常信息，进入阶段五 |
+
+### 执行顺序
+
+按优先级执行：所有 P0 用例 → 所有 P1 用例 → 所有 P2 用例。
+同优先级内按用例编号顺序执行。
+每条用例执行完成后，在文档中用 `✅ PASS` 或 `❌ FAIL` 标记。
+```
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add .claude/skills/skill-e2e-testing/SKILL.md
+git commit -m "feat(skill-e2e-testing): add Stage 4 test execution with subagent dispatch"
+```
+
+---
+
+### Task 5: Add Stage 5 (Self-Healing Loop) to SKILL.md
+
+**Files:**
+- Modify: `.claude/skills/skill-e2e-testing/SKILL.md` (append after Stage 4)
+
+- [ ] **Step 1: Append Stage 5 content to SKILL.md**
+
+Append the following after Stage 4 (after "每条用例执行完成后，在文档中用 `✅ PASS` 或 `❌ FAIL` 标记。"):
+
+```markdown
+
+---
+
+## 阶段五：自愈循环
+
+测试用例失败时，自动分析根因并尝试修复目标 skill，然后重新测试。
+
+### 流程
+
+```
+测试用例失败
+    │
+    ▼
+根因分析
+    │
+    ▼
+严重性评估
+    │
+    ├─ 简单问题 → 自动修复 → 重测（回到阶段四重新执行该用例）
+    │
+    ├─ 复杂问题 → 生成修复方案 → 询问用户确认 → 确认后修复 → 重测
+    │
+    └─ 同一问题 5 次未解决 → 升级用户（提供完整诊断信息）
+```
+
+### Step 1: 根因分析
+
+根据 subagent 返回的失败信息，分析失败根因：
+1. 读取 subagent 返回的 `error`、`then_results` 和 `evidence`
+2. 对照目标 skill 的 SKILL.md，定位问题来源
+3. 判断问题属于 SKILL.md 提示词问题还是关联代码问题
+
+### Step 2: 严重性评估
+
+将问题分为简单和复杂两类：
+
+**简单问题**（自动修复，不询问用户）：
+- SKILL.md 中的拼写/语法错误
+- 格式不一致（如缩进、列表格式）
+- 缺失的前置说明或参数描述
+- 过时的文件路径引用
+- 描述与实际行为的小偏差
+
+**复杂问题**（需用户确认后修复）：
+- 工作流逻辑错误（阶段顺序、步骤遗漏）
+- 工具依赖冲突或缺失
+- 输出格式与描述不匹配
+- 需要重构 SKILL.md 的部分结构
+- 涉及 scripts/ 或 references/ 目录下的代码修改
+
+### Step 3: 修复执行
+
+**简单问题修复**：
+1. 直接修改目标 skill 的 SKILL.md 或相关文件
+2. 在测试用例文档的"修改记录"部分记录修改内容
+3. 重新执行失败的测试用例（回到阶段四）
+
+**复杂问题修复**：
+1. 向用户展示问题诊断和修复方案
+2. 等待用户确认
+3. 确认后修改目标 skill 文件
+4. 在测试用例文档的"修改记录"部分记录修改内容
+5. 重新执行失败的测试用例（回到阶段四）
+
+### Step 4: 重试计数与升级
+
+**计数规则**：
+- 每个独立问题维护一个计数器
+- "同一问题"指根因实质相同（不是表象相同）
+- 修复引入的新问题不计入同一计数器
+
+**升级规则**：
+- 同一问题 5 次修复仍失败 → 停止自愈循环
+- 向用户报告：问题描述、已尝试的修复方案、5 次失败的原因
+- 提供选项：跳过该用例 / 终止测试 / 用户提供指导后继续
+```
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add .claude/skills/skill-e2e-testing/SKILL.md
+git commit -m "feat(skill-e2e-testing): add Stage 5 self-healing loop"
+```
+
+---
+
+### Task 6: Add Stage 6 (Summary Report) and boundary cases to SKILL.md
+
+**Files:**
+- Modify: `.claude/skills/skill-e2e-testing/SKILL.md` (append after Stage 5)
+
+- [ ] **Step 1: Append Stage 6, boundary cases, and pipeline diagram**
+
+Append the following after Stage 5 (after "提供选项：跳过该用例 / 终止测试 / 用户提供指导后继续"):
+
+```markdown
+
+---
+
+## 阶段六：总结报告
+
+所有测试用例执行完毕（或测试终止）后，在测试用例文档末尾追加总结报告。
+
+### 报告内容
+
+在文档末尾追加 `## 测试总结` 部分，包含：
+
+**统计**：
+- 通过的用例数
+- 失败的用例数（其中已修复的用例数）
+- 跳过的用例数
+
+**修改记录**：
+- 列出所有对目标 skill 文件的修改
+- 每条记录包含：文件路径、修改内容摘要、修改原因
+
+**失败用例详情**：
+- 每条最终未通过的用例
+- 标记状态：[已修复] / [待修复] / [已跳过] / [已升级]
+
+**遗留问题与建议**：
+- 列出所有未完全解决的问题
+- 对后续改进的建议
+
+### 报告呈现
+
+向用户展示测试总结：
+1. 通过/失败/跳过的总数
+2. 修改了哪些文件
+3. 是否有遗留问题
+4. 建议的后续行动
+
+---
+
+## 边界情况处理
+
+| 情况 | 处理方式 |
+|------|----------|
+| 目标 skill 不存在 | 报错，列出当前可用的 skill 供用户选择 |
+| SKILL.md 为空或损坏 | 报错，展示文件内容，询问用户是否继续 |
+| 测试目标不适用于该 skill | 在阶段二提示用户调整测试范围 |
+| Subagent 执行超时或异常 | 标记为 fail，附带异常信息，进入阶段五 |
+| 修复后引入新问题 | 作为新问题处理，不计入原问题的重试计数 |
+| 用户中途要求停止 | 保存当前进度到文档，生成已有用例的部分报告 |
+| 无法生成任何测试用例 | 在阶段三报错，回到阶段二补充信息 |
+| 目标 skill 依赖的服务不可用 | 标记相关用例为跳过，在报告中说明 |
+
+---
+
+## 阶段转换总结
+
+```
+用户触发 /skill-e2e-testing <skill-name>
+    │
+    ▼
+┌──────────────────────────────────┐
+│  阶段一：用户说明                 │
+│  解析 skill 名称、测试目标、要求   │
+└────────┬─────────────────────────┘
+         │
+         ▼
+┌──────────────────────────────────┐
+│  阶段二：问题澄清                 │
+│  自动探索 skill → 评估充分性      │
+│  → 循环问答 → 确认测试范围        │
+└────────┬─────────────────────────┘
+         │
+         ▼
+┌──────────────────────────────────┐
+│  阶段三：生成测试用例              │
+│  读取格式 → 参考历史 → 生成文档    │
+│  → 用户确认                      │
+└────────┬─────────────────────────┘
+         │
+         ▼
+┌──────────────────────────────────┐
+│  阶段四：执行测试                 │
+│  逐条用例 → subagent 执行         │
+│  → pass → 下一用例               │
+│  → fail → 阶段五                 │
+└────────┬─────────────────────────┘
+         │ fail
+         ▼
+┌──────────────────────────────────┐
+│  阶段五：自愈循环                 │
+│  根因分析 → 严重性评估            │
+│  → 简单: 自动修复 → 重测         │
+│  → 复杂: 用户确认 → 修复 → 重测   │
+│  → 5×失败: 升级用户              │
+└────────┬─────────────────────────┘
+         │ 全部用例完成
+         ▼
+┌──────────────────────────────────┐
+│  阶段六：总结报告                 │
+│  统计 → 修改记录 → 遗留问题       │
+│  → 呈现给用户                    │
+└──────────────────────────────────┘
+```
+```
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add .claude/skills/skill-e2e-testing/SKILL.md
+git commit -m "feat(skill-e2e-testing): add Stage 6 summary report, boundary cases, pipeline diagram"
+```
+
+---
+
+### Task 7: Self-review — verify SKILL.md completeness and consistency
+
+**Files:**
+- Read: `.claude/skills/skill-e2e-testing/SKILL.md`
+- Read: `.claude/skills/skill-e2e-testing/references/test-case-format.md`
+
+- [ ] **Step 1: Read and review SKILL.md end-to-end**
+
+Read the complete `.claude/skills/skill-e2e-testing/SKILL.md` file.
+
+**Checklist**:
+- [ ] Frontmatter has `name` and `description` fields
+- [ ] All 6 stages are present and flow correctly
+- [ ] Iron rules reference the correct stage numbers
+- [ ] Subagent prompt template has all required fields
+- [ ] Self-healing loop correctly references back to Stage 4
+- [ ] Summary report format matches `references/test-case-format.md`
+- [ ] Boundary cases table is complete per design spec
+- [ ] Pipeline diagram matches the 6 stages
+- [ ] No placeholder text (TBD, TODO, etc.)
+
+- [ ] **Step 2: Fix any issues found**
+
+If the review finds inconsistencies, fix them inline. Commit any fixes.
+
+- [ ] **Step 3: Final commit**
+
+If fixes were needed:
+```bash
+git add .claude/skills/skill-e2e-testing/SKILL.md
+git commit -m "fix(skill-e2e-testing): address self-review findings"
+```
+
+If no fixes needed, skip this step.
