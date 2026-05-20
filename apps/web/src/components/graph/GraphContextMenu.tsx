@@ -26,7 +26,7 @@ export function GraphContextMenu({ nodeId, x, y, onClose }: GraphContextMenuProp
 
   const [position, setPosition] = useState({ x, y });
   const menuRef = useRef<HTMLDivElement>(null);
-  const listenerTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const listenerTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const node = specsNodeMap?.[nodeId];
   const hasChildren = (node?.children?.length ?? 0) > 0;

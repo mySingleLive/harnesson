@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { ReactFlow, Background, Controls, applyNodeChanges, type Node, type Edge, type NodeChange } from '@xyflow/react';
+import { ReactFlow, Background, Controls, SelectionMode, applyNodeChanges, type Node, type Edge, type NodeChange } from '@xyflow/react';
 import Dagre from '@dagrejs/dagre';
 import '@xyflow/react/dist/style.css';
 import type { GraphData } from '@harnesson/shared';
@@ -121,7 +121,8 @@ export function FlowGraph({ graphData }: FlowGraphProps) {
         onNodesChange={onNodesChange}
         onSelectionChange={onSelectionChange}
         onPaneClick={handlePaneClick}
-        selectionMode="partial"
+        selectionOnDrag
+        selectionMode={SelectionMode.Partial}
         panOnDrag={[1, 2]}
         multiSelectionKeyCode="Shift"
         fitView
