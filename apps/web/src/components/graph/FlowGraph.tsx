@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useRef, memo } from 'react';
 import { ReactFlow, Background, Controls, SelectionMode, applyNodeChanges, type Node, type Edge, type NodeChange, type ReactFlowInstance } from '@xyflow/react';
 import Dagre from '@dagrejs/dagre';
 import '@xyflow/react/dist/style.css';
@@ -53,7 +53,7 @@ interface FlowGraphProps {
   graphData: GraphData;
 }
 
-export function FlowGraph({ graphData }: FlowGraphProps) {
+export const FlowGraph = memo(function FlowGraph({ graphData }: FlowGraphProps) {
   const layouted = useMemo(() => getLayoutedElements(graphData), [graphData]);
   const [nodes, setNodes] = useState<Node[]>(layouted.nodes);
   const [contextMenu, setContextMenu] = useState<{ nodeId: string; x: number; y: number } | null>(null);
@@ -98,14 +98,30 @@ export function FlowGraph({ graphData }: FlowGraphProps) {
   // Reset node positions when graph data changes
   useMemo(() => { setNodes(layouted.nodes); }, [layouted.nodes]);
 
+  // Track whether a selection drag is in progress so CSS can hide the
+  // persistent selection rectangle React Flow v12 leaves visible after drag.
+  const isDragSelecting = useRef(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const onSelectionStart = useCallback(() => {
+    isDragSelecting.current = true;
+    wrapperRef.current?.classList.remove('hide-selection-rect');
+  }, []);
+
+  const onSelectionEnd = useCallback(() => {
+    isDragSelecting.current = false;
+    // Defer adding the class so React Flow finishes writing the selection DOM first.
+    requestAnimationFrame(() => {
+      wrapperRef.current?.classList.add('hide-selection-rect');
+    });
+  }, []);
+
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      // Defer pure selection changes by one frame so React Flow's Pane
-      // can finish cleaning up the selection rectangle DOM before we
-      // trigger a re-render via setNodes.
       if (changes.length > 0 && changes.every((c) => c.type === 'select')) {
+        const frozenChanges = changes.map((c) => ({ ...c }));
         requestAnimationFrame(() => {
-          setNodes((nds) => applyNodeChanges(changes, nds));
+          setNodes((nds) => applyNodeChanges(frozenChanges, nds));
         });
         return;
       }
@@ -144,6 +160,8 @@ export function FlowGraph({ graphData }: FlowGraphProps) {
 
   const handlePaneClick = useCallback(() => {
     clearSelection();
+    isDragSelecting.current = false;
+    wrapperRef.current?.classList.add('hide-selection-rect');
   }, [clearSelection]);
 
   const defaultEdgeOptions = useMemo(
@@ -155,7 +173,8 @@ export function FlowGraph({ graphData }: FlowGraphProps) {
   );
 
   return (
-    <div className="h-full w-full">
+    <div ref={wrapperRef} className="h-full w-full hide-selection-rect">
+      <style>{`.hide-selection-rect .react-flow__nodesselection-rect{display:none!important}`}</style>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -165,6 +184,8 @@ export function FlowGraph({ graphData }: FlowGraphProps) {
         onNodeContextMenu={handleNodeContextMenu}
         onNodesChange={onNodesChange}
         onSelectionChange={onSelectionChange}
+        onSelectionStart={onSelectionStart}
+        onSelectionEnd={onSelectionEnd}
         onPaneClick={handlePaneClick}
         selectionOnDrag
         selectionMode={SelectionMode.Partial}
@@ -194,4 +215,4 @@ export function FlowGraph({ graphData }: FlowGraphProps) {
       )}
     </div>
   );
-}
+});
