@@ -25,12 +25,14 @@ function findGraphNode(nodes: GraphNode[], id: string): GraphNode | undefined {
 }
 
 export function DetailPanel() {
-  const selectedNodeId = useGraphStore((s) => s.selectedNodeId);
+  const selectedNodeIds = useGraphStore((s) => s.selectedNodeIds);
   const specsNodeMap = useGraphStore((s) => s.specsNodeMap);
   const specsData = useGraphStore((s) => s.specsData);
   const architectData = useGraphStore((s) => s.architectData);
-  const closeDetailPanel = useGraphStore((s) => s.closeDetailPanel);
-  const selectNode = useGraphStore((s) => s.selectNode);
+  const clearSelection = useGraphStore((s) => s.clearSelection);
+  const selectNodes = useGraphStore((s) => s.selectNodes);
+
+  const selectedNodeId = selectedNodeIds.length === 1 ? selectedNodeIds[0] : null;
 
   if (!selectedNodeId) return null;
 
@@ -58,7 +60,7 @@ export function DetailPanel() {
           <span className="text-[13px] font-medium text-gray-200">{nodeTitle}</span>
         </div>
         <button
-          onClick={closeDetailPanel}
+          onClick={clearSelection}
           className="flex h-6 w-6 items-center justify-center rounded text-gray-500 hover:bg-white/5 hover:text-gray-300"
         >
           <X className="h-3.5 w-3.5" />
@@ -132,7 +134,7 @@ export function DetailPanel() {
                 return (
                   <button
                     key={childId}
-                    onClick={() => selectNode(childId)}
+                    onClick={() => selectNodes([childId])}
                     className="block w-full text-left text-[12px] text-harness-accent hover:text-harness-accent/80 truncate"
                   >
                     {child ? child.name : childId}
