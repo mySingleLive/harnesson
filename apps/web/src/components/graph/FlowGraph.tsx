@@ -99,14 +99,7 @@ export function FlowGraph({ graphData }: FlowGraphProps) {
   useMemo(() => { setNodes(layouted.nodes); }, [layouted.nodes]);
 
   const onNodesChange = useCallback(
-    (changes: NodeChange[]) => {
-      // Filter out selection changes: React Flow handles node highlighting internally.
-      // Applying them via setNodes causes an extra render cycle that prevents
-      // the selection box from being cleaned up after drag ends.
-      const nonSelectionChanges = changes.filter((c) => c.type !== 'select');
-      if (nonSelectionChanges.length === 0) return;
-      setNodes((nds) => applyNodeChanges(nonSelectionChanges, nds));
-    },
+    (changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)),
     [],
   );
 
