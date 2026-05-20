@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { ReactFlow, Background, Controls, SelectionMode, applyNodeChanges, type Node, type Edge, type NodeChange } from '@xyflow/react';
+import { ReactFlow, Background, Controls, SelectionMode, applyNodeChanges, type Node, type Edge, type NodeChange, type ReactFlowInstance } from '@xyflow/react';
 import Dagre from '@dagrejs/dagre';
 import '@xyflow/react/dist/style.css';
 import type { GraphData } from '@harnesson/shared';
@@ -163,6 +163,7 @@ export function FlowGraph({ graphData }: FlowGraphProps) {
         fitViewOptions={{ padding: 0.2 }}
         minZoom={0.3}
         maxZoom={1.5}
+        onInit={(instance) => { (window as any).__reactFlowInstance = instance; }}
         proOptions={{ hideAttribution: true }}
       >
         <Background color="#333" gap={20} size={1} />
