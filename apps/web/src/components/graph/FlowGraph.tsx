@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ReactFlow, Background, Controls, SelectionMode, applyNodeChanges, type Node, type Edge, type NodeChange } from '@xyflow/react';
 import Dagre from '@dagrejs/dagre';
 import '@xyflow/react/dist/style.css';
@@ -62,6 +62,12 @@ export function FlowGraph({ graphData }: FlowGraphProps) {
   const selectNodes = useGraphStore((s) => s.selectNodes);
   const addToSelection = useGraphStore((s) => s.addToSelection);
   const clearSelection = useGraphStore((s) => s.clearSelection);
+  const selectedNodeIds = useGraphStore((s) => s.selectedNodeIds);
+
+  // Sync store selection to React Flow node selected flags (for context menu selections)
+  useEffect(() => {
+    setNodes((nds) => nds.map((n) => ({ ...n, selected: selectedNodeIds.includes(n.id) })));
+  }, [selectedNodeIds]);
 
   // Reset node positions when graph data changes
   useMemo(() => { setNodes(layouted.nodes); }, [layouted.nodes]);
@@ -73,20 +79,22 @@ export function FlowGraph({ graphData }: FlowGraphProps) {
 
   const onSelectionChange = useCallback(
     ({ nodes: selectedNodes }: { nodes: Node[] }) => {
-      selectNodes(selectedNodes.map((n) => n.id));
+      const ids = selectedNodes.map((n) => n.id);
+      const currentIds = useGraphStore.getState().selectedNodeIds;
+      if (ids.length !== currentIds.length || ids.some((id, i) => id !== currentIds[i])) {
+        selectNodes(ids);
+      }
     },
     [selectNodes],
   );
 
   const handleNodeClick = useCallback(
     (event: React.MouseEvent, node: Node) => {
-      if (event.shiftKey) {
-        addToSelection([node.id]);
-      } else {
+      if (!event.shiftKey) {
         selectNodes([node.id]);
       }
     },
-    [addToSelection, selectNodes],
+    [selectNodes],
   );
 
   const handleNodeContextMenu = useCallback(
