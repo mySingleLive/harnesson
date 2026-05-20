@@ -1,20 +1,20 @@
-import { useMemo } from 'react';
-import { ReactFlow, Background, Controls, type Node, type Edge, type OnNodeClick } from '@xyflow/react';
+import { useCallback, useMemo, useState } from 'react';
+import { ReactFlow, Background, Controls, applyNodeChanges, type Node, type Edge, type NodeChange, type OnNodeClick } from '@xyflow/react';
 import Dagre from '@dagrejs/dagre';
 import '@xyflow/react/dist/style.css';
 import type { GraphData } from '@harnesson/shared';
 import { nodeTypes } from './GraphNodes';
 
-const NODE_WIDTH = 200;
+const NODE_WIDTH = 170;
 const NODE_HEIGHT_MAP: Record<string, number> = {
-  project: 48,
-  domain: 40,
-  feature: 36,
+  project: 56,
+  domain: 48,
+  feature: 44,
 };
 
 function getLayoutedElements(graphData: GraphData): { nodes: Node[]; edges: Edge[] } {
   const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
-  g.setGraph({ rankdir: 'TB', nodesep: 50, ranksep: 60 });
+  g.setGraph({ rankdir: 'LR', nodesep: 40, ranksep: 100 });
 
   for (const node of graphData.nodes) {
     g.setNode(node.id, { width: NODE_WIDTH, height: NODE_HEIGHT_MAP[node.type] ?? 40 });
@@ -52,7 +52,17 @@ interface FlowGraphProps {
 }
 
 export function FlowGraph({ graphData, onNodeClick }: FlowGraphProps) {
-  const { nodes, edges } = useMemo(() => getLayoutedElements(graphData), [graphData]);
+  const layouted = useMemo(() => getLayoutedElements(graphData), [graphData]);
+  const [nodes, setNodes] = useState<Node[]>(layouted.nodes);
+  const edges = layouted.edges;
+
+  // Reset node positions when graph data changes
+  useMemo(() => { setNodes(layouted.nodes); }, [layouted.nodes]);
+
+  const onNodesChange = useCallback(
+    (changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    [],
+  );
 
   const defaultEdgeOptions = useMemo(
     () => ({
@@ -70,6 +80,7 @@ export function FlowGraph({ graphData, onNodeClick }: FlowGraphProps) {
         nodeTypes={nodeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
         onNodeClick={onNodeClick}
+        onNodesChange={onNodesChange}
         fitView
         fitViewOptions={{ padding: 0.2 }}
         minZoom={0.3}

@@ -10,8 +10,9 @@ async function fileExists(path: string): Promise<boolean> {
   }
 }
 
-async function readNode(specsDir: string, nodeId: string): Promise<SpecTreeNode | null> {
-  const nodePath = join(specsDir, 'nodes', nodeId, 'node.json');
+async function readNode(specsDir: string, nodeId: string, parentDir?: string): Promise<SpecTreeNode | null> {
+  const nodeDir = parentDir ? join('nodes', parentDir, nodeId) : join('nodes', nodeId);
+  const nodePath = join(specsDir, nodeDir, 'node.json');
   if (!(await fileExists(nodePath))) return null;
   const raw = await readFile(nodePath, 'utf-8');
   return JSON.parse(raw) as SpecTreeNode;
@@ -32,15 +33,16 @@ export async function readSpecsTree(projectPath: string): Promise<SpecsTreeData 
   const root = JSON.parse(raw) as SpecTreeNode;
   const nodes: Record<string, SpecTreeNode> = { [root.id]: root };
 
-  // Recursive BFS to load all children
-  const queue = [...root.children];
+  // BFS to load all children, tracking parent directory for nested node lookup
+  const queue: Array<{ id: string; parentDir: string }> = root.children.map((id) => ({ id, parentDir: '' }));
   while (queue.length > 0) {
-    const childId = queue.shift()!;
+    const { id: childId, parentDir } = queue.shift()!;
     if (nodes[childId]) continue;
-    const childNode = await readNode(specsDir, childId);
+    const childNode = await readNode(specsDir, childId, parentDir);
     if (childNode) {
       nodes[childId] = childNode;
-      queue.push(...childNode.children);
+      const childDir = parentDir ? join(parentDir, childId) : childId;
+      queue.push(...childNode.children.map((id) => ({ id, parentDir: childDir })));
     } else {
       console.warn(`[specs-tree] missing node: ${childId}`);
     }

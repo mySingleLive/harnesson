@@ -38,12 +38,12 @@ function SummaryLine({ content, maxLen = 50 }: { content?: string; maxLen?: numb
 export function ProjectNode({ data }: NodeProps) {
   const d = data as unknown as GraphNodeData;
   return (
-    <div className="cursor-pointer rounded-lg border-2 border-harness-accent bg-harness-accent/20 px-5 py-3 shadow-lg transition-shadow hover:shadow-harness-accent/20" style={{ minWidth: 180 }}>
-      <Handle type="target" position={Position.Top} className="!bg-harness-accent" />
+    <div className="cursor-pointer rounded-lg border-2 border-harness-accent bg-harness-accent/20 px-4 py-2.5 shadow-lg transition-shadow hover:shadow-harness-accent/20" style={{ minWidth: 160, maxWidth: 180 }}>
+      <Handle type="target" position={Position.Left} className="!bg-harness-accent" />
       {d.status && <StatusBadge status={d.status} />}
       <div className="text-[13px] font-semibold text-harness-accent" style={{ marginTop: d.status ? 4 : 0 }}>{d.label}</div>
       <SummaryLine content={d.content} maxLen={60} />
-      <Handle type="source" position={Position.Bottom} className="!bg-harness-accent" />
+      <Handle type="source" position={Position.Right} className="!bg-harness-accent" />
     </div>
   );
 }
@@ -51,12 +51,12 @@ export function ProjectNode({ data }: NodeProps) {
 export function DomainNode({ data }: NodeProps) {
   const d = data as unknown as GraphNodeData;
   return (
-    <div className="cursor-pointer rounded-lg border border-blue-500/60 bg-blue-500/10 px-4 py-2 shadow-md transition-shadow hover:shadow-blue-500/20" style={{ minWidth: 160 }}>
-      <Handle type="target" position={Position.Top} className="!bg-blue-500" />
+    <div className="cursor-pointer rounded-lg border border-blue-500/60 bg-blue-500/10 px-3 py-2 shadow-md transition-shadow hover:shadow-blue-500/20" style={{ minWidth: 140, maxWidth: 170 }}>
+      <Handle type="target" position={Position.Left} className="!bg-blue-500" />
       {d.status && <StatusBadge status={d.status} />}
       <div className="text-[12px] font-medium text-blue-400" style={{ marginTop: d.status ? 3 : 0 }}>{d.label}</div>
       <SummaryLine content={d.content} maxLen={45} />
-      <Handle type="source" position={Position.Bottom} className="!bg-blue-500" />
+      <Handle type="source" position={Position.Right} className="!bg-blue-500" />
     </div>
   );
 }
@@ -64,12 +64,12 @@ export function DomainNode({ data }: NodeProps) {
 export function FeatureNode({ data }: NodeProps) {
   const d = data as unknown as GraphNodeData;
   return (
-    <div className="cursor-pointer rounded-lg border border-green-500/50 bg-green-500/10 px-3 py-1.5 shadow-sm transition-shadow hover:shadow-green-500/20" style={{ minWidth: 140 }}>
-      <Handle type="target" position={Position.Top} className="!bg-green-500" />
+    <div className="cursor-pointer rounded-lg border border-green-500/50 bg-green-500/10 px-3 py-1.5 shadow-sm transition-shadow hover:shadow-green-500/20" style={{ minWidth: 120, maxWidth: 160 }}>
+      <Handle type="target" position={Position.Left} className="!bg-green-500" />
       {d.status && <StatusBadge status={d.status} />}
       <div className="text-[11px] text-green-400" style={{ marginTop: d.status ? 2 : 0 }}>{d.label}</div>
       <SummaryLine content={d.content} maxLen={40} />
-      <Handle type="source" position={Position.Bottom} className="!bg-green-500" />
+      <Handle type="source" position={Position.Right} className="!bg-green-500" />
     </div>
   );
 }
