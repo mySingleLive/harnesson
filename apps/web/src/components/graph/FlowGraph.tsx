@@ -99,7 +99,18 @@ export function FlowGraph({ graphData }: FlowGraphProps) {
   useMemo(() => { setNodes(layouted.nodes); }, [layouted.nodes]);
 
   const onNodesChange = useCallback(
-    (changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    (changes: NodeChange[]) => {
+      // Defer pure selection changes by one frame so React Flow's Pane
+      // can finish cleaning up the selection rectangle DOM before we
+      // trigger a re-render via setNodes.
+      if (changes.length > 0 && changes.every((c) => c.type === 'select')) {
+        requestAnimationFrame(() => {
+          setNodes((nds) => applyNodeChanges(changes, nds));
+        });
+        return;
+      }
+      setNodes((nds) => applyNodeChanges(changes, nds));
+    },
     [],
   );
 
