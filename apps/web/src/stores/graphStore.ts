@@ -52,7 +52,7 @@ interface GraphState {
   syncLogs: string[];
 
   activeTab: GraphTab;
-  selectedNodeId: string | null;
+  selectedNodeIds: string[];
   isDetailPanelOpen: boolean;
 
   setProjectPath: (path: string | null) => void;
@@ -60,8 +60,9 @@ interface GraphState {
   loadSpecsTree: (projectPath: string) => Promise<void>;
   startSync: (options: SyncOptions) => Promise<void>;
   cancelSync: () => Promise<void>;
-  selectNode: (nodeId: string) => void;
-  closeDetailPanel: () => void;
+  selectNodes: (nodeIds: string[]) => void;
+  addToSelection: (nodeIds: string[]) => void;
+  clearSelection: () => void;
   setActiveTab: (tab: GraphTab) => void;
   checkAutoSync: (projectPath: string) => Promise<void>;
 }
@@ -80,7 +81,7 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   syncLogs: [],
 
   activeTab: 'specs-graph',
-  selectedNodeId: null,
+  selectedNodeIds: [],
   isDetailPanelOpen: false,
 
   setProjectPath: (path) => set({ projectPath: path }),
@@ -202,9 +203,15 @@ export const useGraphStore = create<GraphState>((set, get) => ({
     set({ syncStatus: 'idle', syncProgress: 0 });
   },
 
-  selectNode: (nodeId) => set({ selectedNodeId: nodeId, isDetailPanelOpen: true }),
+  selectNodes: (nodeIds) => set({ selectedNodeIds: nodeIds, isDetailPanelOpen: nodeIds.length === 1 }),
 
-  closeDetailPanel: () => set({ isDetailPanelOpen: false, selectedNodeId: null }),
+  addToSelection: (nodeIds) => {
+    const current = get().selectedNodeIds;
+    const merged = [...new Set([...current, ...nodeIds])];
+    set({ selectedNodeIds: merged, isDetailPanelOpen: merged.length === 1 });
+  },
+
+  clearSelection: () => set({ selectedNodeIds: [], isDetailPanelOpen: false }),
 
   setActiveTab: (tab) => set({ activeTab: tab }),
 
