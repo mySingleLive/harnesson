@@ -1,9 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
-import { ReactFlow, Background, Controls, applyNodeChanges, type Node, type Edge, type NodeChange, type OnNodeClick } from '@xyflow/react';
+import { ReactFlow, Background, Controls, applyNodeChanges, type Node, type Edge, type NodeChange } from '@xyflow/react';
 import Dagre from '@dagrejs/dagre';
 import '@xyflow/react/dist/style.css';
 import type { GraphData } from '@harnesson/shared';
 import { nodeTypes, resetDomainColors } from './GraphNodes';
+import { useGraphStore } from '@/stores/graphStore';
+import { GraphContextMenu } from './GraphContextMenu';
 
 const NODE_WIDTH = 170;
 const NODE_HEIGHT_MAP: Record<string, number> = {
@@ -49,13 +51,17 @@ function getLayoutedElements(graphData: GraphData): { nodes: Node[]; edges: Edge
 
 interface FlowGraphProps {
   graphData: GraphData;
-  onNodeClick?: OnNodeClick;
 }
 
-export function FlowGraph({ graphData, onNodeClick }: FlowGraphProps) {
+export function FlowGraph({ graphData }: FlowGraphProps) {
   const layouted = useMemo(() => getLayoutedElements(graphData), [graphData]);
   const [nodes, setNodes] = useState<Node[]>(layouted.nodes);
+  const [contextMenu, setContextMenu] = useState<{ nodeId: string; x: number; y: number } | null>(null);
   const edges = layouted.edges;
+
+  const selectNodes = useGraphStore((s) => s.selectNodes);
+  const addToSelection = useGraphStore((s) => s.addToSelection);
+  const clearSelection = useGraphStore((s) => s.clearSelection);
 
   // Reset node positions when graph data changes
   useMemo(() => { setNodes(layouted.nodes); }, [layouted.nodes]);
@@ -64,6 +70,36 @@ export function FlowGraph({ graphData, onNodeClick }: FlowGraphProps) {
     (changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)),
     [],
   );
+
+  const onSelectionChange = useCallback(
+    ({ nodes: selectedNodes }: { nodes: Node[] }) => {
+      selectNodes(selectedNodes.map((n) => n.id));
+    },
+    [selectNodes],
+  );
+
+  const handleNodeClick = useCallback(
+    (event: React.MouseEvent, node: Node) => {
+      if (event.shiftKey) {
+        addToSelection([node.id]);
+      } else {
+        selectNodes([node.id]);
+      }
+    },
+    [addToSelection, selectNodes],
+  );
+
+  const handleNodeContextMenu = useCallback(
+    (event: React.MouseEvent, node: Node) => {
+      event.preventDefault();
+      setContextMenu({ nodeId: node.id, x: event.clientX, y: event.clientY });
+    },
+    [],
+  );
+
+  const handlePaneClick = useCallback(() => {
+    clearSelection();
+  }, [clearSelection]);
 
   const defaultEdgeOptions = useMemo(
     () => ({
@@ -80,8 +116,14 @@ export function FlowGraph({ graphData, onNodeClick }: FlowGraphProps) {
         edges={edges}
         nodeTypes={nodeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
-        onNodeClick={onNodeClick}
+        onNodeClick={handleNodeClick}
+        onNodeContextMenu={handleNodeContextMenu}
         onNodesChange={onNodesChange}
+        onSelectionChange={onSelectionChange}
+        onPaneClick={handlePaneClick}
+        selectionMode="partial"
+        panOnDrag={[1, 2]}
+        multiSelectionKeyCode="Shift"
         fitView
         fitViewOptions={{ padding: 0.2 }}
         minZoom={0.3}
@@ -93,6 +135,14 @@ export function FlowGraph({ graphData, onNodeClick }: FlowGraphProps) {
           className="!border-harness-border !bg-harness-sidebar [&>button]:!bg-harness-sidebar [&>button]:!border-harness-border [&>button]:!text-gray-400 [&>button:hover]:!bg-white/5"
         />
       </ReactFlow>
+      {contextMenu && (
+        <GraphContextMenu
+          nodeId={contextMenu.nodeId}
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={() => setContextMenu(null)}
+        />
+      )}
     </div>
   );
 }
