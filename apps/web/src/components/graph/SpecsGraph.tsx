@@ -1,5 +1,4 @@
-import { useCallback, useMemo } from 'react';
-import type { NodeMouseHandler } from '@xyflow/react';
+import { useMemo } from 'react';
 import { FlowGraph } from './FlowGraph';
 import { buildGraphFromTree } from './buildGraphFromTree';
 import { useGraphStore } from '@/stores/graphStore';
@@ -8,14 +7,6 @@ import type { GraphData } from '@harnesson/shared';
 export function SpecsGraph() {
   const specsTree = useGraphStore((s) => s.specsTree);
   const specsNodeMap = useGraphStore((s) => s.specsNodeMap);
-  const selectNode = useGraphStore((s) => s.selectNode);
-
-  const handleNodeClick: NodeMouseHandler = useCallback(
-    (_event, node) => {
-      selectNode(node.id);
-    },
-    [selectNode],
-  );
 
   const graphData: GraphData | null = useMemo(() => {
     if (!specsTree || !specsNodeMap) return null;
@@ -30,5 +21,5 @@ export function SpecsGraph() {
     );
   }
 
-  return <FlowGraph graphData={graphData} onNodeClick={handleNodeClick} />;
+  return <FlowGraph graphData={graphData} />;
 }
