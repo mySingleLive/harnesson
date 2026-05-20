@@ -36,7 +36,7 @@ export function useProjectActions() {
         return null;
       }
 
-      const name = result.path.replace(/\/$/, '').split('/').pop() ?? 'untitled';
+      const name = result.path.replace(/[\/\\]$/, '').split(/[\/\\]/).pop() ?? 'untitled';
       const project = await serverApi.createProject({
         name,
         path: result.path,
@@ -95,7 +95,7 @@ export function useProjectActions() {
     async (path: string) => {
       setIsOpening(true);
       try {
-        const name = path.replace(/\/$/, '').split('/').pop() ?? 'untitled';
+        const name = path.replace(/[\/\\]$/, '').split(/[\/\\]/).pop() ?? 'untitled';
         const project = await serverApi.createProject({
           name,
           path,

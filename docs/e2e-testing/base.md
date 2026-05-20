@@ -60,6 +60,18 @@
   - 聚焦态：`border-harness-accent bg-[#1e1e3a] shadow-[0_0_0_2px_rgba(139,92,246,0.25)]`
   - 悬停态：`border-[#3a3a5c] bg-[#1c1c32]`
 
+## 项目管理类
+
+### 打开文件夹添加项目
+- **策略**：下拉菜单 click "打开文件夹" → 用户手动选择文件夹（原生对话框）
+- **关键步骤**：click `button:has(svg.lucide-folder)` 打开下拉菜单 → click `button:has(svg.lucide-folder-open)` → 等待原生对话框 → 用户选择文件夹 → 验证项目出现在下拉框
+- **注意**：Windows 上 PowerShell `-NonInteractive` 标志会阻止 `FolderBrowserDialog` 弹出（已修复）；原生对话框不属于浏览器操作范畴，需用户手动完成；浏览器工具无法操作原生对话框
+
+### 选择已存在项目
+- **策略 A（推荐）**：打开下拉菜单 → eval 点击项目按钮
+  - 关键步骤：click `button:has(svg.lucide-folder)` 打开菜单 → eval `document.querySelectorAll('button')[N].click()` 选择目标项目 → 验证下拉框文本从 "No Project" 变为项目名
+- **注意**：需要先通过 eval 确定项目按钮的索引位置
+
 ## 布局模式类
 
 ### 底部悬浮输入框 + 滚动内容区

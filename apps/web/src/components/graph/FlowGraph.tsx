@@ -7,15 +7,15 @@ import { nodeTypes, resetDomainColors } from './GraphNodes';
 
 const NODE_WIDTH = 170;
 const NODE_HEIGHT_MAP: Record<string, number> = {
-  project: 56,
-  domain: 48,
-  feature: 44,
+  project: 72,
+  domain: 64,
+  feature: 56,
 };
 
 function getLayoutedElements(graphData: GraphData): { nodes: Node[]; edges: Edge[] } {
   resetDomainColors();
   const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
-  g.setGraph({ rankdir: 'LR', nodesep: 50, ranksep: 120 });
+  g.setGraph({ rankdir: 'LR', nodesep: 15, ranksep: 160 });
 
   for (const node of graphData.nodes) {
     g.setNode(node.id, { width: NODE_WIDTH, height: NODE_HEIGHT_MAP[node.type] ?? 40 });
@@ -68,7 +68,7 @@ export function FlowGraph({ graphData, onNodeClick }: FlowGraphProps) {
   const defaultEdgeOptions = useMemo(
     () => ({
       type: 'smoothstep' as const,
-      style: { stroke: '#555' },
+      style: { stroke: '#555', strokeWidth: 2.5 },
     }),
     [],
   );

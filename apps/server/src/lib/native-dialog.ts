@@ -53,7 +53,7 @@ function pickFolderWindows(): string | null {
 
   try {
     const result = execFileSync('powershell', [
-      '-NoProfile', '-NonInteractive', '-Command', ps,
+      '-NoProfile', '-Command', ps,
     ], { encoding: 'utf-8', timeout: 300_000 });
 
     return result.trim() || null;
