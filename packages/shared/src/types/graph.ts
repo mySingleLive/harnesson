@@ -29,6 +29,7 @@ export interface GraphNode {
   content?: string;
   children?: string[];
   status?: string;
+  domainId?: string;
 }
 
 export interface GraphEdge {

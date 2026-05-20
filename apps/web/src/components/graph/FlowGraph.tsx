@@ -3,7 +3,7 @@ import { ReactFlow, Background, Controls, applyNodeChanges, type Node, type Edge
 import Dagre from '@dagrejs/dagre';
 import '@xyflow/react/dist/style.css';
 import type { GraphData } from '@harnesson/shared';
-import { nodeTypes } from './GraphNodes';
+import { nodeTypes, resetDomainColors } from './GraphNodes';
 
 const NODE_WIDTH = 170;
 const NODE_HEIGHT_MAP: Record<string, number> = {
@@ -13,8 +13,9 @@ const NODE_HEIGHT_MAP: Record<string, number> = {
 };
 
 function getLayoutedElements(graphData: GraphData): { nodes: Node[]; edges: Edge[] } {
+  resetDomainColors();
   const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
-  g.setGraph({ rankdir: 'LR', nodesep: 40, ranksep: 100 });
+  g.setGraph({ rankdir: 'LR', nodesep: 50, ranksep: 120 });
 
   for (const node of graphData.nodes) {
     g.setNode(node.id, { width: NODE_WIDTH, height: NODE_HEIGHT_MAP[node.type] ?? 40 });
@@ -33,7 +34,7 @@ function getLayoutedElements(graphData: GraphData): { nodes: Node[]; edges: Edge
       id: node.id,
       type: node.type,
       position: { x: pos.x - NODE_WIDTH / 2, y: pos.y - height / 2 },
-      data: { label: node.title, content: node.content, level: node.level, status: node.status },
+      data: { label: node.title, content: node.content, level: node.level, status: node.status, domainId: node.domainId },
     };
   });
 

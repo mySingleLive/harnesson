@@ -14,9 +14,11 @@ export function buildGraphFromTree(
   const nodes: GraphNode[] = [];
   const edges: { source: string; target: string }[] = [];
 
-  function walk(node: SpecTreeNode) {
+  function walk(node: SpecTreeNode, domainId?: string) {
     if (visited.has(node.id)) return;
     visited.add(node.id);
+
+    const currentDomainId = node.level <= 2 ? (node.level === 2 ? node.id : undefined) : domainId;
 
     nodes.push({
       id: node.id,
@@ -26,13 +28,14 @@ export function buildGraphFromTree(
       content: node.summary,
       children: node.children,
       status: node.status,
+      domainId: currentDomainId,
     });
 
     for (const childId of node.children) {
       const child = nodeMap[childId];
       if (child && childId !== node.id) {
         edges.push({ source: node.id, target: childId });
-        walk(child);
+        walk(child, currentDomainId);
       }
     }
   }

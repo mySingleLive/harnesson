@@ -5,6 +5,7 @@ interface GraphNodeData {
   content?: string;
   level: number;
   status?: string;
+  domainId?: string;
   [key: string]: unknown;
 }
 
@@ -13,6 +14,31 @@ const statusColors: Record<string, { dot: string; text: string }> = {
   review: { dot: '#89b4fa', text: '#89b4fa' },
   done: { dot: '#a6e3a1', text: '#a6e3a1' },
 };
+
+const domainPalette = [
+  { border: 'border-blue-500/60', bg: 'bg-blue-500/10', text: 'text-blue-400', handle: '#3b82f6', shadow: 'hover:shadow-blue-500/20' },
+  { border: 'border-emerald-500/60', bg: 'bg-emerald-500/10', text: 'text-emerald-400', handle: '#10b981', shadow: 'hover:shadow-emerald-500/20' },
+  { border: 'border-amber-500/60', bg: 'bg-amber-500/10', text: 'text-amber-400', handle: '#f59e0b', shadow: 'hover:shadow-amber-500/20' },
+  { border: 'border-rose-500/60', bg: 'bg-rose-500/10', text: 'text-rose-400', handle: '#f43f5e', shadow: 'hover:shadow-rose-500/20' },
+  { border: 'border-cyan-500/60', bg: 'bg-cyan-500/10', text: 'text-cyan-400', handle: '#06b6d4', shadow: 'hover:shadow-cyan-500/20' },
+  { border: 'border-violet-500/60', bg: 'bg-violet-500/10', text: 'text-violet-400', handle: '#8b5cf6', shadow: 'hover:shadow-violet-500/20' },
+];
+
+const domainColorMap = new Map<string, number>();
+let domainColorIndex = 0;
+
+function getDomainColor(domainId: string) {
+  if (!domainColorMap.has(domainId)) {
+    domainColorMap.set(domainId, domainColorIndex % domainPalette.length);
+    domainColorIndex++;
+  }
+  return domainPalette[domainColorMap.get(domainId)!];
+}
+
+function resetDomainColors() {
+  domainColorMap.clear();
+  domainColorIndex = 0;
+}
 
 function StatusBadge({ status }: { status: string }) {
   const color = statusColors[status];
@@ -50,26 +76,28 @@ export function ProjectNode({ data }: NodeProps) {
 
 export function DomainNode({ data }: NodeProps) {
   const d = data as unknown as GraphNodeData;
+  const color = d.domainId ? getDomainColor(d.domainId) : domainPalette[0];
   return (
-    <div className="cursor-pointer rounded-lg border border-blue-500/60 bg-blue-500/10 px-3 py-2 shadow-md transition-shadow hover:shadow-blue-500/20" style={{ minWidth: 140, maxWidth: 170 }}>
-      <Handle type="target" position={Position.Left} className="!bg-blue-500" />
+    <div className={`cursor-pointer rounded-lg border ${color.border} ${color.bg} px-3 py-2 shadow-md transition-shadow ${color.shadow}`} style={{ minWidth: 140, maxWidth: 170 }}>
+      <Handle type="target" position={Position.Left} style={{ background: color.handle }} />
       {d.status && <StatusBadge status={d.status} />}
-      <div className="text-[12px] font-medium text-blue-400" style={{ marginTop: d.status ? 3 : 0 }}>{d.label}</div>
+      <div className={`text-[12px] font-medium ${color.text}`} style={{ marginTop: d.status ? 3 : 0 }}>{d.label}</div>
       <SummaryLine content={d.content} maxLen={45} />
-      <Handle type="source" position={Position.Right} className="!bg-blue-500" />
+      <Handle type="source" position={Position.Right} style={{ background: color.handle }} />
     </div>
   );
 }
 
 export function FeatureNode({ data }: NodeProps) {
   const d = data as unknown as GraphNodeData;
+  const color = d.domainId ? getDomainColor(d.domainId) : domainPalette[0];
   return (
-    <div className="cursor-pointer rounded-lg border border-green-500/50 bg-green-500/10 px-3 py-1.5 shadow-sm transition-shadow hover:shadow-green-500/20" style={{ minWidth: 120, maxWidth: 160 }}>
-      <Handle type="target" position={Position.Left} className="!bg-green-500" />
+    <div className={`cursor-pointer rounded-lg border ${color.border} ${color.bg} px-3 py-1.5 shadow-sm transition-shadow ${color.shadow}`} style={{ minWidth: 120, maxWidth: 160 }}>
+      <Handle type="target" position={Position.Left} style={{ background: color.handle }} />
       {d.status && <StatusBadge status={d.status} />}
-      <div className="text-[11px] text-green-400" style={{ marginTop: d.status ? 2 : 0 }}>{d.label}</div>
+      <div className={`text-[11px] ${color.text}`} style={{ marginTop: d.status ? 2 : 0 }}>{d.label}</div>
       <SummaryLine content={d.content} maxLen={40} />
-      <Handle type="source" position={Position.Right} className="!bg-green-500" />
+      <Handle type="source" position={Position.Right} style={{ background: color.handle }} />
     </div>
   );
 }
@@ -79,3 +107,5 @@ export const nodeTypes = {
   domain: DomainNode,
   feature: FeatureNode,
 } as const;
+
+export { resetDomainColors };
