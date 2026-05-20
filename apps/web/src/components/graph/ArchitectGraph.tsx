@@ -1,18 +1,8 @@
-import { useCallback } from 'react';
-import type { NodeMouseHandler } from '@xyflow/react';
 import { FlowGraph } from './FlowGraph';
 import { useGraphStore } from '@/stores/graphStore';
 
 export function ArchitectGraph() {
   const architectData = useGraphStore((s) => s.architectData);
-  const selectNode = useGraphStore((s) => s.selectNode);
-
-  const handleNodeClick: NodeMouseHandler = useCallback(
-    (_event, node) => {
-      selectNode(node.id);
-    },
-    [selectNode],
-  );
 
   if (!architectData?.graph || architectData.graph.nodes.length === 0) {
     return (
@@ -22,5 +12,5 @@ export function ArchitectGraph() {
     );
   }
 
-  return <FlowGraph graphData={architectData.graph} onNodeClick={handleNodeClick} />;
+  return <FlowGraph graphData={architectData.graph} />;
 }
