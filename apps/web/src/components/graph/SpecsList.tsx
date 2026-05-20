@@ -73,7 +73,7 @@ function TreeNodeRow({
 
 export function SpecsList() {
   const specsTree = useGraphStore((s) => s.specsTree);
-  const selectNode = useGraphStore((s) => s.selectNode);
+  const selectNodes = useGraphStore((s) => s.selectNodes);
 
   if (!specsTree) {
     return (
@@ -85,7 +85,7 @@ export function SpecsList() {
 
   return (
     <div className="py-2">
-      <TreeNodeRow node={specsTree} depth={0} onSelect={selectNode} />
+      <TreeNodeRow node={specsTree} depth={0} onSelect={(id) => selectNodes([id])} />
     </div>
   );
 }
