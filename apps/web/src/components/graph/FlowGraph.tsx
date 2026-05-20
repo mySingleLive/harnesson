@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { ReactFlow, Background, Controls, SelectionMode, applyNodeChanges, type Node, type Edge, type NodeChange } from '@xyflow/react';
 import Dagre from '@dagrejs/dagre';
 import '@xyflow/react/dist/style.css';
@@ -62,12 +62,38 @@ export function FlowGraph({ graphData }: FlowGraphProps) {
   const selectNodes = useGraphStore((s) => s.selectNodes);
   const addToSelection = useGraphStore((s) => s.addToSelection);
   const clearSelection = useGraphStore((s) => s.clearSelection);
-  const selectedNodeIds = useGraphStore((s) => s.selectedNodeIds);
 
-  // Sync store selection to React Flow node selected flags (for context menu selections)
-  useEffect(() => {
-    setNodes((nds) => nds.map((n) => ({ ...n, selected: selectedNodeIds.includes(n.id) })));
-  }, [selectedNodeIds]);
+  // Callbacks for context menu: update store + React Flow internal selection
+  const onSelectNodes = useCallback(
+    (nodeIds: string[]) => {
+      selectNodes(nodeIds);
+      setNodes((nds) => {
+        const changes = nds.map((n) => ({
+          id: n.id,
+          type: 'select' as const,
+          selected: nodeIds.includes(n.id),
+        }));
+        return applyNodeChanges(changes, nds);
+      });
+    },
+    [selectNodes],
+  );
+
+  const onAddToSelection = useCallback(
+    (nodeIds: string[]) => {
+      addToSelection(nodeIds);
+      setNodes((nds) => {
+        const updated = useGraphStore.getState().selectedNodeIds;
+        const changes = nds.map((n) => ({
+          id: n.id,
+          type: 'select' as const,
+          selected: updated.includes(n.id),
+        }));
+        return applyNodeChanges(changes, nds);
+      });
+    },
+    [addToSelection],
+  );
 
   // Reset node positions when graph data changes
   useMemo(() => { setNodes(layouted.nodes); }, [layouted.nodes]);
@@ -150,6 +176,8 @@ export function FlowGraph({ graphData }: FlowGraphProps) {
           x={contextMenu.x}
           y={contextMenu.y}
           onClose={() => setContextMenu(null)}
+          onSelectNodes={onSelectNodes}
+          onAddToSelection={onAddToSelection}
         />
       )}
     </div>

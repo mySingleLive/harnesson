@@ -7,6 +7,8 @@ interface GraphContextMenuProps {
   x: number;
   y: number;
   onClose: () => void;
+  onSelectNodes: (nodeIds: string[]) => void;
+  onAddToSelection: (nodeIds: string[]) => void;
 }
 
 function getAllDescendantIds(
@@ -19,10 +21,8 @@ function getAllDescendantIds(
   return [...children, ...children.flatMap((id) => getAllDescendantIds(id, nodeMap))];
 }
 
-export function GraphContextMenu({ nodeId, x, y, onClose }: GraphContextMenuProps) {
+export function GraphContextMenu({ nodeId, x, y, onClose, onSelectNodes, onAddToSelection }: GraphContextMenuProps) {
   const specsNodeMap = useGraphStore((s) => s.specsNodeMap);
-  const selectNodes = useGraphStore((s) => s.selectNodes);
-  const addToSelection = useGraphStore((s) => s.addToSelection);
 
   const [position, setPosition] = useState({ x, y });
   const menuRef = useRef<HTMLDivElement>(null);
@@ -70,27 +70,27 @@ export function GraphContextMenu({ nodeId, x, y, onClose }: GraphContextMenuProp
   const handleSelect = useCallback(
     (event: React.MouseEvent) => {
       if (event.shiftKey) {
-        addToSelection([nodeId]);
+        onAddToSelection([nodeId]);
       } else {
-        selectNodes([nodeId]);
+        onSelectNodes([nodeId]);
       }
       onClose();
     },
-    [nodeId, addToSelection, selectNodes, onClose],
+    [nodeId, onAddToSelection, onSelectNodes, onClose],
   );
 
   const handleSelectDirectChildren = useCallback(() => {
     if (!node) return;
-    selectNodes(node.children);
+    onSelectNodes([nodeId, ...node.children]);
     onClose();
-  }, [node, selectNodes, onClose]);
+  }, [node, nodeId, onSelectNodes, onClose]);
 
   const handleSelectAllChildren = useCallback(() => {
     if (!specsNodeMap) return;
     const allDescendants = getAllDescendantIds(nodeId, specsNodeMap);
-    selectNodes(allDescendants);
+    onSelectNodes([nodeId, ...allDescendants]);
     onClose();
-  }, [nodeId, specsNodeMap, selectNodes, onClose]);
+  }, [nodeId, specsNodeMap, onSelectNodes, onClose]);
 
   return createPortal(
     <div
